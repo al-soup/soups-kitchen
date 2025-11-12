@@ -4,20 +4,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## General
 
+### Main Rules
+
 - In all interactions and commit messages, be extremely concise and sacrifice
 grammar for the sake of concision.
+
+### Grammer & Style
+
+- When writing markdown text follow the CommonMark lint syntax.
 
 ## Git
 
 ### Commit Messages
 
-Each commit title should start with one of the following:
-
-- feat:
-- fix:
-- refactor:
-- chore:
-- docs:
+- Each commit title should start with one of the following:
+  - feat:
+  - fix:
+  - refactor:
+  - chore:
+  - docs:
+- Do not add references to Claude in the commit messages
 
 ## Planning
 
