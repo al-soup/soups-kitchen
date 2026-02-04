@@ -10,3 +10,12 @@ Thumbs.db
 !.env.example
 !.env.test
 
+# Next.js
+.next/
+out/
+
+# Testing
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
