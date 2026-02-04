@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { PageProvider } from "@/context/PageContext";
 import { Shell } from "@/components/layout/Shell";
 import "./globals.css";
 
@@ -28,7 +29,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${spaceGrotesk.variable}`}>
         <ThemeProvider>
-          <Shell>{children}</Shell>
+          <PageProvider>
+            <Shell>{children}</Shell>
+          </PageProvider>
         </ThemeProvider>
       </body>
     </html>

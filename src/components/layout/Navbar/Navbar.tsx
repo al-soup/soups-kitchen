@@ -1,15 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { usePageContext } from "@/context/PageContext";
 import styles from "./Navbar.module.css";
 import { ProfileDropdown } from "../ProfileDropdown/ProfileDropdown";
 
 interface NavbarProps {
-  subtitle?: string;
   onMenuClick: () => void;
 }
 
-export function Navbar({ subtitle, onMenuClick }: NavbarProps) {
+export function Navbar({ onMenuClick }: NavbarProps) {
+  const { title, subtitle } = usePageContext();
+
   return (
     <header className={styles.navbar}>
       <button
@@ -33,7 +36,7 @@ export function Navbar({ subtitle, onMenuClick }: NavbarProps) {
         </svg>
       </button>
 
-      <div className={styles.brand}>
+      <Link href="/" className={styles.brand}>
         <Image
           src="/soup.svg"
           alt="Soup's Kitchen logo"
@@ -43,10 +46,10 @@ export function Navbar({ subtitle, onMenuClick }: NavbarProps) {
           priority
         />
         <div className={styles.titles}>
-          <h1 className={styles.title}>Soup&apos;s Kitchen</h1>
+          <h1 className={styles.title}>{title}</h1>
           {subtitle && <span className={styles.subtitle}>{subtitle}</span>}
         </div>
-      </div>
+      </Link>
 
       <ProfileDropdown />
     </header>

@@ -8,15 +8,14 @@ import styles from "./Shell.module.css";
 
 interface ShellProps {
   children: React.ReactNode;
-  subtitle?: string;
 }
 
-export function Shell({ children, subtitle }: ShellProps) {
+export function Shell({ children }: ShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <>
-      <Navbar subtitle={subtitle} onMenuClick={() => setSidebarOpen(true)} />
+      <Navbar onMenuClick={() => setSidebarOpen(true)} />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main className={styles.main}>{children}</main>
       <Footer />
