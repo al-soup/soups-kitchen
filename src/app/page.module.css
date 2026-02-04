@@ -1,0 +1,30 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--navbar-height) - 80px);
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+}
+
+.description {
+  font-size: 1.125rem;
+  color: var(--foreground-muted);
+  max-width: 480px;
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+}
