@@ -23,7 +23,9 @@
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--radius-sm);
   color: var(--foreground);
-  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .menuButton:hover {

@@ -3,7 +3,9 @@ import { test, expect } from "@playwright/test";
 test.describe("Navigation", () => {
   test("homepage loads", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: "Welcome to Soup's Kitchen" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Welcome to Soup's Kitchen" })
+    ).toBeVisible();
   });
 
   test("sidebar navigation works", async ({ page }) => {

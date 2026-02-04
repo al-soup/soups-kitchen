@@ -17,7 +17,10 @@ test.describe("Theme", () => {
 
     // Click neo-brutalist theme
     await page.getByRole("button", { name: /neo-brutalist/i }).click();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "neo-brutalist");
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-theme",
+      "neo-brutalist"
+    );
 
     // Click light theme
     await page.getByRole("button", { name: /light/i }).click();
@@ -51,7 +54,10 @@ test.describe("Theme", () => {
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
     await themeBtn.click();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "neo-brutalist");
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-theme",
+      "neo-brutalist"
+    );
 
     await themeBtn.click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");

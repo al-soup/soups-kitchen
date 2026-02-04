@@ -39,7 +39,9 @@
   border-radius: var(--radius-sm);
   font-weight: 600;
   text-decoration: none;
-  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+  transition:
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .homeLink:hover {

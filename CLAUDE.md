@@ -21,7 +21,8 @@
   - refactor:
   - chore:
   - docs:
-- Do not add references to Claude in the commit messages
+- Do not add references to Claude in the commit messages.
+- Don't prompt for committing to Git unless you are asked to.
 
 ## Planning
 
@@ -37,6 +38,33 @@ Current apps: Habit Tracker (/habits), Blog (/work/experience), CV (/work/cv), S
 
 ### Layout Components
 
-- **Navbar**: Fixed top, centered logo + "Soup's Kitchen" title, dynamic subtitle, hamburger (left), profile icon (right)
+- **Navbar**: Fixed top, centered logo + dynamic title (via PageContext), hamburger (left), profile icon (right)
 - **Sidebar**: Slide-in from left, app navigation, transparent backdrop blurs main content
 - **Footer**: Minimal, centered
+
+### Key Patterns
+
+- **PageContext**: Each page uses `usePageTitle(title, subtitle?)` hook to set navbar title
+- **ThemeContext**: Supports "light", "dark", "neo-brutalist" themes
+- **CSS Modules**: All component styles use `.module.css` files
+- **CSS Variables**: Theme colors via `--foreground`, `--background`, `--border-color`, etc. in globals.css
+
+### File Structure
+
+```text
+src/
+  app/           # Next.js app router pages
+  components/
+    layout/      # Shell, Navbar, Sidebar, Footer
+    ui/          # Reusable UI components (ThemeSwitcher)
+  context/       # React contexts (ThemeContext, PageContext)
+  hooks/         # Custom hooks (usePageTitle, useTheme)
+```
+
+### Scripts
+
+- `pnpm dev` - dev server
+- `pnpm build` - production build
+- `pnpm lint` / `pnpm lint:check` - ESLint
+- `pnpm format` / `pnpm format:check` - Prettier
+- `pnpm test:e2e` - Playwright tests

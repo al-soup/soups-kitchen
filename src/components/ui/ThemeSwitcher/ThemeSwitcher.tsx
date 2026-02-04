@@ -7,7 +7,11 @@ import styles from "./ThemeSwitcher.module.css";
 const THEMES: { value: Theme; label: string; description: string }[] = [
   { value: "light", label: "Light", description: "Clean white background" },
   { value: "dark", label: "Dark", description: "Easy on the eyes" },
-  { value: "neo-brutalist", label: "Neo-Brutalist", description: "Bold borders, hard shadows" },
+  {
+    value: "neo-brutalist",
+    label: "Neo-Brutalist",
+    description: "Bold borders, hard shadows",
+  },
 ];
 
 export function ThemeSwitcher() {

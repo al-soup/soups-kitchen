@@ -23,7 +23,10 @@
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--radius-md);
   text-align: left;
-  transition: background var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .option:hover {
