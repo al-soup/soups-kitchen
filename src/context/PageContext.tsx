@@ -11,7 +11,7 @@ interface PageContextValue {
 const PageContext = createContext<PageContextValue | undefined>(undefined);
 
 export function PageProvider({ children }: { children: React.ReactNode }) {
-  const [title, setTitle] = useState("Soup's Kitchen");
+  const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState<string | undefined>();
 
   const setPageInfo = useCallback((newTitle: string, newSubtitle?: string) => {

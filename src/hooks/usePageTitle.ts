@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { usePageContext } from "@/context/PageContext";
 
 export function usePageTitle(title: string, subtitle?: string) {
   const { setPageInfo } = usePageContext();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setPageInfo(title, subtitle);
-    return () => setPageInfo("Soup's Kitchen");
+    return () => setPageInfo("");
   }, [title, subtitle, setPageInfo]);
 }
