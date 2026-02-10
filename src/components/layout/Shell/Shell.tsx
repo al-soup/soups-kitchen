@@ -17,8 +17,10 @@ export function Shell({ children }: ShellProps) {
     <>
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <main className={styles.main}>{children}</main>
-      <Footer />
+      <div className={styles.shell}>
+        <main className={styles.main}>{children}</main>
+        <Footer />
+      </div>
     </>
   );
 }
