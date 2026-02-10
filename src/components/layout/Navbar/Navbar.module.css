@@ -35,8 +35,7 @@
 
 .brand {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  left: calc(50% - 18px);
   display: flex;
   align-items: center;
   gap: 12px;

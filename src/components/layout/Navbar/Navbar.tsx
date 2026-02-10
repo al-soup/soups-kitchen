@@ -45,10 +45,12 @@ export function Navbar({ onMenuClick }: NavbarProps) {
           className={styles.logo}
           priority
         />
-        <div className={styles.titles}>
-          <h1 className={styles.title}>{title}</h1>
-          {subtitle && <span className={styles.subtitle}>{subtitle}</span>}
-        </div>
+        {title && (
+          <div className={styles.titles}>
+            <h1 className={styles.title}>{title}</h1>
+            {subtitle && <span className={styles.subtitle}>{subtitle}</span>}
+          </div>
+        )}
       </Link>
 
       <ProfileDropdown />

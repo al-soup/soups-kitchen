@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { PageProvider } from "@/context/PageContext";
 import { Shell } from "@/components/layout/Shell";
+import { THEME_STORAGE_KEY, NON_DEFAULT_THEMES } from "@/constants/theme";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,6 +28,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t&&${JSON.stringify([...NON_DEFAULT_THEMES])}.includes(t)){document.documentElement.setAttribute("data-theme",t)}}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className={`${inter.variable} ${spaceGrotesk.variable}`}>
         <ThemeProvider>
           <PageProvider>

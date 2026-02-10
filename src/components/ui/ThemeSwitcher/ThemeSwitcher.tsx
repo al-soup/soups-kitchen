@@ -2,6 +2,7 @@
 
 import { useTheme } from "@/hooks/useTheme";
 import type { Theme } from "@/context/ThemeContext";
+import { THEME_ICONS } from "@/constants/themeIcons";
 import styles from "./ThemeSwitcher.module.css";
 
 const THEMES: { value: Theme; label: string; description: string }[] = [
@@ -27,7 +28,10 @@ export function ThemeSwitcher() {
             className={`${styles.option} ${theme === t.value ? styles.active : ""}`}
             onClick={() => setTheme(t.value)}
           >
-            <span className={styles.label}>{t.label}</span>
+            <span className={styles.label}>
+              {THEME_ICONS[t.value]}
+              {t.label}
+            </span>
             <span className={styles.description}>{t.description}</span>
           </button>
         ))}

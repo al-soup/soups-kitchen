@@ -2,13 +2,19 @@
 
 import {
   createContext,
-  useContext,
-  useEffect,
-  useState,
   useCallback,
+  useContext,
+  useLayoutEffect,
+  useState,
 } from "react";
+import {
+  ALL_THEMES,
+  DEFAULT_THEME,
+  THEME_STORAGE_KEY,
+  type Theme,
+} from "@/constants/theme";
 
-export type Theme = "light" | "dark" | "neo-brutalist";
+export type { Theme };
 
 interface ThemeContextValue {
   theme: Theme;
@@ -17,24 +23,25 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-const STORAGE_KEY = "soups-kitchen-theme";
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (stored && ["light", "dark", "neo-brutalist"].includes(stored)) {
+  useLayoutEffect(() => {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
+    if (stored && ALL_THEMES.includes(stored)) {
+      // Set state after the component mounts (via useLayoutEffect) to
+      // sync client‑side theme/localStorage and prevent a hydration mismatch.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setThemeState(stored);
     }
     setMounted(true);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (mounted) {
       document.documentElement.setAttribute("data-theme", theme);
-      localStorage.setItem(STORAGE_KEY, theme);
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
     }
   }, [theme, mounted]);
 
@@ -45,7 +52,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
-      <ThemeContext.Provider value={{ theme: "light", setTheme }}>
+      <ThemeContext.Provider value={{ theme: DEFAULT_THEME, setTheme }}>
         {children}
       </ThemeContext.Provider>
     );
