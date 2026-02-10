@@ -51,8 +51,8 @@ test.describe("Navigation", () => {
     await page.getByRole("button", { name: "Toggle menu" }).click();
     await expect(page.locator("aside")).toHaveClass(/open/);
 
-    // Click backdrop to close
+    // Click backdrop to close and wait for transition
     await page.locator("[class*='backdrop']").click({ force: true });
-    await expect(page.locator("aside")).not.toHaveClass(/open/);
+    await expect(page.locator("[class*='backdrop']")).toBeHidden();
   });
 });
