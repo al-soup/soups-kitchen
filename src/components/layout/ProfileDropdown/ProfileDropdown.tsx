@@ -86,7 +86,11 @@ export function ProfileDropdown() {
 
           <div className={styles.divider} />
 
-          <button className={styles.item} onClick={cycleTheme} data-testid="theme-toggle">
+          <button
+            className={styles.item}
+            onClick={cycleTheme}
+            data-testid="theme-toggle"
+          >
             {THEME_ICONS[theme]}
             {THEMES.find((t) => t.value === theme)?.label}
           </button>
