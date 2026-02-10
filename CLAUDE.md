@@ -60,8 +60,9 @@ Current apps: Habit Tracker (/habits), Blog (/work/experience), CV (/work/cv), S
 src/
   app/           # Next.js app router pages
   components/
-    layout/      # Shell, Navbar, Sidebar, Footer
+    layout/      # Shell, Navbar, Sidebar, Footer, ProfileDropdown
     ui/          # Reusable UI components (ThemeSwitcher)
+  constants/     # App constants (theme config)
   context/       # React contexts (ThemeContext, PageContext)
   hooks/         # Custom hooks (usePageTitle, useTheme)
 ```
