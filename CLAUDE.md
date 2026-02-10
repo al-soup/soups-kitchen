@@ -21,6 +21,11 @@
   - refactor:
   - chore:
   - docs:
+  - build:
+  - ci:
+  - style:
+  - perf:
+  - test:
 - Do not add references to Claude in the commit messages.
 - Don't prompt for committing to Git unless you are asked to.
 
