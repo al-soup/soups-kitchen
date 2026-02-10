@@ -43,7 +43,7 @@ test.describe("Theme", () => {
     await page.goto("/");
     const profileBtn = page.getByRole("button", { name: "Profile menu" });
     const dropdown = page.locator("[class*='dropdown']");
-    const themeBtn = dropdown.getByRole("button", { name: /theme/i });
+    const themeBtn = dropdown.getByTestId("theme-toggle");
 
     // Open profile dropdown
     await profileBtn.click();
