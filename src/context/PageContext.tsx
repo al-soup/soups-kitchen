@@ -18,12 +18,16 @@ export function PageProvider({ children }: { children: React.ReactNode }) {
 
   const setPageInfo = useCallback(
     (title: string, subtitle?: string) => setPageInfoState({ title, subtitle }),
-    [],
+    []
   );
 
   return (
     <PageContext.Provider
-      value={{ title: pageInfo.title, subtitle: pageInfo.subtitle, setPageInfo }}
+      value={{
+        title: pageInfo.title,
+        subtitle: pageInfo.subtitle,
+        setPageInfo,
+      }}
     >
       {children}
     </PageContext.Provider>
