@@ -1,14 +1,11 @@
-"use client";
-
 import Link from "next/link";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { PageTitle } from "@/components/ui/PageTitle";
 import styles from "./not-found.module.css";
 
 export default function NotFound() {
-  usePageTitle("Page Not Found");
-
   return (
     <div className={styles.page}>
+      <PageTitle title="Page Not Found" />
       <div className={styles.errorCode}>404</div>
       <h1 className={styles.title}>Page Not Found</h1>
       <p className={styles.description}>

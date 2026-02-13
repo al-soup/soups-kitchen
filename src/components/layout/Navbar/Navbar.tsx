@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePageContext } from "@/context/PageContext";
 import styles from "./Navbar.module.css";
-import { ProfileDropdown } from "../ProfileDropdown/ProfileDropdown";
+import { ProfileDropdown } from "../ProfileDropdown";
 
 interface NavbarProps {
   onMenuClick: () => void;

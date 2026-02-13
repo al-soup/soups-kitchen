@@ -23,7 +23,6 @@ pnpm dev
 
 ## TODO
 
-- [ ] Build agent for code reviews (a React expert that uses skills)
 - [ ] Build agent for writing and improving e2e test
 - [ ] Load data from Supabase
 - [ ] Add headers to the dropdown (Apps > Habits, Work > CV, Work > Experience)

@@ -1,28 +1,18 @@
 "use client";
 
-import { useTheme } from "@/hooks/useTheme";
-import type { Theme } from "@/context/ThemeContext";
+import { useThemeContext } from "@/context/ThemeContext";
+import { THEME_OPTIONS } from "@/constants/theme";
 import { THEME_ICONS } from "@/constants/themeIcons";
 import styles from "./ThemeSwitcher.module.css";
 
-const THEMES: { value: Theme; label: string; description: string }[] = [
-  { value: "light", label: "Light", description: "Clean white background" },
-  { value: "dark", label: "Dark", description: "Easy on the eyes" },
-  {
-    value: "neo-brutalist",
-    label: "Neo-Brutalist",
-    description: "Bold borders, hard shadows",
-  },
-];
-
 export function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useThemeContext();
 
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Theme</h2>
       <div className={styles.options}>
-        {THEMES.map((t) => (
+        {THEME_OPTIONS.map((t) => (
           <button
             key={t.value}
             className={`${styles.option} ${theme === t.value ? styles.active : ""}`}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Navbar } from "../Navbar";
 import { Sidebar } from "../Sidebar";
 import { Footer } from "../Footer";
@@ -12,11 +12,16 @@ interface ShellProps {
 
 export function Shell({ children }: ShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = useCallback(
+    () => setIsSidebarOpen((prev) => !prev),
+    []
+  );
+  const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
 
   return (
     <>
-      <Navbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <Navbar onMenuClick={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
       <div className={styles.shell}>
         <main className={styles.main}>{children}</main>
         <Footer />

@@ -1,13 +1,10 @@
-"use client";
-
-import { usePageTitle } from "@/hooks/usePageTitle";
-import styles from "./page.module.css";
+import { PageTitle } from "@/components/ui/PageTitle";
+import styles from "../shared-page.module.css";
 
 export default function HabitsPage() {
-  usePageTitle("Habit Tracker");
-
   return (
     <div className={styles.page}>
+      <PageTitle title="Habit Tracker" />
       <h1 className={styles.title}>Habit Tracker</h1>
       <p className={styles.description}>
         Track your daily habits and build consistency.

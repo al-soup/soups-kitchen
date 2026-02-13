@@ -3,20 +3,14 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import styles from "./ProfileDropdown.module.css";
-import { useTheme } from "@/hooks/useTheme";
-import type { Theme } from "@/context/ThemeContext";
+import { useThemeContext } from "@/context/ThemeContext";
+import { THEME_OPTIONS } from "@/constants/theme";
 import { THEME_ICONS } from "@/constants/themeIcons";
-
-const THEMES: { value: Theme; label: string }[] = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "neo-brutalist", label: "Brutalist" },
-];
 
 export function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useThemeContext();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -32,10 +26,19 @@ export function ProfileDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen]);
+
   const cycleTheme = () => {
-    const currentIndex = THEMES.findIndex((t) => t.value === theme);
-    const nextIndex = (currentIndex + 1) % THEMES.length;
-    setTheme(THEMES[nextIndex].value);
+    const currentIndex = THEME_OPTIONS.findIndex((t) => t.value === theme);
+    const nextIndex = (currentIndex + 1) % THEME_OPTIONS.length;
+    setTheme(THEME_OPTIONS[nextIndex].value);
   };
 
   return (
@@ -92,7 +95,7 @@ export function ProfileDropdown() {
             data-testid="theme-toggle"
           >
             {THEME_ICONS[theme]}
-            {THEMES.find((t) => t.value === theme)?.label}
+            {THEME_OPTIONS.find((t) => t.value === theme)?.label}
           </button>
         </div>
       )}
