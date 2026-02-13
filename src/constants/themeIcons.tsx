@@ -1,3 +1,5 @@
+"use client";
+
 import type { Theme } from "@/context/ThemeContext";
 
 export const THEME_ICONS: Record<Theme, React.ReactNode> = {
