@@ -32,6 +32,15 @@ export function ProfileDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen]);
+
   const cycleTheme = () => {
     const currentIndex = THEMES.findIndex((t) => t.value === theme);
     const nextIndex = (currentIndex + 1) % THEMES.length;
