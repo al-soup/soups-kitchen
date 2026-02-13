@@ -11,16 +11,20 @@ interface PageContextValue {
 const PageContext = createContext<PageContextValue | undefined>(undefined);
 
 export function PageProvider({ children }: { children: React.ReactNode }) {
-  const [title, setTitle] = useState("");
-  const [subtitle, setSubtitle] = useState<string | undefined>();
+  const [pageInfo, setPageInfoState] = useState<{
+    title: string;
+    subtitle?: string;
+  }>({ title: "" });
 
-  const setPageInfo = useCallback((newTitle: string, newSubtitle?: string) => {
-    setTitle(newTitle);
-    setSubtitle(newSubtitle);
-  }, []);
+  const setPageInfo = useCallback(
+    (title: string, subtitle?: string) => setPageInfoState({ title, subtitle }),
+    [],
+  );
 
   return (
-    <PageContext.Provider value={{ title, subtitle, setPageInfo }}>
+    <PageContext.Provider
+      value={{ title: pageInfo.title, subtitle: pageInfo.subtitle, setPageInfo }}
+    >
       {children}
     </PageContext.Provider>
   );
