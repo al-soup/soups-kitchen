@@ -1,12 +1,12 @@
 "use client";
 
-import { useTheme } from "@/hooks/useTheme";
+import { useThemeContext } from "@/context/ThemeContext";
 import { THEME_OPTIONS } from "@/constants/theme";
 import { THEME_ICONS } from "@/constants/themeIcons";
 import styles from "./ThemeSwitcher.module.css";
 
 export function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useThemeContext();
 
   return (
     <div className={styles.container}>
