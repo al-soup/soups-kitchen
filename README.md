@@ -23,8 +23,8 @@ pnpm dev
 
 ## TODO
 
+- [ ] Set-up local supabase. Import the prod schemas and functions.
 - [ ] Build agent for writing and improving e2e test
-- [ ] Load data from Supabase
 - [ ] Add headers to the dropdown (Apps > Habits, Work > CV, Work > Experience)
 
 ## Review
