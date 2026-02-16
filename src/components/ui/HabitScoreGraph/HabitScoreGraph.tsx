@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { DailyHabitScore } from "@/lib/supabase/types";
+import type { ActionType, DailyHabitScore } from "@/lib/supabase/types";
 import { HabitScoreGraphDay } from "./HabitScoreGraphDay";
 import styles from "./HabitScoreGraph.module.css";
 
@@ -9,7 +9,7 @@ interface HabitScoreGraphProps {
   scores: DailyHabitScore[];
   loading: boolean;
   error: string | null;
-  actionType: number;
+  actionType: ActionType;
 }
 
 const DAY_LABELS = ["Mon", "Wed", "Fri", "Sun"];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitScoreGraph } from "@/components/ui/HabitScoreGraph";
 import type { ActionType, DailyHabitScore } from "@/lib/supabase/types";
@@ -15,17 +15,29 @@ export default function HabitsPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const handleTypeChange = useCallback((type: ActionType) => {
+    setActionType(type);
     setScores([]);
     setError(null);
     setLoading(true);
+  }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
     const today = new Date().toISOString().split("T")[0];
 
     getDailyHabitScores({ start_date: today, action_type: actionType })
-      .then(setScores)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!controller.signal.aborted) setScores(data);
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted) setError(err.message);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
   }, [actionType]);
 
   return (
@@ -34,7 +46,7 @@ export default function HabitsPage() {
       <h1 className={styles.title}>Habit Tracker</h1>
       <HabitTypeSelector
         value={actionType}
-        onChange={setActionType}
+        onChange={handleTypeChange}
         disabled={loading}
       />
       <HabitScoreGraph

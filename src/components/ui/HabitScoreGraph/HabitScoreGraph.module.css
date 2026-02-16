@@ -137,6 +137,24 @@
   cursor: default;
 }
 
+.outer[data-color-type="2"] {
+  --habit-score-level-1: var(--habit-score-t2-level-1);
+  --habit-score-level-2: var(--habit-score-t2-level-2);
+  --habit-score-level-3: var(--habit-score-t2-level-3);
+  --habit-score-level-4: var(--habit-score-t2-level-4);
+  --habit-score-level-5: var(--habit-score-t2-level-5);
+  --habit-score-level-6: var(--habit-score-t2-level-6);
+}
+
+.outer[data-color-type="3"] {
+  --habit-score-level-1: var(--habit-score-t3-level-1);
+  --habit-score-level-2: var(--habit-score-t3-level-2);
+  --habit-score-level-3: var(--habit-score-t3-level-3);
+  --habit-score-level-4: var(--habit-score-t3-level-4);
+  --habit-score-level-5: var(--habit-score-t3-level-5);
+  --habit-score-level-6: var(--habit-score-t3-level-6);
+}
+
 .errorOverlay {
   position: absolute;
   inset: 0;
