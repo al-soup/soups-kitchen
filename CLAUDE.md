@@ -65,6 +65,8 @@ src/
   constants/     # App constants (theme config)
   context/       # React contexts (ThemeContext, PageContext)
   hooks/         # Custom hooks (usePageTitle, useTheme)
+  lib/
+    supabase/    # Supabase client, types, queries
 ```
 
 ### Scripts
