@@ -21,12 +21,12 @@ function makeScore(date: string, score: number, ids: number[] = []): DailyHabitS
 
 describe("HabitScoreGraph", () => {
   it("renders without crashing with empty scores", () => {
-    render(<HabitScoreGraph scores={[]} loading={false} error={null} />);
+    render(<HabitScoreGraph scores={[]} loading={false} error={null} actionType={1} />);
     expect(screen.getByRole("grid")).toBeInTheDocument();
   });
 
   it("renders day cells for a year (grid + legend)", () => {
-    render(<HabitScoreGraph scores={[]} loading={false} error={null} />);
+    render(<HabitScoreGraph scores={[]} loading={false} error={null} actionType={1} />);
     const cells = screen.getAllByRole("gridcell");
     // ~365 grid cells + 7 legend cells = ~372-384
     expect(cells.length).toBeGreaterThanOrEqual(372);
@@ -38,7 +38,7 @@ describe("HabitScoreGraph", () => {
       makeScore("2025-06-01", 3, [1, 2, 3]),
       makeScore("2025-06-02", 5, [1, 2, 3, 4, 5]),
     ];
-    render(<HabitScoreGraph scores={scores} loading={false} error={null} />);
+    render(<HabitScoreGraph scores={scores} loading={false} error={null} actionType={1} />);
 
     const cells = screen.getAllByRole("gridcell");
     const level3 = cells.filter((c) => c.getAttribute("data-level") === "3");
@@ -48,7 +48,7 @@ describe("HabitScoreGraph", () => {
   });
 
   it("shows every-other day labels", () => {
-    render(<HabitScoreGraph scores={[]} loading={false} error={null} />);
+    render(<HabitScoreGraph scores={[]} loading={false} error={null} actionType={1} />);
     for (const day of ["Mon", "Wed", "Fri", "Sun"]) {
       expect(screen.getByText(day)).toBeInTheDocument();
     }
@@ -58,33 +58,45 @@ describe("HabitScoreGraph", () => {
   });
 
   it("renders month labels", () => {
-    render(<HabitScoreGraph scores={[]} loading={false} error={null} />);
+    render(<HabitScoreGraph scores={[]} loading={false} error={null} actionType={1} />);
     expect(screen.getByText("Jan")).toBeInTheDocument();
   });
 
   it("renders legend with Less and More", () => {
-    render(<HabitScoreGraph scores={[]} loading={false} error={null} />);
+    render(<HabitScoreGraph scores={[]} loading={false} error={null} actionType={1} />);
     expect(screen.getByText("Less")).toBeInTheDocument();
     expect(screen.getByText("More")).toBeInTheDocument();
   });
 
   it("sets data-loading on cells when loading", () => {
-    render(<HabitScoreGraph scores={[]} loading={true} error={null} />);
+    render(<HabitScoreGraph scores={[]} loading={true} error={null} actionType={1} />);
     const cells = screen.getAllByRole("gridcell");
     const loadingCells = cells.filter((c) => c.hasAttribute("data-loading"));
     expect(loadingCells.length).toBeGreaterThan(0);
   });
 
   it("shows error message when error is set", () => {
-    render(<HabitScoreGraph scores={[]} loading={false} error="Something went wrong" />);
+    render(<HabitScoreGraph scores={[]} loading={false} error="Something went wrong" actionType={1} />);
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 
   it("disables scroll buttons when loading", () => {
-    render(<HabitScoreGraph scores={[]} loading={true} error={null} />);
+    render(<HabitScoreGraph scores={[]} loading={true} error={null} actionType={1} />);
     const leftBtn = screen.getByLabelText("Scroll left");
     const rightBtn = screen.getByLabelText("Scroll right");
     expect(leftBtn).toBeDisabled();
     expect(rightBtn).toBeDisabled();
+  });
+
+  it("sets data-color-type on outer div", () => {
+    const { container, rerender } = render(
+      <HabitScoreGraph scores={[]} loading={false} error={null} actionType={2} />,
+    );
+    expect(container.firstChild).toHaveAttribute("data-color-type", "2");
+
+    rerender(
+      <HabitScoreGraph scores={[]} loading={false} error={null} actionType={3} />,
+    );
+    expect(container.firstChild).toHaveAttribute("data-color-type", "3");
   });
 });

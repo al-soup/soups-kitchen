@@ -9,6 +9,7 @@ interface HabitScoreGraphProps {
   scores: DailyHabitScore[];
   loading: boolean;
   error: string | null;
+  actionType: number;
 }
 
 const DAY_LABELS = ["Mon", "Wed", "Fri", "Sun"];
@@ -44,6 +45,7 @@ export function HabitScoreGraph({
   scores,
   loading,
   error,
+  actionType,
 }: HabitScoreGraphProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -132,7 +134,7 @@ export function HabitScoreGraph({
   const totalWeeks = weeks.length;
 
   return (
-    <div className={styles.outer}>
+    <div className={styles.outer} data-color-type={actionType}>
       <div className={styles.bodyRow}>
         <div className={styles.dayLabels}>
           {DAY_LABELS.map((label) => (
