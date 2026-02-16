@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PageTitle } from "@/components/ui/PageTitle";
+import { HabitScoreGraph } from "@/components/ui/HabitScoreGraph";
 import type { DailyHabitScore } from "@/lib/supabase/types";
 import { getDailyHabitScores } from "./api";
 
@@ -25,9 +26,7 @@ export default function HabitsPage() {
     <div className={styles.page}>
       <PageTitle title="Habit Tracker" />
       <h1 className={styles.title}>Habit Tracker</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
-      {!loading && !error && <pre>{JSON.stringify(scores, null, 2)}</pre>}
+      <HabitScoreGraph scores={scores} loading={loading} error={error} />
     </div>
   );
 }

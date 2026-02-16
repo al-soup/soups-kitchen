@@ -12,6 +12,15 @@
   --foreground: #171717;
   --foreground-muted: #666666;
   --border-color: #e5e5e5;
+
+  /* Habit score graph levels */
+  --habit-score-level-0: #ebedf0;
+  --habit-score-level-1: #dafee0;
+  --habit-score-level-2: #9be9a8;
+  --habit-score-level-3: #40c463;
+  --habit-score-level-4: #30a14e;
+  --habit-score-level-5: #216e39;
+  --habit-score-level-6: #0e4429;
   --border-width: 1px;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
@@ -40,6 +49,15 @@
   --border-color: #2a2a2a;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  /* Habit score graph levels */
+  --habit-score-level-0: #161b22;
+  --habit-score-level-1: #0a3219;
+  --habit-score-level-2: #0e4429;
+  --habit-score-level-3: #006d32;
+  --habit-score-level-4: #26a641;
+  --habit-score-level-5: #39d353;
+  --habit-score-level-6: #69ff85;
 }
 
 [data-theme="neo-brutalist"] {
@@ -54,6 +72,15 @@
   --radius-sm: 0;
   --radius-md: 0;
   --radius-lg: 0;
+
+  /* Habit score graph levels */
+  --habit-score-level-0: #e0dfc0;
+  --habit-score-level-1: #d1eace;
+  --habit-score-level-2: #a8e6a1;
+  --habit-score-level-3: #4ccd4c;
+  --habit-score-level-4: #2ea82e;
+  --habit-score-level-5: #1a7a1a;
+  --habit-score-level-6: #0a500a;
 }
 
 /* ===== Reset & Base ===== */
