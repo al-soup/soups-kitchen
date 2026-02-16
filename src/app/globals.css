@@ -12,6 +12,32 @@
   --foreground: #171717;
   --foreground-muted: #666666;
   --border-color: #e5e5e5;
+
+  /* Habit score graph levels — type 1 (green) */
+  --habit-score-level-0: #ebedf0;
+  --habit-score-level-1: #dafee0;
+  --habit-score-level-2: #9be9a8;
+  --habit-score-level-3: #40c463;
+  --habit-score-level-4: #30a14e;
+  --habit-score-level-5: #216e39;
+  --habit-score-level-6: #0e4429;
+
+  /* Habit score graph levels — type 2 (orange) */
+  --habit-score-t2-level-1: #fedfc0;
+  --habit-score-t2-level-2: #fdbe85;
+  --habit-score-t2-level-3: #fd8d3c;
+  --habit-score-t2-level-4: #e6550d;
+  --habit-score-t2-level-5: #a63603;
+  --habit-score-t2-level-6: #6b2003;
+
+  /* Habit score graph levels — type 3 (purple) */
+  --habit-score-t3-level-1: #e8dcf4;
+  --habit-score-t3-level-2: #cba4e3;
+  --habit-score-t3-level-3: #9e6dc4;
+  --habit-score-t3-level-4: #7b42a8;
+  --habit-score-t3-level-5: #5a2d82;
+  --habit-score-t3-level-6: #3b1a5c;
+
   --border-width: 1px;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
@@ -40,6 +66,31 @@
   --border-color: #2a2a2a;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  /* Habit score graph levels */
+  --habit-score-level-0: #161b22;
+  --habit-score-level-1: #0a3219;
+  --habit-score-level-2: #0e4429;
+  --habit-score-level-3: #006d32;
+  --habit-score-level-4: #26a641;
+  --habit-score-level-5: #39d353;
+  --habit-score-level-6: #69ff85;
+
+  /* Type 2 (orange) */
+  --habit-score-t2-level-1: #3d1e00;
+  --habit-score-t2-level-2: #5c2d00;
+  --habit-score-t2-level-3: #8b4500;
+  --habit-score-t2-level-4: #c46200;
+  --habit-score-t2-level-5: #f08c00;
+  --habit-score-t2-level-6: #ffb347;
+
+  /* Type 3 (purple) */
+  --habit-score-t3-level-1: #1e0a33;
+  --habit-score-t3-level-2: #31165c;
+  --habit-score-t3-level-3: #4e2a82;
+  --habit-score-t3-level-4: #7040b0;
+  --habit-score-t3-level-5: #9b6dd4;
+  --habit-score-t3-level-6: #c9a6f0;
 }
 
 [data-theme="neo-brutalist"] {
@@ -54,6 +105,31 @@
   --radius-sm: 0;
   --radius-md: 0;
   --radius-lg: 0;
+
+  /* Habit score graph levels */
+  --habit-score-level-0: #e0dfc0;
+  --habit-score-level-1: #d1eace;
+  --habit-score-level-2: #a8e6a1;
+  --habit-score-level-3: #4ccd4c;
+  --habit-score-level-4: #2ea82e;
+  --habit-score-level-5: #1a7a1a;
+  --habit-score-level-6: #0a500a;
+
+  /* Type 2 (orange) */
+  --habit-score-t2-level-1: #fde0b0;
+  --habit-score-t2-level-2: #fac060;
+  --habit-score-t2-level-3: #e89530;
+  --habit-score-t2-level-4: #cc7000;
+  --habit-score-t2-level-5: #995300;
+  --habit-score-t2-level-6: #663800;
+
+  /* Type 3 (purple) */
+  --habit-score-t3-level-1: #e0d0f0;
+  --habit-score-t3-level-2: #c4a0e0;
+  --habit-score-t3-level-3: #9e68cc;
+  --habit-score-t3-level-4: #7840aa;
+  --habit-score-t3-level-5: #552d80;
+  --habit-score-t3-level-6: #381d55;
 }
 
 /* ===== Reset & Base ===== */
