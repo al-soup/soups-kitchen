@@ -12,7 +12,9 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .option:hover:not(:disabled) {

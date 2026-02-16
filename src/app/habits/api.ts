@@ -4,7 +4,7 @@ import type { GetDailyHabitScoresParams } from "@/lib/supabase/types";
 export async function getDailyHabitScores(params: GetDailyHabitScoresParams) {
   const { data, error } = await getSupabase().rpc(
     "get_daily_habit_scores",
-    params,
+    params
   );
 
   if (error) {
