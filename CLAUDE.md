@@ -66,6 +66,7 @@ Current apps: Habit Tracker (/habits), Login (/login), Blog (/work/experience), 
 - **CSS Modules**: All component styles use `.module.css` files
 - **CSS Variables**: Theme colors via `--foreground`, `--background`, `--border-color`, etc. in globals.css
 - **Auth redirects**: Protected pages redirect to `/login?redirectTo=<path>`. Login reads param and navigates there on success. Validate `redirectTo` starts with `/` and not `//` (open redirect prevention).
+- **Avatar**: `getAvatarUrl(userId, size)` from `src/lib/avatar.ts` returns a DiceBear identicon URL. Hashes user ID with FNV-1a before sending to DiceBear (no raw UUIDs to external service). Used in ProfileDropdown trigger and Settings account section.
 
 ### Auth
 
@@ -92,6 +93,7 @@ src/
   context/       # ThemeContext, PageContext, AuthContext
   hooks/         # usePageTitle, useUserRole
   lib/
+    avatar.ts    # DiceBear identicon URL helper
     supabase/    # client, server, proxy, database.types, types
   proxy.ts       # Next.js proxy (formerly middleware)
 ```

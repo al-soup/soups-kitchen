@@ -7,6 +7,7 @@ import styles from "./ProfileDropdown.module.css";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { getSupabase } from "@/lib/supabase/client";
+import { getAvatarUrl } from "@/lib/avatar";
 import { THEME_OPTIONS } from "@/constants/theme";
 import { THEME_ICONS } from "@/constants/themeIcons";
 
@@ -58,26 +59,42 @@ export function ProfileDropdown() {
 
   return (
     <div className={styles.container} ref={dropdownRef}>
-      <button
-        className={styles.trigger}
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Profile menu"
-        aria-expanded={isOpen}
-      >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+      {user ? (
+        <button
+          className={styles.trigger}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Profile menu"
+          aria-expanded={isOpen}
         >
-          <circle cx="12" cy="8" r="4" />
-          <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-        </svg>
-      </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={getAvatarUrl(user.id, 40)}
+            alt="Avatar"
+            className={styles.avatar}
+          />
+        </button>
+      ) : (
+        <button
+          className={styles.trigger}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Profile menu"
+          aria-expanded={isOpen}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+          </svg>
+        </button>
+      )}
 
       {isOpen && (
         <div className={styles.dropdown}>

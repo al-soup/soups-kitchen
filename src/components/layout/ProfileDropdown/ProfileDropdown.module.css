@@ -54,6 +54,14 @@
   background: var(--background-alt);
 }
 
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border-color);
+  display: block;
+}
+
 .divider {
   height: 1px;
   background: var(--border-color);

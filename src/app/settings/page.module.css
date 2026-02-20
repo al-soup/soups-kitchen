@@ -12,3 +12,64 @@
 .section {
   margin-bottom: 32px;
 }
+
+.sectionTitle {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.accountInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.email {
+  font-size: 1rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userId {
+  font-size: 0.75rem;
+  color: var(--foreground-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logoutButton {
+  padding: 8px 16px;
+  background: transparent;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.logoutButton:hover {
+  background: var(--background-alt);
+  box-shadow: var(--shadow);
+}
