@@ -73,11 +73,36 @@ export type Database = {
           },
         ];
       };
+      user_roles: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          role: Database["public"]["Enums"]["user_role"];
+          table_name: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          role?: Database["public"]["Enums"]["user_role"];
+          table_name: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          role?: Database["public"]["Enums"]["user_role"];
+          table_name?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      custom_access_token_hook: { Args: { event: Json }; Returns: Json };
       get_daily_habit_scores: {
         Args: { action_type: number; start_date?: string };
         Returns: {
@@ -86,9 +111,14 @@ export type Database = {
           total_score: number;
         }[];
       };
+      get_user_role: {
+        Args: { target_table: string };
+        Returns: Database["public"]["Enums"]["user_role"];
+      };
+      is_global_admin: { Args: never; Returns: boolean };
     };
     Enums: {
-      [_ in never]: never;
+      user_role: "admin" | "manager" | "viewer";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -218,6 +248,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["admin", "manager", "viewer"],
+    },
   },
 } as const;

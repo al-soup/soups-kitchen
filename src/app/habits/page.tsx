@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitScoreGraph } from "@/components/ui/HabitScoreGraph";
+import { useUserRole } from "@/hooks/useUserRole";
 import type { ActionType, DailyHabitScore } from "@/lib/supabase/types";
 import { getDailyHabitScores } from "./api";
 import { HabitTypeSelector } from "./HabitTypeSelector";
@@ -10,6 +12,8 @@ import { HabitTypeSelector } from "./HabitTypeSelector";
 import styles from "../shared-page.module.css";
 
 export default function HabitsPage() {
+  const { role } = useUserRole("habit");
+  const canCreate = role === "admin" || role === "manager";
   const [actionType, setActionType] = useState<ActionType>(1);
   const [scores, setScores] = useState<DailyHabitScore[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +47,23 @@ export default function HabitsPage() {
   return (
     <div className={styles.page}>
       <PageTitle title="Habit Tracker" />
-      <h1 className={styles.title}>Habit Tracker</h1>
+      <h1 className={styles.title}>
+        Habit Tracker
+        {canCreate && (
+          <Link
+            href="/habits/create"
+            aria-label="Create habit"
+            style={{
+              marginLeft: 12,
+              fontSize: "1.2rem",
+              verticalAlign: "middle",
+              textDecoration: "none",
+            }}
+          >
+            +
+          </Link>
+        )}
+      </h1>
       <HabitTypeSelector
         value={actionType}
         onChange={handleTypeChange}

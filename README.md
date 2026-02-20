@@ -27,7 +27,12 @@ pnpm dev
 - [ ] Add CI user that can create a habit entry when working on the app
 - [ ] Set-up local supabase. Import the prod schemas and functions.
 - [ ] Build agent for writing and improving e2e test
+
+### Minor
+
+- [ ] Extract icons to lib
 - [ ] Add headers to the dropdown (Apps > Habits, Work > CV, Work > Experience)
+- [ ] Change "work" to about. Set
 
 ## Review
 

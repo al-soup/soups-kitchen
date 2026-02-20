@@ -2,15 +2,30 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import styles from "./ProfileDropdown.module.css";
 import { useThemeContext } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
+import { getSupabase } from "@/lib/supabase/client";
 import { THEME_OPTIONS } from "@/constants/theme";
 import { THEME_ICONS } from "@/constants/themeIcons";
 
 export function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const { theme, setTheme } = useThemeContext();
+  const { user } = useAuth();
+
+  async function handleLogout() {
+    try {
+      await getSupabase().auth.signOut();
+    } catch (e) {
+      console.error("Logout failed:", e);
+    }
+    setIsOpen(false);
+    router.push("/login");
+  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -66,6 +81,44 @@ export function ProfileDropdown() {
 
       {isOpen && (
         <div className={styles.dropdown}>
+          {!user && (
+            <>
+              <Link
+                href="/login"
+                className={styles.item}
+                onClick={() => setIsOpen(false)}
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+                Log in
+              </Link>
+              <div className={styles.divider} />
+            </>
+          )}
+
+          <button
+            className={styles.item}
+            onClick={cycleTheme}
+            data-testid="theme-toggle"
+          >
+            {THEME_ICONS[theme]}
+            {THEME_OPTIONS.find((t) => t.value === theme)?.label}
+          </button>
+
+          <div className={styles.divider} />
+
           <Link
             href="/settings"
             className={styles.item}
@@ -87,16 +140,28 @@ export function ProfileDropdown() {
             Settings
           </Link>
 
-          <div className={styles.divider} />
-
-          <button
-            className={styles.item}
-            onClick={cycleTheme}
-            data-testid="theme-toggle"
-          >
-            {THEME_ICONS[theme]}
-            {THEME_OPTIONS.find((t) => t.value === theme)?.label}
-          </button>
+          {user && (
+            <>
+              <div className={styles.divider} />
+              <button className={styles.item} onClick={handleLogout}>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Log out
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
