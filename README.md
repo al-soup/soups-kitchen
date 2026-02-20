@@ -21,18 +21,21 @@ pnpm dev
 | `pnpm format:check` | Prettier check       |
 | `pnpm test`         | Run unit tests       |
 | `pnpm test:e2e`     | Run Playwright tests |
+| `pnpm test:e2e:ui`  | Playwright UI mode   |
 
 ## TODO
 
+- [ ] Create user avatars
 - [ ] Add CI user that can create a habit entry when working on the app
 - [ ] Set-up local supabase. Import the prod schemas and functions.
 - [ ] Build agent for writing and improving e2e test
+- [ ] Add `redirectTo` param to all protected page redirects (currently only `/habits/create`)
 
 ### Minor
 
 - [ ] Extract icons to lib
 - [ ] Add headers to the dropdown (Apps > Habits, Work > CV, Work > Experience)
-- [ ] Change "work" to about. Set
+- [ ] Change "work" to about. Forward to CV when you just enter /about
 
 ## Review
 
