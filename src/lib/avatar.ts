@@ -10,5 +10,6 @@ function fnv1a(str: string): string {
 
 export function getAvatarUrl(userId: string, size = 64): string {
   const seed = fnv1a(userId);
+  // Docs: https://www.dicebear.com/styles/identicon/
   return `https://api.dicebear.com/9.x/identicon/svg?seed=${seed}&size=${size}`;
 }
