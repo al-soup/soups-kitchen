@@ -43,7 +43,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
           width={36}
           height={36}
           className={styles.logo}
-          priority
+          loading="eager"
         />
         {title && (
           <div className={styles.titles}>
