@@ -89,7 +89,7 @@ src/
   components/
     layout/      # Shell, Navbar, Sidebar, Footer, ProfileDropdown
     ui/          # HabitScoreGraph, PageTitle, ThemeSwitcher
-  constants/     # Theme config + icons
+  constants/     # Theme config, theme icons, shared icons (Menu, User, LogIn, Settings, LogOut)
   context/       # ThemeContext, PageContext, AuthContext
   hooks/         # usePageTitle, useUserRole
   lib/
