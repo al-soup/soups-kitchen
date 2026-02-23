@@ -10,11 +10,18 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const NAV_ITEMS = [
-  { href: "/habits", label: "Habit Tracker" },
-  { href: "/work/experience", label: "Experience" },
-  { href: "/work/cv", label: "CV" },
-  { href: "/settings", label: "Settings" },
+const SECTIONS = [
+  {
+    label: "About",
+    items: [
+      { href: "/about/experience", label: "Experience" },
+      { href: "/about/me", label: "Me" },
+    ],
+  },
+  {
+    label: "Apps",
+    items: [{ href: "/apps/habits", label: "Habit Tracker" }],
+  },
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
@@ -38,15 +45,20 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       />
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ""}`}>
         <nav className={styles.nav}>
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.link} ${pathname === item.href ? styles.active : ""}`}
-              onClick={onClose}
-            >
-              {item.label}
-            </Link>
+          {SECTIONS.map((section) => (
+            <div key={section.label} className={styles.section}>
+              <h3 className={styles.sectionHeading}>{section.label}</h3>
+              {section.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`${styles.link} ${pathname === item.href ? styles.active : ""}`}
+                  onClick={onClose}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
       </aside>

@@ -10,7 +10,7 @@ export default function AppsPage() {
       <PageTitle title="Apps" />
       <h1 className={styles.heading}>Apps</h1>
       <nav className={styles.list}>
-        <Link href="/habits" className={styles.appLink}>
+        <Link href="/apps/habits" className={styles.appLink}>
           Habit Tracker
         </Link>
       </nav>

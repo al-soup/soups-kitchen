@@ -67,8 +67,8 @@ export default function Home() {
       </p>
 
       <nav className={styles.links}>
-        <Link href="/work" className={styles.linkCard}>
-          Work
+        <Link href="/about" className={styles.linkCard}>
+          About
         </Link>
         <Link href="/apps" className={styles.linkCard}>
           Apps

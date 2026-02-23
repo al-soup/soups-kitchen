@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { PageTitle } from "@/components/ui/PageTitle";
 
-import styles from "../../shared-page.module.css";
+import styles from "../../../shared-page.module.css";
 
 export default function CreateHabitPage() {
   const router = useRouter();

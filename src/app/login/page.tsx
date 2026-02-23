@@ -43,7 +43,7 @@ function LoginForm() {
       setError(
         authError.status === 429
           ? "Too many attempts. Please wait."
-          : "Invalid email or password",
+          : "Invalid email or password"
       );
       return;
     }

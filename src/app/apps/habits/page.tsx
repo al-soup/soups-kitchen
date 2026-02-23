@@ -9,7 +9,7 @@ import type { ActionType, DailyHabitScore } from "@/lib/supabase/types";
 import { getDailyHabitScores } from "./api";
 import { HabitTypeSelector } from "./HabitTypeSelector";
 
-import styles from "../shared-page.module.css";
+import styles from "../../shared-page.module.css";
 
 export default function HabitsPage() {
   const { role } = useUserRole("habit");
@@ -51,7 +51,7 @@ export default function HabitsPage() {
         Habit Tracker
         {canCreate && (
           <Link
-            href="/habits/create"
+            href="/apps/habits/create"
             aria-label="Create habit"
             style={{
               marginLeft: 12,

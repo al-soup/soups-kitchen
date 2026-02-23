@@ -47,7 +47,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/habits), Login (/login), Blog (/work/experience), CV (/work/cv), Settings (/settings).
+Current apps: Habit Tracker (/apps/habits), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings).
 
 ### Layout Components
 
@@ -81,11 +81,11 @@ Three Supabase clients:
 ```text
 src/
   app/           # Next.js app router pages
+    about/       # About stub + Experience + Me pages
+    apps/        # Apps hub + Habit tracker (list + create)
     auth/        # OAuth callback route
-    habits/      # Habit tracker (list + create)
     login/       # Login page
     settings/    # Settings page
-    work/        # CV + Experience pages
   components/
     layout/      # Shell, Navbar, Sidebar, Footer, ProfileDropdown
     ui/          # HabitScoreGraph, PageTitle, ThemeSwitcher

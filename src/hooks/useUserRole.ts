@@ -27,7 +27,7 @@ export function useUserRole(targetTable: string) {
 
   const role = useMemo(
     () => (accessToken ? extractRole(accessToken, targetTable) : null),
-    [accessToken, targetTable],
+    [accessToken, targetTable]
   );
 
   return { role, loading };

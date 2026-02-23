@@ -25,17 +25,16 @@ pnpm dev
 
 ## TODO
 
-- [ ] Create user avatars
+- [ ] Add e2e & unit tests
 - [ ] Add CI user that can create a habit entry when working on the app
 - [ ] Set-up local supabase. Import the prod schemas and functions.
 - [ ] Build agent for writing and improving e2e test
 - [ ] Add `redirectTo` param to all protected page redirects (currently only `/habits/create`)
+- [ ] Some apps will not require a theme / should be able to introduce their own theme and overwrite the defaults so there is more of a standalone app feel.
 
 ### Minor
 
 - [ ] Extract icons to lib
-- [ ] Add headers to the dropdown (Apps > Habits, Work > CV, Work > Experience)
-- [ ] Change "work" to about. Forward to CV when you just enter /about
 
 ## Review
 
