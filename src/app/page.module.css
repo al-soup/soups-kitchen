@@ -25,15 +25,20 @@
 
 .wavesBg {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45vh;
   z-index: -2;
   overflow: hidden;
-  mask-image: linear-gradient(to bottom, #000 0%, #000 20%, transparent 45%);
+  contain: strict;
+  will-change: transform;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 44%, transparent 100%);
   -webkit-mask-image: linear-gradient(
     to bottom,
     #000 0%,
-    #000 20%,
-    transparent 45%
+    #000 44%,
+    transparent 100%
   );
 }
 
@@ -112,15 +117,15 @@
   font-family: var(--font-display);
   font-size: 3.5rem;
   margin: 0 0 12px;
-  background: linear-gradient(135deg, #e8c840, #d4760a, #a9361b, #891817);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .titleWord,
 .titleWord2 {
   display: inline-block;
+  background: linear-gradient(135deg, #e8c840, #d4760a, #a9361b, #891817);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   opacity: 0;
   animation: titleEnter 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
@@ -343,7 +348,8 @@
   filter: none;
 }
 
-:global([data-theme="neo-brutalist"]) .title {
+:global([data-theme="neo-brutalist"]) .titleWord,
+:global([data-theme="neo-brutalist"]) .titleWord2 {
   background: none;
   background-clip: unset;
   -webkit-background-clip: unset;
