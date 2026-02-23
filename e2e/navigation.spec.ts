@@ -4,7 +4,7 @@ test.describe("Navigation", () => {
   test("homepage loads", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { name: "Welcome to Soup's Kitchen" })
+      page.getByRole("heading", { name: "Soup's Kitchen" })
     ).toBeVisible();
   });
 
@@ -16,7 +16,7 @@ test.describe("Navigation", () => {
 
     // Navigate to Habits
     await page.getByRole("link", { name: "Habit Tracker" }).click();
-    await expect(page).toHaveURL("/habits");
+    await expect(page).toHaveURL("/apps/habits");
     await expect(page.locator("main h1")).toContainText("Habit Tracker");
 
     // Open sidebar again
@@ -24,24 +24,16 @@ test.describe("Navigation", () => {
 
     // Navigate to Experience
     await page.getByRole("link", { name: "Experience" }).click();
-    await expect(page).toHaveURL("/work/experience");
+    await expect(page).toHaveURL("/about/experience");
     await expect(page.locator("main h1")).toContainText("Experience");
 
     // Open sidebar again
     await page.getByRole("button", { name: "Toggle menu" }).click();
 
-    // Navigate to CV
-    await page.getByRole("link", { name: "CV" }).click();
-    await expect(page).toHaveURL("/work/cv");
-    await expect(page.locator("main h1")).toContainText("CV");
-
-    // Open sidebar again
-    await page.getByRole("button", { name: "Toggle menu" }).click();
-
-    // Navigate to Settings
-    await page.getByRole("link", { name: "Settings" }).click();
-    await expect(page).toHaveURL("/settings");
-    await expect(page.locator("main h1")).toContainText("Settings");
+    // Navigate to Me
+    await page.getByRole("link", { name: "Me" }).click();
+    await expect(page).toHaveURL("/about/me");
+    await expect(page.locator("main h1")).toContainText("Me");
   });
 
   test("sidebar closes when clicking backdrop", async ({ page }) => {

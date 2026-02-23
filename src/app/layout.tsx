@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { PageProvider } from "@/context/PageContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { Shell } from "@/components/layout/Shell";
 import { THEME_STORAGE_KEY, NON_DEFAULT_THEMES } from "@/constants/theme";
 import "./globals.css";
@@ -37,9 +38,11 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${spaceGrotesk.variable}`}>
         <ThemeProvider>
-          <PageProvider>
-            <Shell>{children}</Shell>
-          </PageProvider>
+          <AuthProvider>
+            <PageProvider>
+              <Shell>{children}</Shell>
+            </PageProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

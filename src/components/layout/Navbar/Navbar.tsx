@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePageContext } from "@/context/PageContext";
+import { MenuIcon } from "@/constants/icons";
 import styles from "./Navbar.module.css";
 import { ProfileDropdown } from "../ProfileDropdown";
 
@@ -11,7 +12,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ onMenuClick }: NavbarProps) {
-  const { title, subtitle } = usePageContext();
+  const { title, subtitle, hideBrand } = usePageContext();
 
   return (
     <header className={styles.navbar}>
@@ -20,30 +21,20 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         onClick={onMenuClick}
         aria-label="Toggle menu"
       >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
+        <MenuIcon />
       </button>
 
-      <Link href="/" className={styles.brand}>
+      <Link
+        href="/"
+        className={`${styles.brand} ${hideBrand ? styles.brandHidden : ""}`}
+      >
         <Image
           src="/soup.svg"
           alt="Soup's Kitchen logo"
           width={36}
           height={36}
           className={styles.logo}
-          priority
+          loading="eager"
         />
         {title && (
           <div className={styles.titles}>

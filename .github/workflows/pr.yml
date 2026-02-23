@@ -12,7 +12,9 @@ jobs:
   e2e:
     needs: ci
     runs-on: ubuntu-latest
-
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node-pnpm

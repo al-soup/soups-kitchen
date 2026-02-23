@@ -1,0 +1,11 @@
+{
+  "search.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/tmp": true,
+    ".agents": true,
+    ".claude": true,
+    ".github/skills": true
+  }
+}
