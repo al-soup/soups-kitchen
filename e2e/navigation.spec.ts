@@ -4,7 +4,7 @@ test.describe("Navigation", () => {
   test("homepage loads", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { name: "Welcome to Soup's Kitchen" })
+      page.getByRole("heading", { name: "Soup's Kitchen" })
     ).toBeVisible();
   });
 
@@ -34,7 +34,6 @@ test.describe("Navigation", () => {
     await page.getByRole("link", { name: "Me" }).click();
     await expect(page).toHaveURL("/about/me");
     await expect(page.locator("main h1")).toContainText("Me");
-
   });
 
   test("sidebar closes when clicking backdrop", async ({ page }) => {
