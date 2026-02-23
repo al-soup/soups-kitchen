@@ -11,7 +11,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ onMenuClick }: NavbarProps) {
-  const { title, subtitle } = usePageContext();
+  const { title, subtitle, hideBrand } = usePageContext();
 
   return (
     <header className={styles.navbar}>
@@ -36,7 +36,10 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         </svg>
       </button>
 
-      <Link href="/" className={styles.brand}>
+      <Link
+        href="/"
+        className={`${styles.brand} ${hideBrand ? styles.brandHidden : ""}`}
+      >
         <Image
           src="/soup.svg"
           alt="Soup's Kitchen logo"

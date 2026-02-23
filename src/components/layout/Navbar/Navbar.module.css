@@ -48,6 +48,12 @@
   flex-shrink: 0;
 }
 
+.brandHidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
 .titles {
   display: flex;
   flex-direction: column;
