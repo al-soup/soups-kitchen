@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-HEALTH_URL="http://127.0.0.1:54221/rest/v1/"
+# Default value is a custom port used to avoid conflicts locally
+BASE_URL="${NEXT_PUBLIC_SUPABASE_URL:-http://127.0.0.1:54221}"
+HEALTH_URL="${BASE_URL}/rest/v1/"
 MAX_WAIT=60
 
 if curl -sf "$HEALTH_URL" > /dev/null 2>&1; then
