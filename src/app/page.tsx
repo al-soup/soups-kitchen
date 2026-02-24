@@ -6,8 +6,8 @@ import Link from "next/link";
 import { usePageContext } from "@/context/PageContext";
 import styles from "./page.module.css";
 
-const WAVE_DUR = 18;
-const WAVE_CYCLES = 2;
+const WAVE_DUR = 16;
+const WAVE_CYCLES = 3;
 
 export default function Home() {
   const { setHideBrand } = usePageContext();
