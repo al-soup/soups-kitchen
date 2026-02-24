@@ -14,9 +14,9 @@ test.describe("Habits", () => {
     await login(page, "admin@local.test", "password123");
     await page.goto("/apps/habits");
     await expect(page.locator("main h1")).toContainText("Habit Tracker");
-    await expect(
-      page.getByRole("link", { name: "Create habit" })
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("link", { name: "Create habit" })).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("viewer does NOT see create link", async ({ page }) => {
