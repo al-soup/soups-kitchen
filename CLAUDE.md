@@ -106,6 +106,7 @@ src/
   proxy.ts       # Next.js proxy (formerly middleware)
 supabase/
   config.toml    # Local Supabase config
+  config.ci.toml # CI Supabase config (unused services disabled, default ports)
   migrations/    # Schema migrations (pulled from remote)
   seed.sql       # Dev seed data (3 users, 6 actions, 5 habits)
 scripts/
@@ -130,4 +131,4 @@ scripts/
 ### CI
 
 - CI runs on push: build, format:check, lint:check, unit tests
-- PR workflow: CI + e2e (Playwright, chromium only)
+- PR workflow: CI + e2e (Playwright, chromium only, local Supabase via `config.ci.toml`)
