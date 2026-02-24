@@ -23,22 +23,22 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 
 ## Scripts
 
-| Command                | Description                                 |
-| ---------------------- | ------------------------------------------- |
-| `pnpm dev`             | Dev server (local Supabase)                 |
-| `pnpm dev:remote`      | Dev server (remote Supabase via `.env.remote`) |
-| `pnpm build`           | Production build                            |
-| `pnpm lint`            | ESLint fix                                  |
-| `pnpm lint:check`      | ESLint check                                |
-| `pnpm format`          | Prettier fix                                |
-| `pnpm format:check`    | Prettier check                              |
-| `pnpm test`            | Run unit tests                              |
-| `pnpm test:e2e`        | Run Playwright tests (auto-starts Supabase) |
-| `pnpm test:e2e:ui`     | Playwright UI mode                          |
-| `pnpm supabase:start`  | Start local Supabase                        |
-| `pnpm supabase:stop`   | Stop local Supabase                         |
-| `pnpm supabase:reset`  | Reset DB + rerun migrations & seed          |
-| `pnpm supabase:types`  | Regenerate `database.types.ts`              |
+| Command               | Description                                    |
+| --------------------- | ---------------------------------------------- |
+| `pnpm dev`            | Dev server (local Supabase)                    |
+| `pnpm dev:remote`     | Dev server (remote Supabase via `.env.remote`) |
+| `pnpm build`          | Production build                               |
+| `pnpm lint`           | ESLint fix                                     |
+| `pnpm lint:check`     | ESLint check                                   |
+| `pnpm format`         | Prettier fix                                   |
+| `pnpm format:check`   | Prettier check                                 |
+| `pnpm test`           | Run unit tests                                 |
+| `pnpm test:e2e`       | Run Playwright tests (auto-starts Supabase)    |
+| `pnpm test:e2e:ui`    | Playwright UI mode                             |
+| `pnpm supabase:start` | Start local Supabase                           |
+| `pnpm supabase:stop`  | Stop local Supabase                            |
+| `pnpm supabase:reset` | Reset DB + rerun migrations & seed             |
+| `pnpm supabase:types` | Regenerate `database.types.ts`                 |
 
 ## TODO
 

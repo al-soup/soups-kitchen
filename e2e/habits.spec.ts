@@ -39,12 +39,8 @@ test.describe("Habits", () => {
     await expect(page.locator("main h1")).toContainText("Not Authorized");
   });
 
-  test("unauthenticated user redirected from create page", async ({
-    page,
-  }) => {
+  test("unauthenticated user redirected from create page", async ({ page }) => {
     await page.goto("/apps/habits/create");
-    await expect(page).toHaveURL(
-      "/login?redirectTo=%2Fapps%2Fhabits%2Fcreate"
-    );
+    await expect(page).toHaveURL("/login?redirectTo=%2Fapps%2Fhabits%2Fcreate");
   });
 });
