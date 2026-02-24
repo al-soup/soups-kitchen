@@ -22,5 +22,20 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.75.0
+
+      # Exclude unused services for faster setup in CI
+      - name: Start and seed Supabase
+        run: |
+          cp supabase/config.ci.toml supabase/config.toml
+          supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+
       - name: Run e2e tests
-        run: pnpm run test:e2e
+        run: pnpm test:e2e
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop
