@@ -68,6 +68,14 @@ Current apps: Habit Tracker (/apps/habits), Login (/login), Experience (/about/e
 - **Auth redirects**: Protected pages redirect to `/login?redirectTo=<path>`. Login reads param and navigates there on success. Validate `redirectTo` starts with `/` and not `//` (open redirect prevention).
 - **Avatar**: `getAvatarUrl(userId, size)` from `src/lib/avatar.ts` returns a DiceBear identicon URL. Hashes user ID with FNV-1a before sending to DiceBear (no raw UUIDs to external service). Used in ProfileDropdown trigger and Settings account section.
 
+### Local Supabase
+
+- Requires Docker Desktop running
+- Ports offset from defaults to avoid conflicts (API: 54221, DB: 54222, Studio: 54223)
+- `pnpm supabase:start` to boot, `pnpm supabase:reset` to wipe + reseed
+- Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `password123`)
+- `.env.test` points to local instance; e2e tests use it automatically
+
 ### Auth
 
 Three Supabase clients:
@@ -96,17 +104,28 @@ src/
     avatar.ts    # DiceBear identicon URL helper
     supabase/    # client, server, proxy, database.types, types
   proxy.ts       # Next.js proxy (formerly middleware)
+supabase/
+  config.toml    # Local Supabase config
+  migrations/    # Schema migrations (pulled from remote)
+  seed.sql       # Dev seed data (3 users, 6 actions, 5 habits)
+scripts/
+  ensure-supabase.sh  # Auto-starts local Supabase if not running
 ```
 
 ### Scripts
 
-- `pnpm dev` - dev server
+- `pnpm dev` - dev server (local Supabase)
+- `pnpm dev:remote` - dev server (remote Supabase via `.env.remote`)
 - `pnpm build` - production build
 - `pnpm lint` / `pnpm lint:check` - ESLint
 - `pnpm format` / `pnpm format:check` - Prettier
 - `pnpm test` - unit tests (Jest)
-- `pnpm test:e2e` - Playwright tests
+- `pnpm test:e2e` - Playwright tests (auto-starts local Supabase)
 - `pnpm test:e2e:ui` - Playwright UI mode
+- `pnpm supabase:start` - start local Supabase (requires Docker)
+- `pnpm supabase:stop` - stop local Supabase
+- `pnpm supabase:reset` - reset DB + re-run migrations & seed
+- `pnpm supabase:types` - regenerate `database.types.ts` from local DB
 
 ### CI
 
