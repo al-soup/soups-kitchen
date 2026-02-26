@@ -24,7 +24,11 @@ type HabitRow = {
   completed_at: string;
 };
 
-export async function createHabits(rows: HabitRow[]): Promise<void> {
-  const { error } = await getSupabase().from("habit").insert(rows);
+export async function createHabits(rows: HabitRow[]): Promise<number[]> {
+  const { data, error } = await getSupabase()
+    .from("habit")
+    .insert(rows)
+    .select("id");
   if (error) throw new Error(error.message);
+  return (data ?? []).map((r) => r.id);
 }

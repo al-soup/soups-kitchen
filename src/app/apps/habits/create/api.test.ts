@@ -56,20 +56,25 @@ describe("createHabits", () => {
     { action_id: 1, note: "test", completed_at: "2026-02-26T10:10:00" },
   ];
 
-  it("calls insert with the provided rows", async () => {
-    const insertMock = jest.fn().mockResolvedValue({ error: null });
+  it("calls insert and returns inserted IDs", async () => {
+    const selectMock = jest
+      .fn()
+      .mockResolvedValue({ data: [{ id: 10 }, { id: 11 }], error: null });
+    const insertMock = jest.fn().mockReturnValue({ select: selectMock });
     (getSupabase as jest.Mock).mockReturnValue({
       from: () => ({ insert: insertMock }),
     });
 
-    await createHabits(rows);
+    const ids = await createHabits(rows);
     expect(insertMock).toHaveBeenCalledWith(rows);
+    expect(ids).toEqual([10, 11]);
   });
 
   it("throws when insert returns an error", async () => {
-    const insertMock = jest
+    const selectMock = jest
       .fn()
-      .mockResolvedValue({ error: { message: "Insert failed" } });
+      .mockResolvedValue({ data: null, error: { message: "Insert failed" } });
+    const insertMock = jest.fn().mockReturnValue({ select: selectMock });
     (getSupabase as jest.Mock).mockReturnValue({
       from: () => ({ insert: insertMock }),
     });
