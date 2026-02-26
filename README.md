@@ -46,6 +46,8 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 - [ ] Build agent for writing and improving e2e test
 - [ ] Add `redirectTo` param to all protected page redirects (currently only `/habits/create`)
 - [ ] Some apps will not require a theme / should be able to introduce their own theme and overwrite the defaults so there is more of a standalone app feel.
+- [ ] Improve footer: copyright, github link, maybe linkedin
+- [ ] Set-up propper error handling
 
 ### Apps
 

@@ -11,3 +11,11 @@ export type GetDailyHabitScoresParams = {
 };
 
 export type ActionType = 1 | 2 | 3;
+
+export type Action = {
+  id: number;
+  name: string | null;
+  description: string | null;
+  type: ActionType;
+  level: number | null;
+};

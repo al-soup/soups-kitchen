@@ -1,0 +1,6 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  border-top: var(--border-width, 1px) solid var(--border-color);
+  margin-top: 16px;
+}

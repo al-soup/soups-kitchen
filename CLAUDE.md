@@ -91,6 +91,7 @@ src/
   app/           # Next.js app router pages
     about/       # About stub + Experience + Me pages
     apps/        # Apps hub + Habit tracker (list + create)
+      habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
     auth/        # OAuth callback route
     login/       # Login page
     settings/    # Settings page
@@ -101,6 +102,7 @@ src/
   context/       # ThemeContext, PageContext, AuthContext
   hooks/         # usePageTitle, useUserRole
   lib/
+    actionsCache.ts  # localStorage cache for action rows (24h TTL)
     avatar.ts    # DiceBear identicon URL helper
     supabase/    # client, server, proxy, database.types, types
   proxy.ts       # Next.js proxy (formerly middleware)
