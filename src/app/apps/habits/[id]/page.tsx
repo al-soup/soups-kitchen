@@ -117,7 +117,7 @@ export default function HabitDetailPage() {
       {habit && (
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <span className={styles.actionName}>
+            <span data-testid="action-name" className={styles.actionName}>
               {habit.action.name ?? `Action ${habit.action.id}`}
             </span>
             {habit.action.level != null && (
@@ -151,7 +151,9 @@ export default function HabitDetailPage() {
             {habit.note && (
               <div className={styles.metaRow}>
                 <dt className={styles.metaLabel}>Note</dt>
-                <dd className={styles.metaValue}>{habit.note}</dd>
+                <dd data-testid="habit-note" className={styles.metaValue}>
+                  {habit.note}
+                </dd>
               </div>
             )}
           </dl>

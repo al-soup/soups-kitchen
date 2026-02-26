@@ -92,7 +92,11 @@ export function ActionRow({
     .join(" ");
 
   return (
-    <div className={rowClasses} onClick={handleRowClick}>
+    <div
+      data-testid={`action-row-${action.id}`}
+      className={rowClasses}
+      onClick={handleRowClick}
+    >
       <div className={styles.checkbox} onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"

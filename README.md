@@ -42,6 +42,7 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 
 ## TODO
 
+- [ ] Rerun the react-review-expert over the whole project
 - [ ] Add `redirectTo` param to all protected page redirects (currently only `/habits/create`)
 - [ ] Some apps will not require a theme / should be able to introduce their own theme and overwrite the defaults so there is more of a standalone app feel.
 - [ ] Improve footer: copyright, github link, maybe linkedin
@@ -59,6 +60,8 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 - [ ] Create other types of insight graphs for habits
 
 ### Bus & Train Schedule
+
+Use [OpenData.ch](https://search.ch/timetable/api/help). Check out <https://transport.opendata.ch/examples/stationboard.html>
 
 ### Question Game
 

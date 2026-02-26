@@ -189,6 +189,7 @@ export default function CreateHabitPage() {
 
       <div className={styles.submitBar}>
         <button
+          data-testid="submit-btn"
           className={styles.submitBtn}
           disabled={selectedCount === 0 || submitting}
           onClick={handleSubmit}
@@ -198,10 +199,14 @@ export default function CreateHabitPage() {
             : `Save ${selectedCount > 0 ? `${selectedCount} ` : ""}habit${selectedCount !== 1 ? "s" : ""}`}
         </button>
         {submitSuccess && (
-          <span className={styles.successMessage}>Saved successfully!</span>
+          <span data-testid="success-message" className={styles.successMessage}>
+            Saved successfully!
+          </span>
         )}
         {submitError && (
-          <span className={styles.errorMessage}>{submitError}</span>
+          <span data-testid="error-message" className={styles.errorMessage}>
+            {submitError}
+          </span>
         )}
       </div>
     </div>
