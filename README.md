@@ -47,7 +47,7 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 - [ ] Add `redirectTo` param to all protected page redirects (currently only `/habits/create`)
 - [ ] Some apps will not require a theme / should be able to introduce their own theme and overwrite the defaults so there is more of a standalone app feel.
 - [ ] Improve footer: copyright, github link, maybe linkedin
-- [ ] Set-up propper error handling
+- [ ] Set-up proper error handling
 
 ### Apps
 
@@ -56,7 +56,3 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 - [ ] Question Game
 - [ ] Live-Poll
 - [ ] Speech-to-Text Notes Interface
-
-## Review
-
-- [ ] Look into react hooks, context and global stores. See if this is done correctly for theme/title switching
