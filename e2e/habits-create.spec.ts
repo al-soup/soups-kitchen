@@ -5,8 +5,10 @@ const ADMIN = { email: "admin@local.test", password: "password123" };
 const MANAGER = { email: "manager@local.test", password: "password123" };
 const VIEWER = { email: "viewer@local.test", password: "password123" };
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54221";
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
+const SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54221";
+const SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
 
 test.describe("Habits — Create page", () => {
   test.describe("Auth & Access", () => {
@@ -42,9 +44,7 @@ test.describe("Habits — Create page", () => {
     test.beforeEach(async ({ page }) => {
       await login(page, ADMIN.email, ADMIN.password);
       await page.goto("/apps/habits/create");
-      await expect(
-        page.getByRole("checkbox").first()
-      ).toBeVisible();
+      await expect(page.getByRole("checkbox").first()).toBeVisible();
     });
 
     test("level badges visible", async ({ page }) => {
@@ -212,9 +212,7 @@ test.describe("Habits — Create page", () => {
       ).toBeVisible();
     });
 
-    test("select 2 rows → submit btn reads Save 2 habits", async ({
-      page,
-    }) => {
+    test("select 2 rows → submit btn reads Save 2 habits", async ({ page }) => {
       await page.getByRole("checkbox", { name: "Sweets" }).check();
       await page.getByRole("checkbox", { name: "Smoking" }).check();
       await expect(
@@ -235,8 +233,7 @@ test.describe("Habits — Create page", () => {
 
       const respPromise = page.waitForResponse(
         (r) =>
-          r.url().includes("/rest/v1/habit") &&
-          r.request().method() === "POST"
+          r.url().includes("/rest/v1/habit") && r.request().method() === "POST"
       );
       await page.getByTestId("submit-btn").click();
       const resp = await respPromise;
@@ -254,8 +251,7 @@ test.describe("Habits — Create page", () => {
 
       const respPromise = page.waitForResponse(
         (r) =>
-          r.url().includes("/rest/v1/habit") &&
-          r.request().method() === "POST"
+          r.url().includes("/rest/v1/habit") && r.request().method() === "POST"
       );
       await page.getByTestId("submit-btn").click();
       await respPromise;
@@ -296,10 +292,9 @@ test.describe("Habits — Create page", () => {
         .map((c) => c.value);
 
       const raw = authChunks.join("");
-      const json = Buffer.from(
-        raw.replace(/^base64-/, ""),
-        "base64"
-      ).toString("utf-8");
+      const json = Buffer.from(raw.replace(/^base64-/, ""), "base64").toString(
+        "utf-8"
+      );
       const accessToken: string | null = JSON.parse(json)?.access_token ?? null;
 
       expect(accessToken).toBeTruthy();
