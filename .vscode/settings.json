@@ -1,4 +1,5 @@
 {
+  "deno.enable": false,
   "search.exclude": {
     "**/.git": true,
     "**/node_modules": true,

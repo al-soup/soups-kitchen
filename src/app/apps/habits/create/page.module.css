@@ -1,0 +1,104 @@
+.page {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+@media (min-width: 600px) {
+  .page {
+    padding: 32px 24px;
+  }
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.backLink {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--foreground-muted);
+  text-decoration: none;
+  padding: 4px 8px 4px 0;
+  transition: color var(--transition-fast);
+}
+
+.backLink:hover {
+  color: var(--foreground);
+}
+
+.submitBar {
+  position: sticky;
+  bottom: 0;
+  background: var(--background);
+  padding: 12px 0;
+  border-top: var(--border-width, 1px) solid var(--border-color);
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 600px) {
+  .submitBar {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--foreground);
+  color: var(--background);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+@media (min-width: 600px) {
+  .submitBtn {
+    width: auto;
+  }
+}
+
+.submitBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.successMessage {
+  color: var(--color-success, #22c55e);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.errorMessage {
+  color: var(--color-error, #ef4444);
+  font-size: 14px;
+}
+
+.emptyState {
+  color: var(--foreground-muted);
+  font-size: 14px;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.actionsError {
+  color: var(--color-error, #ef4444);
+  font-size: 14px;
+  margin-top: 16px;
+}

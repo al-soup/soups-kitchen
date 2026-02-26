@@ -1,0 +1,112 @@
+.page {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+@media (min-width: 600px) {
+  .page {
+    padding: 32px 24px;
+  }
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.backLink {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--foreground-muted);
+  text-decoration: none;
+  padding: 4px 8px 4px 0;
+  transition: color var(--transition-fast);
+}
+
+.backLink:hover {
+  color: var(--foreground);
+}
+
+.card {
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.cardHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.actionName {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.levelBadge,
+.typeBadge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid var(--border-color);
+}
+
+.typeBadge {
+  color: var(--foreground-muted);
+  background: transparent;
+}
+
+.description {
+  color: var(--foreground-muted);
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+.meta {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metaRow {
+  display: flex;
+  gap: 12px;
+}
+
+.metaLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground-muted);
+  min-width: 80px;
+}
+
+.metaValue {
+  font-size: 13px;
+}
+
+.errorMessage {
+  color: var(--color-error, #ef4444);
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.notFound {
+  color: var(--foreground-muted);
+  font-size: 14px;
+  padding: 24px 0;
+  text-align: center;
+}
