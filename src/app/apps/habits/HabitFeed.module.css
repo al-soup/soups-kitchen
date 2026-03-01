@@ -1,0 +1,44 @@
+.feed {
+  margin-top: 24px;
+}
+
+.dateHeader {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--foreground-muted);
+  margin: 20px 0 8px;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--foreground-muted);
+  padding: 24px 0;
+  font-size: 14px;
+}
+
+.loadMoreBtn {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--background);
+  color: var(--foreground);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-family: inherit;
+}
+
+.loadMoreBtn:hover:not(:disabled) {
+  background: var(--background-alt);
+}
+
+.loadMoreBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

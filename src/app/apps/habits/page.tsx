@@ -8,6 +8,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import type { ActionType, DailyHabitScore } from "@/lib/supabase/types";
 import { getDailyHabitScores } from "./api";
 import { HabitTypeSelector } from "./HabitTypeSelector";
+import { HabitFeed } from "./HabitFeed";
 
 import styles from "../../shared-page.module.css";
 
@@ -75,6 +76,7 @@ export default function HabitsPage() {
         error={error}
         actionType={actionType}
       />
+      <HabitFeed key={actionType} actionType={actionType} />
     </div>
   );
 }

@@ -52,10 +52,11 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 
 ### Habits
 
+- [ ] Enable RLS for Type 2 habits -> manager/admin
 - [ ] Create labels for the action types
 - [ ] Make habits editable from details page
 - [ ] Create filter and sorting for overview page
-- [ ] Create a paginated feed for the habit with a scroll-to action when clicked on the chart
+- [ ] Create a scroll-to habit action in the feed when clicked on the chart
 - [ ] Create an overview chart option where the different action types can be combined
 - [ ] Create other types of insight graphs for habits
 
@@ -71,7 +72,7 @@ Use websockets, gRCP.
 
 ### Speech-to-Text Notes Interface
 
-Use Whisper or AssemblyAI
+Use Wispr or AssemblyAI
 
 ### More App Ideas
 
@@ -106,3 +107,4 @@ Use Whisper or AssemblyAI
 
 - [ ] Add authenticated API routes that use Supabase issued JWTs
 - [ ] Create Strave CRON for cycling activities
+- [ ] Improve SMTP setup to avoid Spam emails.

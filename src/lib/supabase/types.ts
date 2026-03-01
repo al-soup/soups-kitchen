@@ -25,3 +25,8 @@ export type HabitDetail = Pick<
 > & {
   action: Action;
 };
+
+export type HabitFeedPage = {
+  items: HabitDetail[];
+  hasMore: boolean;
+};
