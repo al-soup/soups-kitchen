@@ -139,6 +139,7 @@ export function ActionRow({
                 <label className={styles.label}>Date</label>
                 <input
                   type="date"
+                  lang="en-GB"
                   className={styles.dateField}
                   value={dateVal}
                   disabled={disabled}
@@ -149,6 +150,7 @@ export function ActionRow({
                 <label className={styles.label}>Time</label>
                 <input
                   type="time"
+                  lang="en-GB"
                   className={styles.dateField}
                   value={timeVal}
                   disabled={disabled}
