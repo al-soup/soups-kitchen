@@ -1,0 +1,40 @@
+.item {
+  background: var(--background-alt);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.levelBadge {
+  font-size: 11px;
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note {
+  font-size: 13px;
+  color: var(--foreground);
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  background: var(--background);
+  border-left: 3px solid var(--border-color);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  line-height: 1.4;
+}

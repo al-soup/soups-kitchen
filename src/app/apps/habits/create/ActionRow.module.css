@@ -4,6 +4,7 @@
   min-height: 48px;
   padding: 4px 0;
   border-bottom: var(--border-width, 1px) solid var(--border-color);
+  border-left: 3px solid transparent;
   cursor: pointer;
   transition: background var(--transition-fast);
 }
@@ -13,8 +14,7 @@
 }
 
 .rowSelected {
-  border-left: 3px solid var(--foreground);
-  padding-left: 8px;
+  border-left-color: var(--foreground);
 }
 
 .rowDisabled {

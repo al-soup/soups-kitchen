@@ -17,7 +17,8 @@
     color var(--transition-fast);
 }
 
-.option:hover:not(:disabled) {
+/* Prevent clashing of font- and background colors */
+.option:hover:not(:disabled):not([data-active="true"]) {
   background: var(--background-alt);
 }
 

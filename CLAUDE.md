@@ -67,6 +67,7 @@ Current apps: Habit Tracker (/apps/habits), Login (/login), Experience (/about/e
 - **CSS Variables**: Theme colors via `--foreground`, `--background`, `--border-color`, etc. in globals.css
 - **Auth redirects**: Protected pages redirect to `/login?redirectTo=<path>`. Login reads param and navigates there on success. Validate `redirectTo` starts with `/` and not `//` (open redirect prevention).
 - **Avatar**: `getAvatarUrl(userId, size)` from `src/lib/avatar.ts` returns a DiceBear identicon URL. Hashes user ID with FNV-1a before sending to DiceBear (no raw UUIDs to external service). Used in ProfileDropdown trigger and Settings account section.
+- **State reset on prop change**: use `key={prop}` at the mount site to remount the child fresh. Avoids synchronous `setState` calls inside effects (triggers `react-compiler` lint error).
 
 ### Local Supabase
 
@@ -91,6 +92,7 @@ src/
   app/           # Next.js app router pages
     about/       # About stub + Experience + Me pages
     apps/        # Apps hub + Habit tracker (list + create)
+      habits/         # HabitFeed (paginated feed, grouped by date), HabitTypeSelector
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
     auth/        # OAuth callback route
     login/       # Login page
