@@ -1,14 +1,6 @@
-import type { ActionType, HabitDetail } from "@/lib/supabase/types";
+import type { HabitDetail } from "@/lib/supabase/types";
+import { getBadgeStyle } from "@/lib/badgeStyles";
 import styles from "./HabitFeedItem.module.css";
-
-function getBadgeStyle(type: ActionType, level: number) {
-  const prefix = type === 2 ? "t2-" : type === 3 ? "t3-" : "";
-  return {
-    background: `var(--habit-score-${prefix}level-${level})`,
-    color: "var(--foreground)",
-    borderColor: "transparent",
-  };
-}
 
 export function HabitFeedItem({ habit }: { habit: HabitDetail }) {
   const { action, note } = habit;

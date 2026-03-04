@@ -73,10 +73,10 @@ test.describe("Habits — Create page", () => {
       await expect(page.getByRole("checkbox").first()).toBeVisible();
     });
 
-    test("switching to Type 2 shows only Sweets, Smoking, Party", async ({
+    test("switching to Bad Habits shows only Sweets, Smoking, Party", async ({
       page,
     }) => {
-      await page.getByRole("radio", { name: "Type 2" }).click();
+      await page.getByTestId("type-2").click();
       await expect(
         page.getByRole("checkbox", { name: "Sweets" })
       ).toBeVisible();
@@ -90,7 +90,7 @@ test.describe("Habits — Create page", () => {
     test("switching tabs clears selection", async ({ page }) => {
       await page.getByRole("checkbox", { name: "Daily Stretches" }).check();
       await expect(page.getByTestId("submit-btn")).toBeEnabled();
-      await page.getByRole("radio", { name: "Type 2" }).click();
+      await page.getByTestId("type-2").click();
       await expect(page.getByTestId("submit-btn")).toBeDisabled();
     });
   });
@@ -99,7 +99,7 @@ test.describe("Habits — Create page", () => {
     test.beforeEach(async ({ page }) => {
       await login(page, ADMIN.email, ADMIN.password);
       await page.goto("/apps/habits/create");
-      await page.getByRole("radio", { name: "Type 2" }).click();
+      await page.getByTestId("type-2").click();
       await expect(
         page.getByRole("checkbox", { name: "Sweets" })
       ).toBeVisible();
@@ -157,7 +157,7 @@ test.describe("Habits — Create page", () => {
       test.setTimeout(25000);
       await login(page, ADMIN.email, ADMIN.password);
       await page.goto("/apps/habits/create");
-      await page.getByRole("radio", { name: "Type 2" }).click();
+      await page.getByTestId("type-2").click();
       await page.getByTestId("action-row-12").getByText("Sweets").click();
       await expect(page.locator('input[type="date"]')).toBeVisible();
     });
@@ -206,7 +206,7 @@ test.describe("Habits — Create page", () => {
     test.beforeEach(async ({ page }) => {
       await login(page, ADMIN.email, ADMIN.password);
       await page.goto("/apps/habits/create");
-      await page.getByRole("radio", { name: "Type 2" }).click();
+      await page.getByTestId("type-2").click();
       await expect(
         page.getByRole("checkbox", { name: "Sweets" })
       ).toBeVisible();

@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { login } from "./helpers";
 
 const VIEWER = { email: "viewer@local.test", password: "password123" };
+const ADMIN = { email: "admin@local.test", password: "password123" };
 
 test.describe("Habits — Feed", () => {
   test.beforeEach(async ({ page }) => {
@@ -33,7 +34,9 @@ test.describe("Habits — Feed", () => {
     }
   });
 
-  test("switching to Type 2 resets feed", async ({ page }) => {
+  test("switching to Bad Habits resets feed", async ({ page }) => {
+    await login(page, ADMIN.email, ADMIN.password);
+    await page.goto("/apps/habits");
     await expect(page.locator("[class*='item']").first()).toBeVisible({
       timeout: 10000,
     });
@@ -44,7 +47,7 @@ test.describe("Habits — Feed", () => {
         (r) =>
           r.url().includes("/rest/v1/habit") && r.request().method() === "GET"
       ),
-      page.getByRole("radio", { name: "Type 2" }).click(),
+      page.getByTestId("type-2").click(),
     ]);
 
     // DB-agnostic: verify the refetch applied the type-2 filter
@@ -56,10 +59,12 @@ test.describe("Habits — Feed", () => {
     ).toBeVisible({ timeout: 10000 });
   });
 
-  test("Type 2 has fewer than 20 entries — no Load more button", async ({
+  test("Bad Habits has fewer than 20 entries — no Load more button", async ({
     page,
   }) => {
-    await page.getByRole("radio", { name: "Type 2" }).click();
+    await login(page, ADMIN.email, ADMIN.password);
+    await page.goto("/apps/habits");
+    await page.getByTestId("type-2").click();
     await expect(page.locator("[class*='item']").first()).toBeVisible({
       timeout: 10000,
     });

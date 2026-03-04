@@ -9,7 +9,7 @@ interface HabitScoreGraphDayProps {
 
 function formatTooltipDate(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-US", {
+  return d.toLocaleDateString("en-GB", {
     month: "short",
     day: "numeric",
     year: "numeric",

@@ -98,6 +98,11 @@
   font-size: 13px;
 }
 
+.metaValueNote {
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
 .errorMessage {
   color: var(--color-error, #ef4444);
   font-size: 14px;

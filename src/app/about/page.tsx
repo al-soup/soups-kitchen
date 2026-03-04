@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { PageTitle } from "@/components/ui/PageTitle";
 import styles from "../shared-page.module.css";

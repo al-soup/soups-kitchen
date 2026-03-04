@@ -57,7 +57,9 @@ SELECT setval('public.action_id_seq', 20);
 -- ~50 habit entries spread over last 60 days
 INSERT INTO public.habit (action_id, completed_at, note) VALUES
   -- Week 1 (recent)
-  (1, now() - interval '1 day',   'morning stretch routine'),
+  (1, now() - interval '1 day',   'morning stretch routine
+felt tight in the hips
+need to add hip flexor work'),
   (2, now() - interval '1 day',   '60 push-ups'),
   (18, now() - interval '1 day',  'solved 2 medium problems'),
   (5, now() - interval '2 days',  'upper body focus'),
