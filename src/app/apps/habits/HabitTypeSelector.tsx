@@ -11,16 +11,18 @@ interface HabitTypeSelectorProps {
   value: ActionType;
   onChange: (type: ActionType) => void;
   disabled: boolean;
+  types?: { value: ActionType; label: string }[];
 }
 
 export function HabitTypeSelector({
   value,
   onChange,
   disabled,
+  types,
 }: HabitTypeSelectorProps) {
   return (
     <div className={styles.group} role="radiogroup" aria-label="Habit type">
-      {TYPES.map((t) => (
+      {(types ?? TYPES).map((t) => (
         <button
           key={t.value}
           className={styles.option}

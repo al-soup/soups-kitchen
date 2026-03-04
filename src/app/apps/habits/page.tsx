@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitScoreGraph } from "@/components/ui/HabitScoreGraph";
@@ -15,7 +15,18 @@ import styles from "../../shared-page.module.css";
 export default function HabitsPage() {
   const { role } = useUserRole("habit");
   const canCreate = role === "admin" || role === "manager";
+  const canSeeType2 = role === "admin" || role === "manager";
+  const availableTypes = useMemo(
+    () => [
+      { value: 1 as ActionType, label: "Sports" },
+      ...(canSeeType2 ? [{ value: 2 as ActionType, label: "Bad Habits" }] : []),
+      { value: 3 as ActionType, label: "Learning" },
+    ],
+    [canSeeType2],
+  );
+
   const [actionType, setActionType] = useState<ActionType>(1);
+  const effectiveType: ActionType = !canSeeType2 && actionType === 2 ? 1 : actionType;
   const [scores, setScores] = useState<DailyHabitScore[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +42,7 @@ export default function HabitsPage() {
     const controller = new AbortController();
     const today = new Date().toISOString().split("T")[0];
 
-    getDailyHabitScores({ start_date: today, action_type: actionType })
+    getDailyHabitScores({ start_date: today, action_type: effectiveType })
       .then((data) => {
         if (!controller.signal.aborted) setScores(data);
       })
@@ -43,7 +54,7 @@ export default function HabitsPage() {
       });
 
     return () => controller.abort();
-  }, [actionType]);
+  }, [effectiveType]);
 
   return (
     <div className={styles.page}>
@@ -66,17 +77,18 @@ export default function HabitsPage() {
         )}
       </h1>
       <HabitTypeSelector
-        value={actionType}
+        value={effectiveType}
         onChange={handleTypeChange}
         disabled={loading}
+        types={availableTypes}
       />
       <HabitScoreGraph
         scores={scores}
         loading={loading}
         error={error}
-        actionType={actionType}
+        actionType={effectiveType}
       />
-      <HabitFeed key={actionType} actionType={actionType} />
+      <HabitFeed key={effectiveType} actionType={effectiveType} />
     </div>
   );
 }
