@@ -2,9 +2,9 @@ import type { ActionType } from "@/lib/supabase/types";
 import styles from "./HabitTypeSelector.module.css";
 
 const TYPES: { value: ActionType; label: string }[] = [
-  { value: 1, label: "Type 1" },
-  { value: 2, label: "Type 2" },
-  { value: 3, label: "Type 3" },
+  { value: 1, label: "Sports" },
+  { value: 2, label: "Bad Habits" },
+  { value: 3, label: "Learning" },
 ];
 
 interface HabitTypeSelectorProps {
@@ -29,6 +29,7 @@ export function HabitTypeSelector({
           role="radio"
           aria-checked={value === t.value}
           data-active={value === t.value}
+          data-testid={`type-${t.value}`}
           disabled={disabled}
           onClick={() => onChange(t.value)}
         >
