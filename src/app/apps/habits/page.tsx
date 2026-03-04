@@ -22,11 +22,12 @@ export default function HabitsPage() {
       ...(canSeeType2 ? [{ value: 2 as ActionType, label: "Bad Habits" }] : []),
       { value: 3 as ActionType, label: "Learning" },
     ],
-    [canSeeType2],
+    [canSeeType2]
   );
 
   const [actionType, setActionType] = useState<ActionType>(1);
-  const effectiveType: ActionType = !canSeeType2 && actionType === 2 ? 1 : actionType;
+  const effectiveType: ActionType =
+    !canSeeType2 && actionType === 2 ? 1 : actionType;
   const [scores, setScores] = useState<DailyHabitScore[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
