@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { Action, ActionType } from "@/lib/supabase/types";
+import type { Action } from "@/lib/supabase/types";
+import { getBadgeStyle } from "@/lib/badgeStyles";
+import { getLocalToday, getCurrentTime } from "@/lib/dateUtils";
 import styles from "./ActionRow.module.css";
 
 export type SelectionEntry = {
@@ -20,26 +22,6 @@ interface ActionRowProps {
     value?: string
   ) => void;
   disabled: boolean;
-}
-
-function getLocalToday(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function getCurrentTime(): string {
-  const d = new Date();
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
-
-function getBadgeStyle(type: ActionType, level: number) {
-  const prefix = type === 2 ? "t2-" : type === 3 ? "t3-" : "";
-  const bgVar = `var(--habit-score-${prefix}level-${level})`;
-  return {
-    background: bgVar,
-    color: "var(--foreground)",
-    borderColor: "transparent",
-  };
 }
 
 export function ActionRow({

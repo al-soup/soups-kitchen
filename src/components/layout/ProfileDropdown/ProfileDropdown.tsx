@@ -110,6 +110,7 @@ export function ProfileDropdown() {
             className={styles.item}
             onClick={cycleTheme}
             data-testid="theme-toggle"
+            aria-label={`Theme: ${THEME_OPTIONS.find((t) => t.value === theme)?.label}`}
           >
             {THEME_ICONS[theme]}
             {THEME_OPTIONS.find((t) => t.value === theme)?.label}

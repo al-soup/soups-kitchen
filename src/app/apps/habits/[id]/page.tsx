@@ -8,6 +8,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { getHabitById } from "./api";
 import type { HabitDetail, ActionType } from "@/lib/supabase/types";
+import { getBadgeStyle } from "@/lib/badgeStyles";
 
 import sharedStyles from "../../../shared-page.module.css";
 import styles from "./page.module.css";
@@ -17,15 +18,6 @@ const ACTION_TYPE_LABELS: Record<ActionType, string> = {
   2: "Bad Habits",
   3: "Learning",
 };
-
-function getBadgeStyle(type: ActionType, level: number) {
-  const prefix = type === 2 ? "t2-" : type === 3 ? "t3-" : "";
-  return {
-    background: `var(--habit-score-${prefix}level-${level})`,
-    color: "var(--foreground)",
-    borderColor: "transparent",
-  };
-}
 
 function formatDateTime(iso: string | null): string {
   if (!iso) return "—";

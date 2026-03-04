@@ -9,6 +9,7 @@ import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitTypeSelector } from "../HabitTypeSelector";
 import { ActionList, type SelectionMap } from "./ActionList";
 import { getActions, createHabits } from "./api";
+import { getLocalToday, getCurrentTime } from "@/lib/dateUtils";
 import type { Action, ActionType } from "@/lib/supabase/types";
 
 import sharedStyles from "../../../shared-page.module.css";
@@ -85,9 +86,8 @@ export default function CreateHabitPage() {
           };
         }
         if (!prev[actionId]) {
-          const d = new Date();
-          const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-          const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+          const date = getLocalToday();
+          const time = getCurrentTime();
           return {
             ...prev,
             [actionId]: { note: "", completedAt: `${date}T${time}` },

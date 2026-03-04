@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { getSupabase } from "@/lib/supabase/client";
+import { safeRedirect } from "@/lib/safeRedirect";
 import styles from "./page.module.css";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -11,11 +12,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo");
-  const safeRedirect =
-    redirectTo?.startsWith("/") && !redirectTo.startsWith("//")
-      ? redirectTo
-      : "/";
+  const redirectTo = safeRedirect(searchParams.get("redirectTo"));
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -48,7 +45,7 @@ function LoginForm() {
       return;
     }
 
-    router.push(safeRedirect);
+    router.push(redirectTo);
   }
 
   return (
