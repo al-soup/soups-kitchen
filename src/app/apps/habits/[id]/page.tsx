@@ -143,7 +143,7 @@ export default function HabitDetailPage() {
             {habit.note && (
               <div className={styles.metaRow}>
                 <dt className={styles.metaLabel}>Note</dt>
-                <dd data-testid="habit-note" className={styles.metaValue}>
+                <dd data-testid="habit-note" className={styles.metaValueNote}>
                   {habit.note}
                 </dd>
               </div>
