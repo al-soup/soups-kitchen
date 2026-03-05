@@ -1,10 +1,21 @@
 .footer {
-  padding: 24px 16px;
+  padding: 24px 32px;
   border-top: var(--border-width) solid var(--border-color);
-  text-align: center;
+  display: flex;
+  justify-content: flex-end;
 }
 
-.text {
-  font-size: 0.875rem;
+.links {
+  display: flex;
+  gap: 16px;
+}
+
+.link {
   color: var(--foreground-muted);
+  display: flex;
+  transition: color var(--transition-normal);
+}
+
+.link:hover {
+  color: var(--foreground);
 }
