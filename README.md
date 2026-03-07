@@ -1,6 +1,6 @@
 # Soup's Kitchen
 
-Multi-app platform hosting small tools and portfolio.
+Multi-app platform hosting small tools and my portfolio.
 
 ## Development
 

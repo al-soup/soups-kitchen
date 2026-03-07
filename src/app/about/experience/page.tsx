@@ -7,8 +7,11 @@ export default function ExperiencePage() {
       <PageTitle title="Experience" />
       <h1 className={styles.title}>Experience</h1>
       <p className={styles.description}>
-        My professional journey and projects.
+        This is work in progress. I will be posting small blog entries about my
+        professional journey and projects.
       </p>
+      <br />
+      <p>Coming soon...</p>
     </div>
   );
 }
