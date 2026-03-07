@@ -11,6 +11,9 @@ export default function AppsPage() {
         <Link href="/apps/habits" className={styles.appLink}>
           Habit Tracker
         </Link>
+        <Link href="/apps/fahrplan" className={styles.appLink}>
+          Fahrplan
+        </Link>
       </nav>
     </div>
   );

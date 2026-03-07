@@ -1,0 +1,21 @@
+.board {
+  width: 100%;
+  max-width: 560px;
+  background: var(--zvv-bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.loading {
+  padding: 32px;
+  text-align: center;
+  color: var(--zvv-text-muted);
+  font-size: 0.95rem;
+}
+
+.empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--zvv-text-muted);
+  font-size: 0.95rem;
+}

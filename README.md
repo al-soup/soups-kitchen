@@ -57,9 +57,9 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 - [ ] Create an overview chart option where the different action types can be combined
 - [ ] Create other types of insight graphs for habits
 
-### Bus & Train Schedule
+### Fahrplan
 
-Use [OpenData.ch](https://search.ch/timetable/api/help). Check out <https://transport.opendata.ch/examples/stationboard.html>
+Swiss departure board at `/apps/fahrplan`. Uses [search.ch](https://search.ch/timetable/api/help) API proxied through Next.js API routes. ZVV-themed dark UI, station persistence via localStorage, 30s auto-refresh.
 
 ### Question Game
 
@@ -80,7 +80,7 @@ Use Wispr or AssemblyAI
 
 ## About
 
-### ANCHOR Me
+### Me
 
 - [ ] Replace contact email
 - [ ] Require magic link or account to see CV more details
