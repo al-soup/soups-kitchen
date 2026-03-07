@@ -1,6 +1,6 @@
 # Soup's Kitchen
 
-Multi-app platform hosting small tools and portfolio.
+Multi-app platform hosting small tools and my portfolio.
 
 ## Development
 
@@ -51,8 +51,6 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 
 ### Habits
 
-- [ ] Enable RLS for Type 2 habits -> manager/admin
-- [ ] Create labels for the action types
 - [ ] Make habits editable from details page
 - [ ] Create filter and sorting for overview page
 - [ ] Create a scroll-to habit action in the feed when clicked on the chart
@@ -84,8 +82,13 @@ Use Wispr or AssemblyAI
 
 ### ANCHOR Me
 
-- [ ] Display basic CV information
-- [ ] Require magic link or account to see CV details
+- [ ] Replace contact email
+- [ ] Require magic link or account to see CV more details
+- [ ] Add a testimonial from Lino & Danijel
+- [ ] Link tags to blog entries
+- [ ] Add a general summary about your tech stack. What are you what are you confident with, where would you like to dive deeper.
+- [ ] Add a description about my work position (New Elements, EdTech, etc.)
+- [ ] Summarize some of my strengths. Find a nice way to display that
 
 ### Experience
 
@@ -105,5 +108,5 @@ Use Wispr or AssemblyAI
 ### API
 
 - [ ] Add authenticated API routes that use Supabase issued JWTs
-- [ ] Create Strave CRON for cycling activities
+- [ ] Create Strava CRON for cycling activities
 - [ ] Improve SMTP setup to avoid Spam emails.
