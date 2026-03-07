@@ -47,7 +47,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings).
 
 ### Layout Components
 
@@ -91,7 +91,9 @@ Three Supabase clients:
 src/
   app/           # Next.js app router pages
     about/       # About stub + Experience + Me pages
-    apps/        # Apps hub + Habit tracker (list + create)
+    api/fahrplan/ # Proxy routes for search.ch (completion, stationboard)
+    apps/        # Apps hub + Habit tracker + Fahrplan
+      fahrplan/       # Swiss departure board (StationSearch, DepartureBoard, DepartureRow)
       habits/         # HabitFeed (paginated feed, grouped by date), HabitTypeSelector
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
     auth/        # OAuth callback route

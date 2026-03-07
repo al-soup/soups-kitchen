@@ -1,0 +1,55 @@
+.root {
+  --zvv-bg: #1a2744;
+  --zvv-bg-secondary: #243358;
+  --zvv-accent: #f0c432;
+  --zvv-text: #ffffff;
+  --zvv-text-muted: #8899bb;
+  --zvv-danger: #ff4444;
+
+  flex: 1;
+  background: var(--zvv-bg);
+  color: var(--zvv-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  gap: 24px;
+}
+
+.searchPrompt {
+  font-size: 1.1rem;
+  color: var(--zvv-text-muted);
+  text-align: center;
+}
+
+.stationHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stationName {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--zvv-accent);
+}
+
+.changeButton {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  border: 1px solid var(--zvv-text-muted);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--zvv-text-muted);
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.changeButton:hover {
+  border-color: var(--zvv-accent);
+  color: var(--zvv-accent);
+}
