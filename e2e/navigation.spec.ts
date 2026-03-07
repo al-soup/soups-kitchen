@@ -33,7 +33,7 @@ test.describe("Navigation", () => {
     // Navigate to Me
     await page.getByRole("link", { name: "Me" }).click();
     await expect(page).toHaveURL("/about/me");
-    await expect(page.locator("main h1")).toContainText("Me");
+    await expect(page.locator("main h1")).toContainText("Alex Kräuchi");
   });
 
   test("sidebar closes when clicking backdrop", async ({ page }) => {
