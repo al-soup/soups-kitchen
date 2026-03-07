@@ -59,7 +59,8 @@
 }
 
 .option:hover,
-.option:focus {
+.option:focus,
+.active {
   background: rgba(240, 196, 50, 0.1);
   outline: none;
 }

@@ -6,7 +6,7 @@
   --zvv-text-muted: #8899bb;
   --zvv-danger: #ff4444;
 
-  min-height: calc(100vh - 60px);
+  flex: 1;
   background: var(--zvv-bg);
   color: var(--zvv-text);
   display: flex;

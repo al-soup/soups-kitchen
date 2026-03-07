@@ -59,7 +59,7 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 
 ### Fahrplan
 
-Swiss departure board at `/apps/fahrplan`. Uses [search.ch](https://search.ch/timetable/api/help) API proxied through Next.js API routes. ZVV-themed dark UI, station persistence via localStorage, 30s auto-refresh.
+Swiss departure board at `/apps/fahrplan`. Uses [search.ch](https://search.ch/timetable/api/help) API proxied through Next.js API routes. ZVV-themed dark UI, station persistence via localStorage, 15s auto-refresh.
 
 ### Question Game
 
