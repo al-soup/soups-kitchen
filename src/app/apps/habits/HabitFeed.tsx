@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ActionType, HabitDetail } from "@/lib/supabase/types";
+import { useUserRole } from "@/hooks/useUserRole";
 import { getHabitFeed, PAGE_SIZE } from "./api";
 import { HabitFeedItem } from "./HabitFeedItem";
 import styles from "./HabitFeed.module.css";
@@ -33,6 +34,8 @@ export function HabitFeed({ actionType }: { actionType: ActionType }) {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { role } = useUserRole("habit");
+  const showDetailLink = role === "admin" || role === "manager";
 
   useEffect(() => {
     const controller = new AbortController();
@@ -85,7 +88,7 @@ export function HabitFeed({ actionType }: { actionType: ActionType }) {
           <section key={group.date} id={`feed-date-${group.date}`}>
             <h3 className={styles.dateHeader}>{group.label}</h3>
             {group.habits.map((h) => (
-              <HabitFeedItem key={h.id} habit={h} />
+              <HabitFeedItem key={h.id} habit={h} showDetailLink={showDetailLink} />
             ))}
           </section>
         ))
