@@ -137,6 +137,7 @@ scripts/
 - `pnpm supabase:stop` - stop local Supabase
 - `pnpm supabase:reset` - reset DB + re-run migrations & seed
 - `pnpm supabase:types` - regenerate `database.types.ts` from local DB
+- `pnpm generate-icons` - regenerate per-app PWA icons in `public/icons/`
 
 ### CI
 
