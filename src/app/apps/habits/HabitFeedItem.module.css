@@ -26,6 +26,22 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.infoLink {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--foreground);
+  opacity: 0.45;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.infoLink:hover {
+  opacity: 0.85;
 }
 
 .note {

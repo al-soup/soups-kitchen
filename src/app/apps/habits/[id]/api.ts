@@ -16,3 +16,19 @@ export async function getHabitById(id: number): Promise<HabitDetail | null> {
   }
   return data as HabitDetail;
 }
+
+export async function updateHabit(
+  id: number,
+  fields: { note: string; completed_at: string }
+): Promise<void> {
+  const { error } = await getSupabase()
+    .from("habit")
+    .update(fields)
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteHabit(id: number): Promise<void> {
+  const { error } = await getSupabase().from("habit").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+}

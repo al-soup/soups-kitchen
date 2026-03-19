@@ -39,6 +39,11 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 | `pnpm supabase:stop`  | Stop local Supabase                            |
 | `pnpm supabase:reset` | Reset DB + rerun migrations & seed             |
 | `pnpm supabase:types` | Regenerate `database.types.ts`                 |
+| `pnpm generate-icons` | Regenerate per-app PWA icons                   |
+
+## PWA
+
+Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Screen", iOS home screen icon). Each app has its own web app manifest and icons. Run `pnpm generate-icons` to regenerate icons from `public/soup.svg`.
 
 ## TODO
 
@@ -51,15 +56,14 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 
 ### Habits
 
-- [ ] Make habits editable from details page
 - [ ] Create filter and sorting for overview page
-- [ ] Create a scroll-to habit action in the feed when clicked on the chart
 - [ ] Create an overview chart option where the different action types can be combined
 - [ ] Create other types of insight graphs for habits
 
 ### Fahrplan
 
-Swiss departure board at `/apps/fahrplan`. Uses [search.ch](https://search.ch/timetable/api/help) API proxied through Next.js API routes. ZVV-themed dark UI, station persistence via localStorage, 15s auto-refresh.
+- [ ] Use the current location to find the closest departure spot
+- [ ] Create a filter to limit departures (all, train, tram, bus, other?). Maybe lift the limit to fetch 30 connections.
 
 ### Question Game
 

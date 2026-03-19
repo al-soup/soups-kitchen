@@ -18,6 +18,35 @@
   font-size: 14px;
 }
 
+.filterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--background-alt);
+  color: var(--foreground);
+}
+
+.filterChipClear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--foreground-muted);
+  line-height: 1;
+}
+
+.filterChipClear:hover {
+  color: var(--foreground);
+}
+
 .loadMoreBtn {
   display: block;
   width: 100%;

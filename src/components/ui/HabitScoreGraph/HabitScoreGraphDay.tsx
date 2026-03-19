@@ -5,6 +5,8 @@ interface HabitScoreGraphDayProps {
   score: number;
   habitCount: number;
   loading: boolean;
+  selected?: boolean;
+  onClick?: () => void;
 }
 
 function formatTooltipDate(dateStr: string): string {
@@ -21,15 +23,20 @@ export function HabitScoreGraphDay({
   score,
   habitCount,
   loading,
+  selected,
+  onClick,
 }: HabitScoreGraphDayProps) {
   const level = Math.min(score, 6);
+  const Tag = onClick ? "button" : "div";
 
   return (
-    <div
+    <Tag
       className={styles.cell}
       data-level={level}
       data-loading={loading || undefined}
+      data-selected={selected || undefined}
       role="gridcell"
+      {...(onClick ? { type: "button" as const, onClick } : {})}
     >
       {habitCount > 0 && !loading && (
         <div className={styles.tooltip}>
@@ -39,6 +46,6 @@ export function HabitScoreGraphDay({
           </span>
         </div>
       )}
-    </div>
+    </Tag>
   );
 }

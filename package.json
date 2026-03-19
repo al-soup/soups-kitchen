@@ -17,7 +17,8 @@
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",
-    "supabase:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
+    "supabase:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
+    "generate-icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
@@ -41,12 +42,14 @@
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "prettier": "^3.8.1",
+    "sharp": "^0.34.5",
     "supabase": "^2.76.14",
     "ts-jest": "^29.4.6",
     "typescript": "^5"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "sharp",
       "supabase"
     ]
   }

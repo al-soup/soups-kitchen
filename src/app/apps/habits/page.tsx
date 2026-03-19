@@ -31,9 +31,11 @@ export default function HabitsPage() {
   const [scores, setScores] = useState<DailyHabitScore[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const handleTypeChange = useCallback((type: ActionType) => {
     setActionType(type);
+    setSelectedDate(null);
     setScores([]);
     setError(null);
     setLoading(true);
@@ -88,8 +90,15 @@ export default function HabitsPage() {
         loading={loading}
         error={error}
         actionType={effectiveType}
+        selectedDate={selectedDate}
+        onSelectDate={setSelectedDate}
       />
-      <HabitFeed key={effectiveType} actionType={effectiveType} />
+      <HabitFeed
+        key={`${effectiveType}-${selectedDate ?? "all"}`}
+        actionType={effectiveType}
+        selectedDate={selectedDate}
+        onClearDate={() => setSelectedDate(null)}
+      />
     </div>
   );
 }
