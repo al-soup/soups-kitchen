@@ -116,3 +116,79 @@
   padding: 24px 0;
   text-align: center;
 }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.btn {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 4px);
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: var(--foreground);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnPrimary {
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+}
+
+.btnDanger {
+  color: var(--color-error, #ef4444);
+  border-color: var(--color-error, #ef4444);
+}
+
+.btnDangerFill {
+  background: var(--color-error, #ef4444);
+  color: #fff;
+  border-color: var(--color-error, #ef4444);
+}
+
+.editInput {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 4px);
+  padding: 4px 8px;
+  font-size: 13px;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.editTextarea {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 4px);
+  padding: 4px 8px;
+  font-size: 13px;
+  width: 100%;
+  resize: vertical;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: inherit;
+}
+
+.dateTimeRow {
+  display: flex;
+  gap: 8px;
+}
+
+.deleteConfirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
