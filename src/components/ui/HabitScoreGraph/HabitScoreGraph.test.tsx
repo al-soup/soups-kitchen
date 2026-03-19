@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { HabitScoreGraph } from "./HabitScoreGraph";
 import type { DailyHabitScore } from "@/lib/supabase/types";
 
@@ -143,6 +143,85 @@ describe("HabitScoreGraph", () => {
     const rightBtn = screen.getByLabelText("Scroll right");
     expect(leftBtn).toBeDisabled();
     expect(rightBtn).toBeDisabled();
+  });
+
+  it("calls onSelectDate with date when clicking a scored day", () => {
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const onSelectDate = jest.fn();
+
+    render(
+      <HabitScoreGraph
+        scores={[makeScore(dateStr, 3, [1, 2, 3])]}
+        loading={false}
+        error={null}
+        actionType={1}
+        selectedDate={null}
+        onSelectDate={onSelectDate}
+      />
+    );
+
+    // Scored days render as buttons; find one with data-level > 0
+    const buttons = screen
+      .getAllByRole("gridcell")
+      .filter(
+        (c) => c.tagName === "BUTTON" && c.getAttribute("data-level") !== "0"
+      );
+    expect(buttons.length).toBeGreaterThanOrEqual(1);
+    fireEvent.click(buttons[0]);
+    expect(onSelectDate).toHaveBeenCalledWith(dateStr);
+  });
+
+  it("calls onSelectDate(null) when clicking already-selected day", () => {
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const onSelectDate = jest.fn();
+
+    render(
+      <HabitScoreGraph
+        scores={[makeScore(dateStr, 3, [1, 2, 3])]}
+        loading={false}
+        error={null}
+        actionType={1}
+        selectedDate={dateStr}
+        onSelectDate={onSelectDate}
+      />
+    );
+
+    const buttons = screen
+      .getAllByRole("gridcell")
+      .filter(
+        (c) => c.tagName === "BUTTON" && c.getAttribute("data-level") !== "0"
+      );
+    fireEvent.click(buttons[0]);
+    expect(onSelectDate).toHaveBeenCalledWith(null);
+  });
+
+  it("zero-score days render as div, not button", () => {
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+    render(
+      <HabitScoreGraph
+        scores={[makeScore(dateStr, 3, [1, 2, 3])]}
+        loading={false}
+        error={null}
+        actionType={1}
+        onSelectDate={jest.fn()}
+      />
+    );
+
+    const zeroScoreDivs = screen
+      .getAllByRole("gridcell")
+      .filter(
+        (c) => c.tagName === "DIV" && c.getAttribute("data-level") === "0"
+      );
+    // Most days have no score so there should be many divs
+    expect(zeroScoreDivs.length).toBeGreaterThan(300);
+    // None of them should be buttons
+    for (const div of zeroScoreDivs) {
+      expect(div.tagName).not.toBe("BUTTON");
+    }
   });
 
   it("sets data-color-type on outer div", () => {

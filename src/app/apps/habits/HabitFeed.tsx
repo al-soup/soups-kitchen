@@ -27,7 +27,15 @@ function groupByDate(items: HabitDetail[]): DateGroup[] {
   }));
 }
 
-export function HabitFeed({ actionType }: { actionType: ActionType }) {
+export function HabitFeed({
+  actionType,
+  selectedDate,
+  onClearDate,
+}: {
+  actionType: ActionType;
+  selectedDate?: string | null;
+  onClearDate?: () => void;
+}) {
   const [items, setItems] = useState<HabitDetail[]>([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -40,7 +48,7 @@ export function HabitFeed({ actionType }: { actionType: ActionType }) {
   useEffect(() => {
     const controller = new AbortController();
 
-    getHabitFeed({ actionType, offset: 0 })
+    getHabitFeed({ actionType, offset: 0, date: selectedDate })
       .then((page) => {
         if (controller.signal.aborted) return;
         setItems(page.items);
@@ -55,11 +63,11 @@ export function HabitFeed({ actionType }: { actionType: ActionType }) {
       });
 
     return () => controller.abort();
-  }, [actionType]);
+  }, [actionType, selectedDate]);
 
   const handleLoadMore = () => {
     setLoadingMore(true);
-    getHabitFeed({ actionType, offset })
+    getHabitFeed({ actionType, offset, date: selectedDate })
       .then((page) => {
         setItems((prev) => [...prev, ...page.items]);
         setOffset((prev) => prev + PAGE_SIZE);
@@ -79,8 +87,28 @@ export function HabitFeed({ actionType }: { actionType: ActionType }) {
     return <div className={styles.emptyState}>{error}</div>;
   }
 
+  const filterLabel = selectedDate
+    ? new Date(selectedDate + "T12:00:00").toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : null;
+
   return (
     <div className={styles.feed}>
+      {filterLabel && (
+        <div className={styles.filterChip}>
+          <span>{filterLabel}</span>
+          <button
+            className={styles.filterChipClear}
+            onClick={onClearDate}
+            aria-label="Clear date filter"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       {groups.length === 0 ? (
         <div className={styles.emptyState}>No habits recorded.</div>
       ) : (
@@ -88,7 +116,11 @@ export function HabitFeed({ actionType }: { actionType: ActionType }) {
           <section key={group.date} id={`feed-date-${group.date}`}>
             <h3 className={styles.dateHeader}>{group.label}</h3>
             {group.habits.map((h) => (
-              <HabitFeedItem key={h.id} habit={h} showDetailLink={showDetailLink} />
+              <HabitFeedItem
+                key={h.id}
+                habit={h}
+                showDetailLink={showDetailLink}
+              />
             ))}
           </section>
         ))

@@ -6,8 +6,10 @@ BASE_URL="${NEXT_PUBLIC_SUPABASE_URL:-http://127.0.0.1:54221}"
 HEALTH_URL="${BASE_URL}/rest/v1/"
 MAX_WAIT=60
 
+echo "Checking availability of local Supabase..."
+
 if curl -sf "$HEALTH_URL" > /dev/null 2>&1; then
-  echo "Supabase already running"
+  echo "Supabase already running ✅"
   exit 0
 fi
 

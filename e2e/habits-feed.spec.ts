@@ -64,7 +64,23 @@ test.describe("Habits — Feed", () => {
   }) => {
     await login(page, ADMIN.email, ADMIN.password);
     await page.goto("/apps/habits");
-    await page.getByTestId("type-2").click();
+
+    // Wait for initial load to settle
+    await expect(page.locator("[class*='item']").first()).toBeVisible({
+      timeout: 10000,
+    });
+
+    // Wait for type-2 feed response (filter includes action.type=eq.2)
+    await Promise.all([
+      page.waitForResponse(
+        (r) =>
+          r.url().includes("/rest/v1/habit") &&
+          r.request().method() === "GET" &&
+          decodeURIComponent(r.url()).includes("action.type=eq.2")
+      ),
+      page.getByTestId("type-2").click(),
+    ]);
+
     await expect(page.locator("[class*='item']").first()).toBeVisible({
       timeout: 10000,
     });
@@ -88,6 +104,41 @@ test.describe("Habits — Feed", () => {
       const countAfter = await page.locator("[class*='item']").count();
       expect(countAfter).toBeGreaterThan(countBefore);
     }).toPass({ timeout: 10000 });
+  });
+
+  test("clicking graph day filters feed, clicking again clears", async ({
+    page,
+  }) => {
+    // Wait for feed to load
+    await expect(page.locator("[class*='item']").first()).toBeVisible({
+      timeout: 10000,
+    });
+
+    // Click a scored day (button gridcell) in the graph
+    const scoredDay = page
+      .locator("[role='grid'] button[role='gridcell']")
+      .first();
+    await expect(scoredDay).toBeVisible({ timeout: 10000 });
+    await scoredDay.click();
+
+    // Filter chip should appear (use div to avoid matching the clear button)
+    const filterChip = page.locator("div[class*='filterChip']");
+    await expect(filterChip).toBeVisible({ timeout: 5000 });
+
+    // Clear button should be visible
+    const clearBtn = page.getByLabel("Clear date filter");
+    await expect(clearBtn).toBeVisible();
+
+    // Clear the filter
+    await clearBtn.click();
+
+    // Filter chip should disappear
+    await expect(filterChip).not.toBeVisible({ timeout: 5000 });
+
+    // Feed items should reappear (unfiltered)
+    await expect(page.locator("[class*='item']").first()).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("feed items contain action name", async ({ page }) => {

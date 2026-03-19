@@ -49,6 +49,10 @@ Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfoli
 
 Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings).
 
+#### Habits: Graph→Feed interaction
+
+Clicking a colored day in `HabitScoreGraph` sets `selectedDate` state, which filters `HabitFeed` to that date. Clicking again clears. Switching action type also resets `selectedDate`. Feed shows a filter chip with clear button when filtered.
+
 ### Layout Components
 
 - **Navbar**: Fixed top, centered logo + dynamic title (via PageContext), hamburger (left), profile icon (right)

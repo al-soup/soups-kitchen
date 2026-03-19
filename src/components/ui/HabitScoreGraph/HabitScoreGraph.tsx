@@ -10,6 +10,8 @@ interface HabitScoreGraphProps {
   loading: boolean;
   error: string | null;
   actionType: ActionType;
+  selectedDate?: string | null;
+  onSelectDate?: (date: string | null) => void;
 }
 
 const DAY_LABELS = ["Mon", "Wed", "Fri", "Sun"];
@@ -46,6 +48,8 @@ export function HabitScoreGraph({
   loading,
   error,
   actionType,
+  selectedDate,
+  onSelectDate,
 }: HabitScoreGraphProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -177,6 +181,15 @@ export function HabitScoreGraph({
                   score={day.score}
                   habitCount={day.habitCount}
                   loading={loading}
+                  selected={day.date === selectedDate}
+                  onClick={
+                    day.habitCount > 0
+                      ? () =>
+                          onSelectDate?.(
+                            day.date === selectedDate ? null : day.date
+                          )
+                      : undefined
+                  }
                 />
               ))}
             </div>

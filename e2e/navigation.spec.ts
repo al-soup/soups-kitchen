@@ -41,10 +41,11 @@ test.describe("Navigation", () => {
 
     // Open sidebar
     await page.getByRole("button", { name: "Toggle menu" }).click();
-    await expect(page.locator("aside")).toHaveClass(/open/);
+    const backdrop = page.locator("[class*='backdrop']");
+    await expect(backdrop).toBeVisible();
 
-    // Click backdrop to close and wait for transition
-    await page.locator("[class*='backdrop']").click({ force: true });
-    await expect(page.locator("[class*='backdrop']")).toBeHidden();
+    // Click backdrop to close
+    await backdrop.click();
+    await expect(backdrop).toBeHidden();
   });
 });
