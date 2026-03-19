@@ -133,9 +133,7 @@ export default function HabitDetailPage() {
           onEditDate={setEditDate}
           onEditTime={setEditTime}
           onStartEdit={() => {
-            const dt = habit.completed_at
-              ? new Date(habit.completed_at)
-              : null;
+            const dt = habit.completed_at ? new Date(habit.completed_at) : null;
             setEditDate(dt ? dt.toISOString().slice(0, 10) : "");
             setEditTime(
               dt
@@ -166,9 +164,7 @@ export default function HabitDetailPage() {
               });
               setEditing(false);
             } catch (err: unknown) {
-              setSaveError(
-                err instanceof Error ? err.message : "Save failed"
-              );
+              setSaveError(err instanceof Error ? err.message : "Save failed");
             } finally {
               setSaving(false);
             }

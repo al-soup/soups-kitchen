@@ -29,9 +29,6 @@ export async function updateHabit(
 }
 
 export async function deleteHabit(id: number): Promise<void> {
-  const { error } = await getSupabase()
-    .from("habit")
-    .delete()
-    .eq("id", id);
+  const { error } = await getSupabase().from("habit").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
