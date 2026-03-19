@@ -23,6 +23,6 @@ export function GET() {
         },
       ],
     },
-    { headers: { "Content-Type": "application/manifest+json" } },
+    { headers: { "Content-Type": "application/manifest+json" } }
   );
 }
