@@ -1,8 +1,17 @@
 "use client";
 
-import { useRef, useSyncExternalStore, useCallback } from "react";
+import {
+  useMemo,
+  useState,
+  useRef,
+  useSyncExternalStore,
+  useCallback,
+} from "react";
 import { fetchStationboard } from "./api";
 import type { StationboardConnection } from "./types";
+import type { TransportFilterKey } from "./constants";
+import { ALL_FILTER_KEYS, TRANSPORT_FILTERS } from "./constants";
+import { TransportFilter } from "./TransportFilter";
 import { DepartureRow } from "./DepartureRow";
 import styles from "./DepartureBoard.module.css";
 
@@ -115,33 +124,66 @@ function useBoardData(station: string): BoardState {
   );
 }
 
+export function filterConnections(
+  connections: StationboardConnection[],
+  active: Set<TransportFilterKey>
+): StationboardConnection[] {
+  const allActive = active.size === 0 || active.size === ALL_FILTER_KEYS.length;
+  if (allActive) return connections;
+
+  const allowedTypes = new Set<string>();
+  for (const key of active) {
+    for (const t of TRANSPORT_FILTERS[key]) {
+      allowedTypes.add(t);
+    }
+  }
+  return connections.filter((c) => allowedTypes.has(c.type));
+}
+
 export function DepartureBoard({ station }: DepartureBoardProps) {
   const { connections, loading } = useBoardData(station);
   const now = useSyncExternalStore(subscribeNow, getNow, getNow);
+  const [activeFilters, setActiveFilters] = useState<Set<TransportFilterKey>>(
+    () => new Set(ALL_FILTER_KEYS)
+  );
 
-  const departures = deduplicateConnections(connections, now);
+  const deduplicated = deduplicateConnections(connections, now);
 
-  if (loading) {
-    return (
-      <div className={styles.board}>
-        <div className={styles.loading}>Loading departures...</div>
-      </div>
-    );
-  }
+  const availableFilters = useMemo(() => {
+    const types = new Set(deduplicated.map((c) => c.type));
+    const available = new Set<TransportFilterKey>();
+    for (const key of ALL_FILTER_KEYS) {
+      if (TRANSPORT_FILTERS[key].some((t) => types.has(t))) {
+        available.add(key);
+      }
+    }
+    return available;
+  }, [deduplicated]);
 
-  if (departures.length === 0) {
-    return (
-      <div className={styles.board}>
-        <div className={styles.empty}>No upcoming departures</div>
-      </div>
-    );
-  }
+  const departures = filterConnections(deduplicated, activeFilters);
 
   return (
-    <div className={styles.board}>
-      {departures.map((c) => (
-        <DepartureRow key={`${c["*Z"]}-${c.time}`} connection={c} now={now} />
-      ))}
-    </div>
+    <>
+      <TransportFilter
+        active={activeFilters}
+        available={availableFilters}
+        onChange={setActiveFilters}
+      />
+      <div className={styles.board}>
+        {loading ? (
+          <div className={styles.loading}>Loading departures...</div>
+        ) : departures.length === 0 ? (
+          <div className={styles.empty}>No upcoming departures</div>
+        ) : (
+          departures.map((c) => (
+            <DepartureRow
+              key={`${c["*Z"]}-${c.time}`}
+              connection={c}
+              now={now}
+            />
+          ))
+        )}
+      </div>
+    </>
   );
 }

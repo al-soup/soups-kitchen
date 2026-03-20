@@ -62,9 +62,6 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 
 ### Fahrplan
 
-- [ ] Use the current location to find the closest departure spot
-- [ ] Create a filter to limit departures (all, train, tram, bus, other?). Maybe lift the limit to fetch 30 connections.
-
 ### Question Game
 
 ### Live-Poll
@@ -83,6 +80,10 @@ Use Wispr or AssemblyAI
 - [ ] Wheel of fortune
 
 ## About
+
+### Elevator Pitch
+
+- [ ] Create a animated elevator pitch that shows in 1 minute why I'm a good hire. Use a nice background e.g. from Great Budapest Hotel opening scene, and present yourself in the elevator.
 
 ### Me
 
