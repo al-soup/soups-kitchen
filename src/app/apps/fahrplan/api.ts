@@ -1,5 +1,17 @@
 import type { CompletionItem, StationboardResponse } from "./types";
 
+export async function fetchNearbyStation(
+  lat: number,
+  lon: number
+): Promise<string | null> {
+  const res = await fetch(
+    `/api/fahrplan/completion?latlon=${lat},${lon}&accuracy=500`
+  );
+  if (!res.ok) return null;
+  const data: CompletionItem[] = await res.json();
+  return data.length > 0 ? data[0].label : null;
+}
+
 export async function fetchCompletions(
   term: string
 ): Promise<CompletionItem[]> {

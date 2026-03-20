@@ -53,3 +53,36 @@
   border-color: var(--zvv-accent);
   color: var(--zvv-accent);
 }
+
+.locateButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  border: 1px solid var(--zvv-text-muted);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--zvv-text-muted);
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.locateButton:hover:not(:disabled) {
+  border-color: var(--zvv-accent);
+  color: var(--zvv-accent);
+}
+
+.locateButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.locateError {
+  font-size: 0.85rem;
+  color: var(--zvv-danger);
+  text-align: center;
+  margin: 0;
+}
