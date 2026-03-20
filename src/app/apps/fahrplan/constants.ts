@@ -7,6 +7,18 @@ export const ZVV = {
   danger: "#ff4444",
 } as const;
 
+export const TRANSPORT_FILTERS = {
+  Train: ["train", "express_train", "strain"],
+  Tram: ["tram"],
+  Bus: ["bus"],
+} as const;
+
+export type TransportFilterKey = keyof typeof TRANSPORT_FILTERS;
+
+export const ALL_FILTER_KEYS = Object.keys(
+  TRANSPORT_FILTERS
+) as TransportFilterKey[];
+
 export const TRANSPORT_COLORS: Record<string, string> = {
   train: "#e3000f",
   express_train: "#e3000f",

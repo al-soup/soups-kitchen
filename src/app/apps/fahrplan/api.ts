@@ -12,7 +12,7 @@ export async function fetchCompletions(
 
 export async function fetchStationboard(
   stop: string,
-  limit = 30
+  limit = 50
 ): Promise<StationboardResponse> {
   const res = await fetch(
     `/api/fahrplan/stationboard?stop=${encodeURIComponent(stop)}&limit=${limit}`

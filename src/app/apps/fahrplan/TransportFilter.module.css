@@ -1,0 +1,42 @@
+.row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border: 1px solid var(--zvv-text-muted);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--zvv-text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.chip:hover {
+  border-color: var(--zvv-text);
+  color: var(--zvv-text);
+}
+
+.chip:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.chip.active {
+  background: var(--zvv-accent);
+  color: var(--zvv-bg);
+  border-color: var(--zvv-accent);
+}
