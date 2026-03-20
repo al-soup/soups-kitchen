@@ -80,9 +80,7 @@ describe("FahrplanPage locate button", () => {
     fireEvent.click(screen.getByText("Use my location"));
 
     const [onSuccess] = mockGetCurrentPosition.mock.calls[0];
-    await act(() =>
-      onSuccess({ coords: { latitude: 0, longitude: 0 } })
-    );
+    await act(() => onSuccess({ coords: { latitude: 0, longitude: 0 } }));
 
     expect(screen.getByText("No stations found nearby")).toBeInTheDocument();
   });
@@ -117,9 +115,7 @@ describe("FahrplanPage locate button", () => {
     render(<FahrplanPage />);
     fireEvent.click(screen.getByText("Use my location"));
 
-    expect(
-      screen.getByText("Geolocation not supported")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Geolocation not supported")).toBeInTheDocument();
   });
 
   it("disables button while locating", () => {

@@ -26,7 +26,10 @@ export default function FahrplanPage() {
     setLocateError(null);
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
-        const name = await fetchNearbyStation(pos.coords.latitude, pos.coords.longitude);
+        const name = await fetchNearbyStation(
+          pos.coords.latitude,
+          pos.coords.longitude
+        );
         setLocating(false);
         if (name) {
           setStation(name);
@@ -66,9 +69,7 @@ export default function FahrplanPage() {
             <LocateIcon size={18} />
             {locating ? "Locating…" : "Use my location"}
           </button>
-          {locateError && (
-            <p className={styles.locateError}>{locateError}</p>
-          )}
+          {locateError && <p className={styles.locateError}>{locateError}</p>}
         </>
       ) : (
         <>
