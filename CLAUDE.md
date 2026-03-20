@@ -7,6 +7,10 @@
 - In all interactions and commit messages, be extremely concise and sacrifice
   grammar for the sake of concision.
 
+### CI
+
+- Run `pnpm run format` at the end of every task.
+
 ### Grammar & Style
 
 - When writing markdown text follow the CommonMark lint syntax.
