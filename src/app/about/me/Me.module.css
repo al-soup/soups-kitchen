@@ -304,6 +304,12 @@
   letter-spacing: 0.01em;
 }
 
+.chipHighlight {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
 /* ===== Awards ===== */
 .awards {
   display: flex;

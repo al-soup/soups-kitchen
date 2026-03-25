@@ -29,6 +29,8 @@ import {
   NativeScriptIcon,
 } from "@/constants/icons";
 import type { ComponentType } from "react";
+import { PillFilter } from "@/components/ui/PillFilter";
+import type { PillFilterItem } from "@/components/ui/PillFilter/PillFilter";
 import styles from "./Me.module.css";
 
 type LinkPart = { text: string; href: string };
@@ -301,6 +303,23 @@ export default function MePage() {
 
   const cardsRef = useRef<HTMLDivElement>(null);
   const [logoErrors, setLogoErrors] = useState<Set<string>>(new Set());
+  const [techFilter, setTechFilter] = useState<string | null>(null);
+
+  const techItems: PillFilterItem[] = (() => {
+    const counts: Record<string, number> = {};
+    for (const job of experience) {
+      for (const t of job.tech) {
+        counts[t] = (counts[t] || 0) + 1;
+      }
+    }
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([label, count]) => ({ label, count, icon: TECH_ICONS[label] }));
+  })();
+
+  const filteredExperience = techFilter
+    ? experience.filter((j) => j.tech.includes(techFilter))
+    : experience;
 
   useEffect(() => {
     const cards = cardsRef.current?.querySelectorAll<HTMLElement>(
@@ -322,7 +341,7 @@ export default function MePage() {
 
     cards.forEach((card) => observer.observe(card));
     return () => observer.disconnect();
-  }, []);
+  }, [techFilter]);
 
   function handleLogoError(key: string) {
     setLogoErrors((prev) => new Set(prev).add(key));
@@ -371,8 +390,13 @@ export default function MePage() {
         {/* Work Experience */}
         <section className={styles.section}>
           <p className={styles.sectionLabel}>Work Experience</p>
+          <PillFilter
+            items={techItems}
+            value={techFilter}
+            onChange={setTechFilter}
+          />
           <div className={styles.timeline}>
-            {experience.map((job) => {
+            {filteredExperience.map((job) => {
               const key = `${job.company}-${job.period}`;
               const showLogo = job.logoUrl && !logoErrors.has(key);
               return (
@@ -426,7 +450,10 @@ export default function MePage() {
                         {job.tech.map((t) => {
                           const Icon = TECH_ICONS[t];
                           return (
-                            <span key={t} className={styles.chip}>
+                            <span
+                              key={t}
+                              className={`${styles.chip} ${techFilter === t ? styles.chipHighlight : ""}`}
+                            >
                               {Icon && <Icon size={14} />}
                               {t}
                             </span>

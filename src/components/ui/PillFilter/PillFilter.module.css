@@ -1,0 +1,32 @@
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 16px 0 32px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--background-alt);
+  color: var(--foreground-muted);
+  border: var(--border-width) solid var(--border-color);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pill:hover {
+  border-color: var(--foreground-muted);
+}
+
+.pillActive {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
