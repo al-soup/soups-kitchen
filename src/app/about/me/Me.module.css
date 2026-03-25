@@ -291,6 +291,9 @@
 }
 
 .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 0.75rem;
   font-weight: 500;
   padding: 3px 8px;

@@ -2,7 +2,33 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { GitHubIcon, LinkedInIcon, MailIcon } from "@/constants/icons";
+import {
+  GitHubIcon,
+  LinkedInIcon,
+  MailIcon,
+  GoIcon,
+  NodeJsIcon,
+  NuxtJsIcon,
+  DockerIcon,
+  GitLabCIIcon,
+  RedisIcon,
+  KubernetesIcon,
+  TypeScriptIcon,
+  SvelteKitIcon,
+  D3JsIcon,
+  CouchDBIcon,
+  GitHubCIIcon,
+  AngularIcon,
+  NestJSIcon,
+  JavaIcon,
+  MongoDBIcon,
+  FlutterIcon,
+  FirebaseIcon,
+  PythonIcon,
+  MySQLIcon,
+  NativeScriptIcon,
+} from "@/constants/icons";
+import type { ComponentType } from "react";
 import styles from "./Me.module.css";
 
 type LinkPart = { text: string; href: string };
@@ -26,6 +52,30 @@ const MONTHS = [
 function formatPeriod(s: string) {
   return s.replace(/(\d{2})\/(\d{4})/g, (_, m, y) => `${MONTHS[+m - 1]} ${y}`);
 }
+
+const TECH_ICONS: Record<string, ComponentType<{ size?: number }>> = {
+  Go: GoIcon,
+  "Node.js": NodeJsIcon,
+  "Nuxt.js": NuxtJsIcon,
+  Docker: DockerIcon,
+  "GitLab CI": GitLabCIIcon,
+  Redis: RedisIcon,
+  Kubernetes: KubernetesIcon,
+  TypeScript: TypeScriptIcon,
+  SvelteKit: SvelteKitIcon,
+  "D3.js": D3JsIcon,
+  CouchDB: CouchDBIcon,
+  "GitHub CI": GitHubCIIcon,
+  Angular: AngularIcon,
+  NestJS: NestJSIcon,
+  Java: JavaIcon,
+  MongoDB: MongoDBIcon,
+  Flutter: FlutterIcon,
+  Firebase: FirebaseIcon,
+  Python: PythonIcon,
+  MySQL: MySQLIcon,
+  NativeScript: NativeScriptIcon,
+};
 
 function ExternalBadge({ href, children }: { href: string; children: string }) {
   return (
@@ -373,11 +423,15 @@ export default function MePage() {
                     )}
                     {job.tech.length > 0 && (
                       <div className={styles.chips}>
-                        {job.tech.map((t) => (
-                          <span key={t} className={styles.chip}>
-                            {t}
-                          </span>
-                        ))}
+                        {job.tech.map((t) => {
+                          const Icon = TECH_ICONS[t];
+                          return (
+                            <span key={t} className={styles.chip}>
+                              {Icon && <Icon size={14} />}
+                              {t}
+                            </span>
+                          );
+                        })}
                       </div>
                     )}
                   </div>

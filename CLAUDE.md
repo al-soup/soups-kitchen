@@ -124,8 +124,11 @@ supabase/
   config.ci.toml # CI Supabase config (unused services disabled, default ports)
   migrations/    # Schema migrations (pulled from remote)
   seed.sql       # Dev seed data (3 users, 6 actions, 5 habits)
+public/
+  tech/          # Generated tech logo PNGs (via generate-tech-logos)
 scripts/
   ensure-supabase.sh  # Auto-starts local Supabase if not running
+  generate-tech-logos.mjs  # Generate tech stack tag PNGs
 ```
 
 ### Scripts
@@ -143,6 +146,7 @@ scripts/
 - `pnpm supabase:reset` - reset DB + re-run migrations & seed
 - `pnpm supabase:types` - regenerate `database.types.ts` from local DB
 - `pnpm generate-icons` - regenerate per-app PWA icons in `public/icons/`
+- `pnpm generate-tech-logos` - regenerate tech stack tag PNGs in `public/tech/`
 
 ### CI
 
