@@ -50,7 +50,9 @@ describe("PillFilter", () => {
     const itemsWithIcon: PillFilterItem[] = [
       { label: "Go", count: 1, icon: MockIcon },
     ];
-    render(<PillFilter items={itemsWithIcon} value={null} onChange={() => {}} />);
+    render(
+      <PillFilter items={itemsWithIcon} value={null} onChange={() => {}} />
+    );
 
     expect(screen.getByTestId("icon")).toBeTruthy();
   });
