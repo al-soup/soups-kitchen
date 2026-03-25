@@ -51,7 +51,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
 
 #### Habits: Graph→Feed interaction
 
