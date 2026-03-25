@@ -248,7 +248,7 @@ function buildTagSvg({ icon, text }, scale = 3) {
 }
 
 async function generateOne(tech) {
-  const { svg, width, height, scale } = buildTagSvg(tech);
+  const { svg, width, height } = buildTagSvg(tech);
   const finalWidth = Math.round(width);
   const finalHeight = Math.round(height);
 
