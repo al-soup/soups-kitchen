@@ -49,43 +49,58 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 
 - [ ] Add `redirectTo` param to all protected page redirects (currently only `/habits/create`)
 - [ ] Some apps will not require a theme / should be able to introduce their own theme and overwrite the defaults so there is more of a standalone app feel.
-- [ ] Improve footer: copyright, github link, maybe linkedin
 - [ ] Set-up proper error handling
 
 ### Apps
 
-### Habits
+#### Habits
 
 - [ ] Create filter and sorting for overview page
 - [ ] Create an overview chart option where the different action types can be combined
 - [ ] Create other types of insight graphs for habits
 
-### Fahrplan
+#### Fahrplan
 
-### Question Game
+#### Question Game
 
-### Live-Poll
+#### Live-Poll
 
 Use websockets, gRCP.
 
-### Speech-to-Text Notes Interface
+#### Speech-to-Text Notes Interface
 
-Use Wispr or AssemblyAI
+Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. Not yet sure about the exact sync process.
 
-### More App Ideas
+#### More App Ideas
 
-- [ ] Booking calendar for Cambrils
-- [ ] Boule Score
-- [ ] QR Code generator
-- [ ] Wheel of fortune
+- Booking calendar for Cambrils
+- Boule Score
+- QR Code generator
+- Wheel of fortune
 
-## About
+### About
 
-### Elevator Pitch
+#### Elevator Pitch
 
 - [ ] Create a animated elevator pitch that shows in 1 minute why I'm a good hire. Use a nice background e.g. from Great Budapest Hotel opening scene, and present yourself in the elevator.
 
-### Me
+**Idea:**
+
+- Background that adapts to the time of day. Mountain scene.
+- Grand Budapest Hotel style, you zoom into the Elevator once you click start
+- The elevator can move up or down. Create it as a scrolly-tool
+- In the elevator I show my pitch on the wall of the elevator
+- Out of the window you see only small movement plus you see an oldschool pointer of the current floor
+
+**Pitch:**
+
+- USP
+- Worked in different industries with project examples
+- soft skills
+- Can teach myself anything. Eager learner and motivated to build, improve, solve and optimize
+- Pays attention to detail, is reliable
+
+#### Me
 
 - [ ] Replace contact email
 - [ ] Require magic link or account to see CV more details
@@ -95,7 +110,7 @@ Use Wispr or AssemblyAI
 - [ ] Add a description about my work position (New Elements, EdTech, etc.)
 - [ ] Summarize some of my strengths. Find a nice way to display that
 
-### Experience
+#### Experience
 
 - [ ] Finish the blog parser/renderer in Go
 - [ ] Save post to DB or rsync to serve as static files from VPS or Supabase object storage
@@ -105,6 +120,7 @@ Use Wispr or AssemblyAI
 ### CI
 
 - [ ] Add CI user that can create a habit entry when working on the app
+- [ ] Setup a logging lib (LogTape) and integrate it with a centralized logging platform (Grafana Cloud)
 
 ### AI
 
