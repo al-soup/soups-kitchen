@@ -51,7 +51,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
 
 #### Habits: Graph→Feed interaction
 
@@ -71,7 +71,7 @@ Clicking a colored day in `HabitScoreGraph` sets `selectedDate` state, which fil
 - **AuthContext**: `AuthProvider` wraps app, exposes `useAuth()` → `{ user, accessToken, loading }`. Client-side Supabase auth via `@supabase/ssr`.
 - **useUserRole(table)**: Decodes JWT to extract role for a given table. Returns `{ role, loading }`.
 - **Proxy** (`src/proxy.ts`): Refreshes Supabase auth cookies on every request. Uses `createProxyClient` from `src/lib/supabase/proxy.ts`.
-- **Icons**: Shared icons live in `src/constants/icons.tsx`. Check there first before creating new SVG icons; add new ones there too. Domain-specific icons (e.g. transport types) live in their feature's `icons.tsx`.
+- **Icons**: Shared icons live in `src/constants/icons.tsx`. Check there first before creating new SVG icons; add new ones there too. Domain-specific icons (e.g. transport types) live in their feature's `icons.tsx`. Display new icons `src/app/dev/icons/page.tsx`.
 - **CSS Modules**: All component styles use `.module.css` files
 - **CSS Variables**: Theme colors via `--foreground`, `--background`, `--border-color`, etc. in globals.css
 - **Auth redirects**: Protected pages redirect to `/login?redirectTo=<path>`. Login reads param and navigates there on success. Validate `redirectTo` starts with `/` and not `//` (open redirect prevention).
@@ -124,8 +124,11 @@ supabase/
   config.ci.toml # CI Supabase config (unused services disabled, default ports)
   migrations/    # Schema migrations (pulled from remote)
   seed.sql       # Dev seed data (3 users, 6 actions, 5 habits)
+public/
+  tech/          # Generated tech logo PNGs (via generate-tech-logos)
 scripts/
   ensure-supabase.sh  # Auto-starts local Supabase if not running
+  generate-tech-logos.mjs  # Generate tech stack tag PNGs
 ```
 
 ### Scripts
@@ -143,6 +146,7 @@ scripts/
 - `pnpm supabase:reset` - reset DB + re-run migrations & seed
 - `pnpm supabase:types` - regenerate `database.types.ts` from local DB
 - `pnpm generate-icons` - regenerate per-app PWA icons in `public/icons/`
+- `pnpm generate-tech-logos` - regenerate tech stack tag PNGs in `public/tech/`
 
 ### CI
 

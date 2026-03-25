@@ -18,7 +18,8 @@
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",
     "supabase:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
-    "generate-icons": "node scripts/generate-icons.mjs"
+    "generate-icons": "node scripts/generate-icons.mjs",
+    "generate-tech-logos": "node scripts/generate-tech-logos.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
