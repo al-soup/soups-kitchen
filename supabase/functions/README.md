@@ -29,6 +29,7 @@ self-maintain its credentials after each refresh.
 ┌─────────────────────────────────────────────────────────┐
 │  DAILY CRON (strava-activity edge function)             │
 │                                                         │
+│  0. Validate x-cron-secret header (reject if missing)   │
 │  1. Read token row from strava_tokens                   │
 │  2. Check expires_at — if expired:                      │
 │     a. POST refresh_token to Strava token endpoint      │
@@ -53,16 +54,15 @@ The old refresh token is immediately invalid — there is no grace period.
 
 `strava_tokens` table (service_role access only, RLS enabled with no policies):
 
-| Column          | Type        | Notes                             |
-| --------------- | ----------- | --------------------------------- |
-| `id`            | int (PK)    | Auto-generated                    |
-| `user_id`       | uuid (UQ)   | FK → auth.users, one row per user |
-| `athlete_id`    | bigint      | Strava athlete ID                 |
-| `access_token`  | text        | Current valid token               |
-| `refresh_token` | text        | Used to obtain next access token  |
-| `expires_at`    | bigint      | Unix epoch seconds                |
-| `created_at`    | timestamptz | Row creation time                 |
-| `updated_at`    | timestamptz | Last token refresh time           |
+| Column          | Type        | Notes                            |
+| --------------- | ----------- | -------------------------------- |
+| `id`            | int (PK)    | Auto-generated                   |
+| `athlete_id`    | bigint      | Strava athlete ID                |
+| `access_token`  | text        | Current valid token              |
+| `refresh_token` | text        | Used to obtain next access token |
+| `expires_at`    | bigint      | Unix epoch seconds               |
+| `created_at`    | timestamptz | Row creation time                |
+| `updated_at`    | timestamptz | Last token refresh time          |
 
 ### Secrets
 
@@ -70,6 +70,7 @@ The old refresh token is immediately invalid — there is no grace period.
 | --------------------------- | ------------------------------------- | ---------------------------- |
 | `STRAVA_CLIENT_ID`          | Supabase secrets (prod), .env (local) | Edge function + setup script |
 | `STRAVA_CLIENT_SECRET`      | Supabase secrets (prod), .env (local) | Edge function + setup script |
+| `CRON_SECRET`               | Supabase secrets (prod), .env (local) | Edge function (auth guard)   |
 | `SUPABASE_URL`              | Auto-available in edge functions      | Edge function                |
 | `SUPABASE_SERVICE_ROLE_KEY` | Auto-available in edge functions      | Edge function                |
 
@@ -77,7 +78,7 @@ The old refresh token is immediately invalid — there is no grace period.
 
 ```sh
 # 1. Set Strava secrets (production)
-supabase secrets set STRAVA_CLIENT_ID=<id> STRAVA_CLIENT_SECRET=<secret>
+supabase secrets set STRAVA_CLIENT_ID=<id> STRAVA_CLIENT_SECRET=<secret> CRON_SECRET=<secret>
 
 # 2. Run migrations
 pnpm supabase:reset   # local
@@ -87,6 +88,7 @@ pnpm supabase:reset   # local
 pnpm strava:auth
 
 # 4. Schedule cron in Supabase Dashboard (daily, e.g. 06:00 UTC)
+#    Set x-cron-secret header in the cron config to match CRON_SECRET
 ```
 
 ### Local testing
@@ -95,8 +97,12 @@ pnpm strava:auth
 # Start local Supabase
 pnpm supabase:start
 
-# Invoke function directly (verify_jwt = false)
-curl -i http://127.0.0.1:54221/functions/v1/strava-activity
+# Serve Edge functions
+supabase functions serve --env-file .env.local
+
+# Invoke function (requires x-cron-secret header)
+curl -i http://127.0.0.1:54221/functions/v1/strava-activity \
+  -H "x-cron-secret: $CRON_SECRET"
 ```
 
 ### Future work

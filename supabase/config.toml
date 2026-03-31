@@ -365,8 +365,10 @@ inspector_port = 8183
 # The Deno major version to use.
 deno_version = 2
 
-# [edge_runtime.secrets]
-# secret_key = "env(SECRET_VALUE)"
+[edge_runtime.secrets]
+STRAVA_CLIENT_ID = "env(STRAVA_CLIENT_ID)"
+STRAVA_CLIENT_SECRET = "env(STRAVA_CLIENT_SECRET)"
+CRON_SECRET = "env(CRON_SECRET)"
 
 [analytics]
 enabled = true
@@ -389,7 +391,7 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 
 [functions.strava-activity]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/strava-activity/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx

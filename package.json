@@ -19,7 +19,8 @@
     "supabase:reset": "supabase db reset",
     "supabase:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
     "generate-icons": "node scripts/generate-icons.mjs",
-    "generate-tech-logos": "node scripts/generate-tech-logos.mjs"
+    "generate-tech-logos": "node scripts/generate-tech-logos.mjs",
+    "strava:auth": "node scripts/strava-auth.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",

@@ -122,6 +122,8 @@ src/
 supabase/
   config.toml    # Local Supabase config
   config.ci.toml # CI Supabase config (unused services disabled, default ports)
+  functions/     # Supabase Edge Functions (Deno)
+    strava-activity/  # Daily cron: fetch Strava activities
   migrations/    # Schema migrations (pulled from remote)
   seed.sql       # Dev seed data (3 users, 6 actions, 5 habits)
 public/
@@ -129,6 +131,7 @@ public/
 scripts/
   ensure-supabase.sh  # Auto-starts local Supabase if not running
   generate-tech-logos.mjs  # Generate tech stack tag PNGs
+  strava-auth.mjs  # One-time Strava OAuth token setup
 ```
 
 ### Scripts
@@ -147,6 +150,15 @@ scripts/
 - `pnpm supabase:types` - regenerate `database.types.ts` from local DB
 - `pnpm generate-icons` - regenerate per-app PWA icons in `public/icons/`
 - `pnpm generate-tech-logos` - regenerate tech stack tag PNGs in `public/tech/`
+- `pnpm strava:auth` - one-time Strava OAuth setup (stores tokens in DB)
+
+### Strava Integration
+
+- Edge function `strava-activity` fetches recent Strava activities via cron (daily)
+- Tokens stored in `strava_tokens` table, auto-refreshed on each run (Strava rotates refresh tokens)
+- Endpoint protected by `x-cron-secret` header (not JWT)
+- Setup: run `pnpm strava:auth` once, then deploy edge function + set secrets
+- Secrets: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `CRON_SECRET`
 
 ### CI
 
