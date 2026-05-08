@@ -58,8 +58,11 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Create filter and sorting for overview page
 - [ ] Create an overview chart option where the different action types can be combined
 - [ ] Create other types of insight graphs for habits
+- [ ] Include tracking of productive hours
 
 #### Fahrplan
+
+#### Knowledge Graph (working title)
 
 #### Question Game
 
@@ -119,8 +122,8 @@ Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. Not yet
 
 ### CI
 
-- [ ] Add CI user that can create a habit entry when working on the app
 - [ ] Setup a logging lib (LogTape) and integrate it with a centralized logging platform (Grafana Cloud)
+- [ ] Add CI user that can create a habit entry when working on the app
 
 ### AI
 
@@ -129,5 +132,4 @@ Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. Not yet
 ### API
 
 - [ ] Add authenticated API routes that use Supabase issued JWTs
-- [ ] Create Strava CRON for cycling activities
 - [ ] Improve SMTP setup to avoid Spam emails.

@@ -36,9 +36,16 @@ self-maintain its credentials after each refresh.
 │     b. Receive new access_token + refresh_token         │
 │     c. Update strava_tokens row                         │
 │  3. GET /api/v3/athlete/activities?after=<24h ago>      │
-│  4. Return activities as JSON                           │
+│  4. Filter to ride sport_types, convert units           │
+│  5. Upsert into strava_rides (idempotent on             │
+│     strava_activity_id)                                 │
+│  6. Return { fetched, kept, inserted, skipped }         │
 └─────────────────────────────────────────────────────────┘
 ```
+
+[Strava Auth Docs](https://developers.strava.com/docs/authentication/)
+
+[Manage your Strava API settings](https://www.strava.com/settings/api)
 
 ### Token lifecycle
 
@@ -63,6 +70,21 @@ The old refresh token is immediately invalid — there is no grace period.
 | `expires_at`    | bigint      | Unix epoch seconds               |
 | `created_at`    | timestamptz | Row creation time                |
 | `updated_at`    | timestamptz | Last token refresh time          |
+
+`strava_rides` table (service_role access only, RLS enabled with no policies).
+Filtered to ride sport types: `Ride`, `VirtualRide`, `GravelRide`,
+`MountainBikeRide`. Idempotent on `strava_activity_id`:
+
+| Column               | Type           | Notes                          |
+| -------------------- | -------------- | ------------------------------ |
+| `id`                 | bigserial (PK) | Auto-generated                 |
+| `strava_activity_id` | bigint UNIQUE  | Strava activity ID             |
+| `ride_date`          | timestamptz    | `start_date` from Strava (UTC) |
+| `distance_km`        | numeric(7,2)   | Converted from meters          |
+| `elevation_gain_m`   | numeric(7,1)   | `total_elevation_gain`         |
+| `average_speed_kmh`  | numeric(5,2)   | Converted from m/s             |
+| `raw_response`       | jsonb          | Full Strava activity object    |
+| `created_at`         | timestamptz    | Row creation time              |
 
 ### Secrets
 
@@ -100,13 +122,50 @@ pnpm supabase:start
 # Serve Edge functions
 supabase functions serve --env-file .env.local
 
+export CRON_SECRET="<your-secret>"
+
 # Invoke function (requires x-cron-secret header)
-curl -i http://127.0.0.1:54221/functions/v1/strava-activity \
+# use `-o <file-name>` to save
+curl -i -v http://127.0.0.1:54221/functions/v1/strava-activity \
+  -H "x-cron-secret: $CRON_SECRET"
+```
+
+### Promoting to production
+
+Supabase recommends a **local-first** workflow: migrations are the
+source of truth, edge functions are versioned in code, never edit prod
+schema via Studio.
+
+```sh
+# 1. Capture any remote-only schema as a tracked migration (run if remote
+#    has drift from local migrations).
+supabase db pull
+
+# 2. Apply local migrations to remote.
+supabase db push
+
+# 3. Deploy the edge function.
+supabase functions deploy strava-activity
+
+# 4. Set production secrets.
+supabase secrets set STRAVA_CLIENT_ID=<id> STRAVA_CLIENT_SECRET=<secret> CRON_SECRET=<secret>
+
+# 5. Run one-time OAuth (point pnpm strava:auth at the prod env).
+pnpm strava:auth
+
+# 6. Schedule the cron in Dashboard → Edge Functions → Schedules
+#    (daily, e.g. 06:00 UTC). Set x-cron-secret header = CRON_SECRET.
+
+# 7. Smoke test against prod.
+curl -i https://<project>.supabase.co/functions/v1/strava-activity \
   -H "x-cron-secret: $CRON_SECRET"
 ```
 
 ### Future work
 
+- Create my own centralized logger (or start with Supabase for now)
+- Rename Supabase key
+- In the current supabase config check the `verify jwt` option
+- Check if the secrets are set automatically when I sync the functions - do I need to apply the migration for the table?
+- Set-up a daily CRON
 - Map specific Strava activity types to habit entries
-- Activity deduplication
-- Multi-user support
