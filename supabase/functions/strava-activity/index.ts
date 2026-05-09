@@ -25,7 +25,7 @@ interface TokenRow {
 
 interface StravaSummaryActivity {
   id: number;
-  sport_type: typeof RIDE_SPORT_TYPES[number];
+  sport_type: (typeof RIDE_SPORT_TYPES)[number];
   start_date: string;
   distance: number; // meters
   total_elevation_gain: number; // meters
@@ -50,7 +50,7 @@ type LogLevel = "info" | "warn" | "error";
 function log(
   level: LogLevel,
   msg: string,
-  fields: Record<string, unknown> = {},
+  fields: Record<string, unknown> = {}
 ): void {
   const payload = JSON.stringify({
     ts: new Date().toISOString(),
@@ -80,7 +80,7 @@ function authorize(req: Request): Response | null {
 
 async function ensureFreshToken(
   supabase: ReturnType<typeof createClient>,
-  token: TokenRow,
+  token: TokenRow
 ): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
 
@@ -134,7 +134,7 @@ async function ensureFreshToken(
 
 async function fetchActivities(
   accessToken: string,
-  after: number,
+  after: number
 ): Promise<StravaSummaryActivity[]> {
   const url = `${STRAVA_ACTIVITIES_URL}?after=${after}&per_page=30`;
   const res = await fetch(url, {
@@ -171,7 +171,7 @@ function toRideRow(a: StravaSummaryActivity): StravaRideRow {
 
 async function insertRides(
   supabase: ReturnType<typeof createClient>,
-  rows: StravaRideRow[],
+  rows: StravaRideRow[]
 ): Promise<number> {
   if (rows.length === 0) return 0;
 
@@ -213,7 +213,7 @@ Deno.serve(async (req) => {
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
     const { data: token, error: tokenError } = await supabase
@@ -226,14 +226,14 @@ Deno.serve(async (req) => {
       log("error", "no strava tokens found", { error: tokenError?.message });
       return errorResponse(
         500,
-        "No Strava tokens found. Run pnpm strava:auth first.",
+        "No Strava tokens found. Run pnpm strava:auth first."
       );
     }
 
     const accessToken = await ensureFreshToken(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       supabase as any,
-      token as TokenRow,
+      token as TokenRow
     );
 
     // Fetch activities from the last 24 hours
@@ -262,7 +262,7 @@ Deno.serve(async (req) => {
         inserted,
         skipped,
       }),
-      { headers: { "Content-Type": "application/json" } },
+      { headers: { "Content-Type": "application/json" } }
     );
   } catch (err) {
     const message = (err as Error).message;
