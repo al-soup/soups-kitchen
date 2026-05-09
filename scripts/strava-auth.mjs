@@ -8,7 +8,7 @@
  * Required env vars:
  *   STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET,
  *   NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL),
- *   SUPABASE_SERVICE_ROLE_KEY
+ *   SERVICE_ROLE_KEY_SUPABASE
  */
 
 import { createServer } from "node:http";
@@ -58,7 +58,7 @@ function requireEnv(name, fallback) {
 const CLIENT_ID = requireEnv("STRAVA_CLIENT_ID");
 const CLIENT_SECRET = requireEnv("STRAVA_CLIENT_SECRET");
 const SUPABASE_URL = requireEnv("NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL");
-const SERVICE_ROLE_KEY = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+const SERVICE_ROLE_KEY = requireEnv("SERVICE_ROLE_KEY_SUPABASE");
 
 // ---------------------------------------------------------------------------
 // Strava token exchange

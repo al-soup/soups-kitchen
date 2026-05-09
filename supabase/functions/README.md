@@ -124,10 +124,12 @@ supabase functions serve --env-file .env.local
 
 export CRON_SECRET="<your-secret>"
 
-# Invoke function (requires x-cron-secret header)
-# use `-o <file-name>` to save
-curl -i -v http://127.0.0.1:54221/functions/v1/strava-activity \
-  -H "x-cron-secret: $CRON_SECRET"
+# Invoke function (POST, requires x-cron-secret header)
+# use `-o <file-name>` to save the response body
+curl -i -X POST http://127.0.0.1:54221/functions/v1/strava-activity \
+  -H "Content-Type: application/json" \
+  -H "x-cron-secret: $CRON_SECRET" \
+  -d '{}'
 ```
 
 ### Promoting to production
@@ -151,21 +153,21 @@ supabase functions deploy strava-activity
 supabase secrets set STRAVA_CLIENT_ID=<id> STRAVA_CLIENT_SECRET=<secret> CRON_SECRET=<secret>
 
 # 5. Run one-time OAuth (point pnpm strava:auth at the prod env).
+# To load the prod credentials replace the env file in the `loadEnvFile` function.
 pnpm strava:auth
 
-# 6. Schedule the cron in Dashboard → Edge Functions → Schedules
-#    (daily, e.g. 06:00 UTC). Set x-cron-secret header = CRON_SECRET.
+# 6. Schedule the cron in Dashboard -> Integrations -> Cron
+# It currently runs at 02:30 AM.
 
 # 7. Smoke test against prod.
-curl -i https://<project>.supabase.co/functions/v1/strava-activity \
-  -H "x-cron-secret: $CRON_SECRET"
+curl -i -X POST https://<project>.supabase.co/functions/v1/strava-activity \
+  -H "Content-Type: application/json" \
+  -H "x-cron-secret: $CRON_SECRET" \
+  -d '{}'
 ```
 
 ### Future work
 
-- Create my own centralized logger (or start with Supabase for now)
-- Rename Supabase key
-- In the current supabase config check the `verify jwt` option
 - Check if the secrets are set automatically when I sync the functions - do I need to apply the migration for the table?
-- Set-up a daily CRON
-- Map specific Strava activity types to habit entries
+- Create a DB trigger to save new Stava entries as habits
+- Rename Supabase key

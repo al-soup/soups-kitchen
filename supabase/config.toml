@@ -391,6 +391,12 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 
 [functions.strava-activity]
 enabled = true
+# If verify_jwt is set to `true` every request must include either:
+# - Authorization: Bearer <supabase-jwt>, or
+# - apikey: <anon-or-service-role-key> header. 
+# verify_jwt = false → no Supabase JWT/apikey required to invoke. The
+# function can gate itself with the `x-cron-secret` header (see strava-activity/index.ts).
+# Keeps cron callers simple: they only need the secret, not an apikey.
 verify_jwt = false
 import_map = "./functions/strava-activity/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
