@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitScoreGraph } from "@/components/ui/HabitScoreGraph";
 import { useUserRole } from "@/hooks/useUserRole";
 import type { ActionType, DailyHabitScore } from "@/lib/supabase/types";
+import { actionTypeQuery, parseActionType, TYPE_PARAM } from "@/lib/actionType";
 import { getDailyHabitScores } from "./api";
 import { HabitTypeSelector } from "./HabitTypeSelector";
 import { HabitFeed } from "./HabitFeed";
@@ -13,6 +15,18 @@ import { HabitFeed } from "./HabitFeed";
 import styles from "../../shared-page.module.css";
 
 export default function HabitsPage() {
+  return (
+    <Suspense fallback={null}>
+      <HabitsPageInner />
+    </Suspense>
+  );
+}
+
+function HabitsPageInner() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const { role } = useUserRole("habit");
   const canCreate = role === "admin" || role === "manager";
   const canSeeType2 = role === "admin" || role === "manager";
@@ -25,7 +39,8 @@ export default function HabitsPage() {
     [canSeeType2]
   );
 
-  const [actionType, setActionType] = useState<ActionType>(1);
+  const actionType: ActionType =
+    parseActionType(searchParams.get(TYPE_PARAM)) ?? 1;
   const effectiveType: ActionType =
     !canSeeType2 && actionType === 2 ? 1 : actionType;
   const [scores, setScores] = useState<DailyHabitScore[]>([]);
@@ -33,13 +48,16 @@ export default function HabitsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  const handleTypeChange = useCallback((type: ActionType) => {
-    setActionType(type);
-    setSelectedDate(null);
-    setScores([]);
-    setError(null);
-    setLoading(true);
-  }, []);
+  const handleTypeChange = useCallback(
+    (type: ActionType) => {
+      setSelectedDate(null);
+      setScores([]);
+      setError(null);
+      setLoading(true);
+      router.replace(`${pathname}${actionTypeQuery(type)}`, { scroll: false });
+    },
+    [router, pathname]
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -66,7 +84,7 @@ export default function HabitsPage() {
         Habit Tracker
         {canCreate && (
           <Link
-            href="/apps/habits/create"
+            href={`/apps/habits/create${actionTypeQuery(effectiveType)}`}
             aria-label="Create habit"
             style={{
               marginLeft: 12,

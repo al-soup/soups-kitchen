@@ -60,9 +60,11 @@ test.describe("Habits — Create page", () => {
       await expect(page.getByTestId("submit-btn")).toBeDisabled();
     });
 
-    test("back arrow navigates to /apps/habits", async ({ page }) => {
+    test("back arrow navigates to /apps/habits with current type", async ({
+      page,
+    }) => {
       await page.getByRole("link", { name: "Back to habits" }).click();
-      await expect(page).toHaveURL("/apps/habits");
+      await expect(page).toHaveURL("/apps/habits?type=1");
     });
   });
 
