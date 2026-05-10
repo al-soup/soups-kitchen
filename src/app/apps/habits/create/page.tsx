@@ -1,8 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { PageTitle } from "@/components/ui/PageTitle";
@@ -10,21 +17,32 @@ import { HabitTypeSelector } from "../HabitTypeSelector";
 import { ActionList, type SelectionMap } from "./ActionList";
 import { getActions, createHabits } from "./api";
 import { getLocalToday, getCurrentTime } from "@/lib/dateUtils";
+import { actionTypeQuery, parseActionType, TYPE_PARAM } from "@/lib/actionType";
 import type { Action, ActionType } from "@/lib/supabase/types";
 
 import sharedStyles from "../../../shared-page.module.css";
 import styles from "./page.module.css";
 
 export default function CreateHabitPage() {
+  return (
+    <Suspense fallback={null}>
+      <CreateHabitPageInner />
+    </Suspense>
+  );
+}
+
+function CreateHabitPageInner() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const { role, loading: roleLoading } = useUserRole("habit");
 
   const loading = authLoading || roleLoading;
   const canCreate = role === "admin" || role === "manager";
 
-  const [actionType, setActionType] = useState<ActionType>(1);
+  const actionType: ActionType =
+    parseActionType(searchParams.get(TYPE_PARAM)) ?? 1;
   const [actions, setActions] = useState<Action[]>([]);
   const [actionsLoading, setActionsLoading] = useState(true);
   const [actionsError, setActionsError] = useState<string | null>(null);
@@ -61,10 +79,13 @@ export default function CreateHabitPage() {
     [actions, actionType]
   );
 
-  const handleTypeChange = useCallback((type: ActionType) => {
-    setActionType(type);
-    setSelection({});
-  }, []);
+  const handleTypeChange = useCallback(
+    (type: ActionType) => {
+      setSelection({});
+      router.replace(`${pathname}${actionTypeQuery(type)}`, { scroll: false });
+    },
+    [router, pathname]
+  );
 
   const handleSelectionChange = useCallback(
     (
@@ -154,7 +175,7 @@ export default function CreateHabitPage() {
       <PageTitle title="Create Habit" />
       <div className={styles.header}>
         <Link
-          href="/apps/habits"
+          href={`/apps/habits${actionTypeQuery(actionType)}`}
           className={styles.backLink}
           aria-label="Back to habits"
         >

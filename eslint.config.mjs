@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Deno edge functions — toolchain mismatch with Next's ESLint/TS.
+    "supabase/functions/**",
   ]),
 ]);
 
