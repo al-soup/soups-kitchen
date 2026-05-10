@@ -2,7 +2,7 @@
 
 ## strava-activity
 
-Daily cron-triggered function that fetches recent Strava activities.
+Nightly cron-triggered function that fetches recent Strava activities and saves it into the `strava_rides` DB table. A DB trigger will also create a corresponding entry in the `habit` DB table.
 
 ### Why a DB table for tokens?
 
@@ -165,9 +165,3 @@ curl -i -X POST https://<project>.supabase.co/functions/v1/strava-activity \
   -H "x-cron-secret: $CRON_SECRET" \
   -d '{}'
 ```
-
-### Future work
-
-- Check if the secrets are set automatically when I sync the functions - do I need to apply the migration for the table?
-- Create a DB trigger to save new Stava entries as habits
-- Rename Supabase key
