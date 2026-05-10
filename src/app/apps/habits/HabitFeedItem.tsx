@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { HabitDetail } from "@/lib/supabase/types";
 import { getBadgeStyle } from "@/lib/badgeStyles";
+import { linkifyText } from "@/lib/linkifyText";
 import { InfoIcon } from "@/constants/icons";
 import styles from "./HabitFeedItem.module.css";
 
@@ -35,7 +36,7 @@ export function HabitFeedItem({ habit, showDetailLink }: HabitFeedItemProps) {
           </Link>
         )}
       </div>
-      {note && <p className={styles.note}>{note}</p>}
+      {note && <p className={styles.note}>{linkifyText(note)}</p>}
     </div>
   );
 }

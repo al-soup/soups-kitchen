@@ -9,6 +9,7 @@ import { PageTitle } from "@/components/ui/PageTitle";
 import { getHabitById, updateHabit, deleteHabit } from "./api";
 import type { HabitDetail, ActionType } from "@/lib/supabase/types";
 import { getBadgeStyle } from "@/lib/badgeStyles";
+import { linkifyText } from "@/lib/linkifyText";
 
 import sharedStyles from "../../../shared-page.module.css";
 import styles from "./page.module.css";
@@ -295,8 +296,10 @@ function HabitCard({
                 onChange={(e) => onEditNote(e.target.value)}
                 rows={3}
               />
+            ) : habit.note ? (
+              linkifyText(habit.note)
             ) : (
-              habit.note || "—"
+              "—"
             )}
           </dd>
         </div>

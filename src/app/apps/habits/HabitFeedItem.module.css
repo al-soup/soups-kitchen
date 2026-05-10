@@ -55,3 +55,15 @@
   line-height: 1.4;
   white-space: pre-wrap;
 }
+
+.note a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+
+.note a:hover {
+  text-decoration-thickness: 2px;
+}

@@ -104,6 +104,18 @@
   white-space: pre-wrap;
 }
 
+.metaValueNote a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+
+.metaValueNote a:hover {
+  text-decoration-thickness: 2px;
+}
+
 .errorMessage {
   color: var(--color-error, #ef4444);
   font-size: 14px;
