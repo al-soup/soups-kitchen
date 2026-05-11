@@ -114,3 +114,17 @@ need to add hip flexor work'),
   (14, now() - interval '45 days', 'NYE party'),
   (19, now() - interval '50 days', 'started cert prep'),
   (8, now() - interval '55 days', 'snowboarding day trip');
+
+-- Knowledge base tags
+INSERT INTO public.tags (name, type) VALUES
+  ('System Design',       'topic'),
+  ('Databases',           'topic'),
+  ('Web Development',     'topic'),
+  ('DevOps',              'topic'),
+  ('Algorithms',          'topic'),
+  ('DB Indexing',         'concept'),
+  ('Caching',             'concept'),
+  ('Concurrency',         'concept'),
+  ('REST',                'concept'),
+  ('Authentication',      'concept')
+ON CONFLICT (name) DO NOTHING;

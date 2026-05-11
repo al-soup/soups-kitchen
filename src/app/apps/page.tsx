@@ -16,6 +16,12 @@ export default function AppsPage() {
           <p className={styles.linkTitle}>Fahrplan</p>
           <p className={styles.linkDesc}>Swiss public transport departures</p>
         </Link>
+        <Link href="/apps/knowledge-base" className={styles.appLink}>
+          <p className={styles.linkTitle}>Knowledge Base</p>
+          <p className={styles.linkDesc}>
+            Q&amp;A bits, tagged by topic & concept
+          </p>
+        </Link>
       </nav>
     </div>
   );

@@ -2,6 +2,9 @@ import type { Database, Tables } from "./database.types";
 
 type Functions = Database["public"]["Functions"];
 
+export type Tag = Tables<"tags">;
+export type TagType = Database["public"]["Enums"]["tag_type"];
+
 export type DailyHabitScore =
   Functions["get_daily_habit_scores"]["Returns"][number];
 
