@@ -23,7 +23,12 @@ const SECTIONS = [
     items: [
       { href: "/apps/habits", label: "Habit Tracker" },
       { href: "/apps/fahrplan", label: "Fahrplan" },
+      { href: "/apps/knowledge-base", label: "Knowledge Base" },
     ],
+  },
+  {
+    label: "Tools",
+    items: [{ href: "/resources", label: "Resources" }],
   },
 ];
 

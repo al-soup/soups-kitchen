@@ -20,13 +20,12 @@ export default function KnowledgeBasePage() {
           <p className={styles.linkTitle}>Manage Tags</p>
           <p className={styles.linkDesc}>Add and edit topics and concepts</p>
         </Link>
-        <div
-          className={`${styles.link} ${styles.linkDisabled}`}
-          aria-disabled="true"
-        >
+        <Link href="/resources" className={styles.link}>
           <p className={styles.linkTitle}>Resources</p>
-          <p className={styles.linkDesc}>Coming soon</p>
-        </div>
+          <p className={styles.linkDesc}>
+            Upload files; reference via {"{{resource:<id>}}"} tokens
+          </p>
+        </Link>
         <div
           className={`${styles.link} ${styles.linkDisabled}`}
           aria-disabled="true"

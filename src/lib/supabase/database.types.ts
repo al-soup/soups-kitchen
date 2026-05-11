@@ -156,40 +156,35 @@ export type Database = {
       resources: {
         Row: {
           bucket: string;
+          created_at: string | null;
           filename: string | null;
           id: string;
-          knowledge_id: string | null;
           label: string | null;
           mime_type: string | null;
+          size_bytes: number | null;
           storage_path: string;
         };
         Insert: {
           bucket: string;
+          created_at?: string | null;
           filename?: string | null;
           id?: string;
-          knowledge_id?: string | null;
           label?: string | null;
           mime_type?: string | null;
+          size_bytes?: number | null;
           storage_path: string;
         };
         Update: {
           bucket?: string;
+          created_at?: string | null;
           filename?: string | null;
           id?: string;
-          knowledge_id?: string | null;
           label?: string | null;
           mime_type?: string | null;
+          size_bytes?: number | null;
           storage_path?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "resources_knowledge_id_fkey";
-            columns: ["knowledge_id"];
-            isOneToOne: false;
-            referencedRelation: "knowledge";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       strava_rides: {
         Row: {

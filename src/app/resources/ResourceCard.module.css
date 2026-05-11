@@ -1,0 +1,133 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  background: var(--background);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.card:hover {
+  border-color: var(--foreground-muted);
+}
+
+.preview {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--background-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.previewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mimeBadge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--foreground-muted);
+  padding: 4px 8px;
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--background);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  color: var(--foreground);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.label:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.labelInput {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 4px 6px;
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: inherit;
+}
+
+.labelInput:focus {
+  outline: 2px solid var(--foreground);
+  outline-offset: -1px;
+}
+
+.meta {
+  font-size: 0.75rem;
+  color: var(--foreground-muted);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.error {
+  font-size: 11px;
+  color: var(--color-error, #ef4444);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.actionBtn {
+  flex: 1;
+  font-size: 12px;
+  padding: 6px 8px;
+  border: var(--border-width, 1px) solid var(--border-color);
+  background: var(--background);
+  color: var(--foreground);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.actionBtn:hover:not(:disabled) {
+  background: var(--background-alt);
+  border-color: var(--foreground-muted);
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  color: var(--color-error, #ef4444);
+  border-color: var(--color-error, #ef4444);
+}

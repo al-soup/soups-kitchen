@@ -51,7 +51,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — tags admin only so far), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — tags admin only so far), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
 
 #### Habits: Graph→Feed interaction
 
@@ -105,8 +105,11 @@ src/
       fahrplan/       # Swiss departure board (StationSearch, DepartureBoard, DepartureRow)
       habits/         # HabitFeed (paginated feed, grouped by date), HabitTypeSelector
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
-      knowledge-base/ # Hub page (links to tags admin; resources/create are stubs)
+      knowledge-base/ # Hub page (links to tags admin + resources; create entry is a stub)
       knowledge-base/tags/  # Tags admin (api.ts CRUD, TagSection, TagRow); topic & concept
+    resources/   # Standalone resources module (upload to Supabase Storage)
+                 # UploadDropzone, ResourceGrid, ResourceCard; api.ts CRUD + signed URLs
+                 # Placeholder token: {{resource:<uuid>}}
     auth/        # OAuth callback route
     login/       # Login page
     settings/    # Settings page

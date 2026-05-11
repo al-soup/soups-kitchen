@@ -1,0 +1,21 @@
+.intro {
+  color: var(--foreground-muted);
+  font-size: 0.9375rem;
+  margin: 0 0 24px;
+  max-width: 60ch;
+}
+
+.code {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.8125rem;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--background-alt);
+  border: var(--border-width, 1px) solid var(--border-color);
+}
+
+.error {
+  color: var(--color-error, #ef4444);
+  font-size: 14px;
+  margin-top: 16px;
+}
