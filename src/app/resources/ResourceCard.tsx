@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Resource } from "@/lib/supabase/types";
+import { CheckIcon, CopyIcon, TrashIcon } from "@/constants/icons";
 import { getSignedUrl, placeholderToken } from "./api";
 import styles from "./ResourceCard.module.css";
 
@@ -177,26 +178,33 @@ export function ResourceCard({
             {resource.label || resource.filename || "Untitled"}
           </button>
         )}
-        <p className={styles.meta}>
-          {resource.filename ?? "—"} · {formatSize(resource.size_bytes)}
-        </p>
+        <div className={styles.meta}>
+          <span className={styles.filename} title={resource.filename ?? ""}>
+            {resource.filename ?? "—"}
+          </span>
+          <span className={styles.size}>{formatSize(resource.size_bytes)}</span>
+        </div>
         {error && <p className={styles.error}>{error}</p>}
         <div className={styles.actions}>
           <button
             type="button"
-            className={styles.actionBtn}
+            className={`${styles.iconBtn} ${copied ? styles.iconBtnSuccess : ""}`}
             onClick={handleCopyToken}
             disabled={busy}
+            aria-label={copied ? "Copied!" : "Copy token"}
+            title={copied ? "Copied!" : "Copy token"}
           >
-            {copied ? "Copied!" : "Copy token"}
+            {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
           </button>
           <button
             type="button"
-            className={`${styles.actionBtn} ${styles.deleteBtn}`}
+            className={`${styles.iconBtn} ${styles.deleteBtn}`}
             onClick={handleDelete}
             disabled={busy}
+            aria-label="Delete"
+            title="Delete"
           >
-            Delete
+            <TrashIcon size={16} />
           </button>
         </div>
       </div>

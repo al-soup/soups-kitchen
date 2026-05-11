@@ -83,12 +83,26 @@
 }
 
 .meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
   font-size: 0.75rem;
   color: var(--foreground-muted);
-  margin: 0;
-  white-space: nowrap;
+  min-width: 0;
+}
+
+.filename {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.size {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 
 .error {
@@ -99,35 +113,48 @@
 
 .actions {
   display: flex;
-  gap: 6px;
-  margin-top: 6px;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 4px;
 }
 
-.actionBtn {
-  flex: 1;
-  font-size: 12px;
-  padding: 6px 8px;
-  border: var(--border-width, 1px) solid var(--border-color);
-  background: var(--background);
-  color: var(--foreground);
+.iconBtn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--foreground-muted);
+  border: var(--border-width, 1px) solid transparent;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition:
+    color var(--transition-fast),
     background var(--transition-fast),
     border-color var(--transition-fast);
 }
 
-.actionBtn:hover:not(:disabled) {
+.iconBtn:hover:not(:disabled) {
+  color: var(--foreground);
   background: var(--background-alt);
-  border-color: var(--foreground-muted);
+  border-color: var(--border-color);
 }
 
-.actionBtn:disabled {
-  opacity: 0.5;
+.iconBtn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
+}
+
+.iconBtnSuccess,
+.iconBtnSuccess:hover:not(:disabled) {
+  color: var(--color-success, #22c55e);
+  background: transparent;
+  border-color: transparent;
 }
 
 .deleteBtn:hover:not(:disabled) {
   color: var(--color-error, #ef4444);
   border-color: var(--color-error, #ef4444);
+  background: transparent;
 }

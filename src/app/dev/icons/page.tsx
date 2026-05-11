@@ -11,6 +11,9 @@ import {
   LinkedInIcon,
   MailIcon,
   InfoIcon,
+  CopyIcon,
+  CheckIcon,
+  TrashIcon,
   LocateIcon,
   GitHubIcon,
   GoIcon,
@@ -49,6 +52,8 @@ if (process.env.NODE_ENV === "production") {
 
 const icons: { name: string; Component: ComponentType<{ size?: number }> }[] = [
   { name: "AngularIcon", Component: AngularIcon },
+  { name: "CheckIcon", Component: CheckIcon },
+  { name: "CopyIcon", Component: CopyIcon },
   { name: "CouchDBIcon", Component: CouchDBIcon },
   { name: "D3JsIcon", Component: D3JsIcon },
   { name: "DenoIcon", Component: DenoIcon },
@@ -82,6 +87,7 @@ const icons: { name: string; Component: ComponentType<{ size?: number }> }[] = [
   { name: "SettingsIcon", Component: SettingsIcon },
   { name: "SupabaseIcon", Component: SupabaseIcon },
   { name: "SvelteKitIcon", Component: SvelteKitIcon },
+  { name: "TrashIcon", Component: TrashIcon },
   { name: "TypeScriptIcon", Component: TypeScriptIcon },
   { name: "UserIcon", Component: UserIcon },
 ];
