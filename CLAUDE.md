@@ -136,6 +136,7 @@ public/
 scripts/
   ensure-supabase.sh  # Auto-starts local Supabase if not running
   generate-tech-logos.mjs  # Generate tech stack tag PNGs
+  seed-resources.mjs   # Upload supabase/seed-files/* into Storage (chained after reset)
   strava-auth.mjs  # One-time Strava OAuth token setup
 ```
 
@@ -151,7 +152,8 @@ scripts/
 - `pnpm test:e2e:ui` - Playwright UI mode
 - `pnpm supabase:start` - start local Supabase (requires Docker)
 - `pnpm supabase:stop` - stop local Supabase
-- `pnpm supabase:reset` - reset DB + re-run migrations & seed
+- `pnpm supabase:reset` - reset DB + re-run migrations & seed + upload any dev resources
+- `pnpm seed:resources` - upload files from `supabase/seed-files/` to Storage
 - `pnpm supabase:types` - regenerate `database.types.ts` from local DB
 - `pnpm generate-icons` - regenerate per-app PWA icons in `public/icons/`
 - `pnpm generate-tech-logos` - regenerate tech stack tag PNGs in `public/tech/`

@@ -25,3 +25,5 @@ out/
 
 # Supabase
 supabase/.temp/
+supabase/seed-files/*
+!supabase/seed-files/.gitkeep
