@@ -26,13 +26,12 @@ export default function KnowledgeBasePage() {
             Upload files; reference via {"{{resource:<id>}}"} tokens
           </p>
         </Link>
-        <div
-          className={`${styles.link} ${styles.linkDisabled}`}
-          aria-disabled="true"
-        >
+        <Link href="/apps/knowledge-base/create" className={styles.link}>
           <p className={styles.linkTitle}>Create entry</p>
-          <p className={styles.linkDesc}>Coming soon</p>
-        </div>
+          <p className={styles.linkDesc}>
+            Add a new Q&amp;A bit with tags and resources
+          </p>
+        </Link>
       </nav>
     </div>
   );

@@ -19,8 +19,8 @@ markdown via placeholder tokens (`{{resource:<uuid>}}`), no FK.
 | --- | ------------------------------------------------------------------------------------- | ------- |
 | 1   | Tags admin                                                                            | ✅ done |
 | 2   | Decouple resources + standalone Resources module                                      | ✅ done |
-| 3   | Knowledge entry create/edit (form: q, summary, markdown, tag picker, resource picker) | ⏳ next |
-| 4   | Overview list + detail view; resolve placeholders to signed Storage URLs              | —       |
+| 3   | Knowledge entry create/edit (form: q, summary, markdown, tag picker, resource picker) | ✅ done |
+| 4   | Overview list + detail view; resolve placeholders to signed Storage URLs              | ⏳ next |
 | 5   | Filter overview by topic + concept tags                                               | —       |
 | 6   | Full-text search + fuzzy typeahead (`search_vector` + `pg_trgm`)                      | —       |
 
@@ -81,22 +81,41 @@ tile). Standalone so any future app can reuse it.
   `tsconfig.tsbuildinfo`
 - `.gitignore`: added `supabase/seed-files/*` with `.gitkeep` exception
 
-## Step 3 — Knowledge Entry Create/Edit (next)
+## Step 3 — Knowledge Entry Create/Edit (done)
 
-Route TBD (likely `/apps/knowledge-base/create` + `/apps/knowledge-base/<id>`
-for edit). Form fields:
+Routes: `/apps/knowledge-base/create` (new) and
+`/apps/knowledge-base/[id]/edit` (edit). KB hub's "Create entry" tile now
+links to `/create`.
 
-- Question (text, required)
-- Summary (textarea, 1–2 sentences, required)
-- Detail (markdown textarea, optional)
-- Tag picker — topics + concepts, multi-select from existing tags
-- Resource picker — reuses `<ResourcePicker />` (to be extracted from
-  `ResourceGrid`) to insert `{{resource:<uuid>}}` tokens into the detail
+- **Shared form** in private folder `_form/` (Next.js ignores `_*` for
+  routing; importable by both pages):
+  - `KnowledgeForm.tsx` — question (required), summary (required textarea),
+    detail (markdown textarea, optional), tag picker, "Insert resource" button
+  - `TagPicker.tsx` — single search filters both lists simultaneously;
+    `<details open>` collapsible sections; pills filled = selected, outlined
+    = unselected; topics use `--color-primary`, concepts use `--color-secondary`;
+    `+ Topic` / `+ Concept` buttons appear when the search query has no exact
+    match (calls `createTag` from `tags/api.ts`)
+  - `ResourcePickerModal.tsx` — opens on "Insert resource"; modal grid of
+    resource tiles with image preview via signed URL; filter input; click a
+    tile → inserts `{{resource:<uuid>}}` at the textarea cursor
+- **API** (`_form/api.ts`):
+  - `createKnowledge({ question, summary, detail, tagIds })` — inserts
+    `public.knowledge` row (trigger updates `search_vector`), then bulk
+    inserts `public.knowledge_tags`; rolls back the entry on tag insert
+    failure
+  - `updateKnowledge(id, ...)` — updates entry + replaces tags
+    (delete-all-then-insert via `setKnowledgeTags`)
+  - `getKnowledge(id)` — fetches entry + its tag ids for the edit page
+- **Markdown rendering**: deferred to step 4. Detail is stored verbatim;
+  tokens are not resolved yet.
+- **Auth**: any authenticated user (matches RLS)
+- **Tests**: 21 (api 7, TagPicker 8, ResourcePickerModal 5, KnowledgeForm
+  is covered indirectly via TagPicker + Picker tests)
+- **Hub**: Create entry tile activated
+- **CLAUDE.md**: updated
 
-Inserts into `public.knowledge` (trigger updates `search_vector`) +
-`public.knowledge_tags` join rows.
-
-## Step 4 — Overview + Detail (later)
+## Step 4 — Overview + Detail (next)
 
 - Overview list at `/apps/knowledge-base` (replaces the temporary hub)
 - Detail view at `/apps/knowledge-base/<id>`
