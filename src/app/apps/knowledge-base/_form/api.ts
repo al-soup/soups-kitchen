@@ -144,6 +144,7 @@ export interface ListKnowledgeParams {
   limit?: number;
   topicIds?: string[];
   conceptIds?: string[];
+  q?: string;
 }
 
 export async function listKnowledge({
@@ -151,11 +152,14 @@ export async function listKnowledge({
   limit = 20,
   topicIds,
   conceptIds,
+  q,
 }: ListKnowledgeParams = {}): Promise<KnowledgeListPage> {
   const supabase = getSupabase();
+  const trimmed = q?.trim();
   const { data, error } = await supabase.rpc("search_knowledge", {
     topic_ids: topicIds?.length ? topicIds : undefined,
     concept_ids: conceptIds?.length ? conceptIds : undefined,
+    q: trimmed ? trimmed : undefined,
     p_offset: offset,
     p_limit: limit,
   });

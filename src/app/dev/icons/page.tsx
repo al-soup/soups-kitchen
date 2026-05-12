@@ -11,6 +11,8 @@ import {
   LinkedInIcon,
   MailIcon,
   InfoIcon,
+  SearchIcon,
+  XIcon,
   CopyIcon,
   CheckIcon,
   TrashIcon,
@@ -88,12 +90,14 @@ const icons: { name: string; Component: ComponentType<{ size?: number }> }[] = [
   { name: "PythonIcon", Component: PythonIcon },
   { name: "ReactIcon", Component: ReactIcon },
   { name: "RedisIcon", Component: RedisIcon },
+  { name: "SearchIcon", Component: SearchIcon },
   { name: "SettingsIcon", Component: SettingsIcon },
   { name: "SupabaseIcon", Component: SupabaseIcon },
   { name: "SvelteKitIcon", Component: SvelteKitIcon },
   { name: "TrashIcon", Component: TrashIcon },
   { name: "TypeScriptIcon", Component: TypeScriptIcon },
   { name: "UserIcon", Component: UserIcon },
+  { name: "XIcon", Component: XIcon },
 ];
 
 const sizes = [16, 24, 32];

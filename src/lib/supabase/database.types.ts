@@ -315,6 +315,7 @@ export type Database = {
           concept_ids?: string[];
           p_limit?: number;
           p_offset?: number;
+          q?: string;
           topic_ids?: string[];
         };
         Returns: {

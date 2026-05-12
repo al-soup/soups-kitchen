@@ -22,7 +22,7 @@ markdown via placeholder tokens (`{{resource:<uuid>}}`), no FK.
 | 3   | Knowledge entry create/edit (form: q, summary, markdown, tag picker, resource picker) | ✅ done |
 | 4   | Overview list + detail view; resolve placeholders to signed Storage URLs              | ✅ done |
 | 5   | Filter overview by topic + concept tags                                               | ✅ done |
-| 6   | Full-text search + fuzzy typeahead (`search_vector` + `pg_trgm`)                      | ⏳ next |
+| 6   | Full-text search + fuzzy typeahead (`search_vector` + `pg_trgm`)                      | ✅ done |
 
 ## Step 1 — Tags Admin (done)
 
@@ -251,16 +251,58 @@ int, p_limit int)` returns `setof (knowledge + tags json)`. Tags are
 - **CLAUDE.md** updated; `_form/filterParams.ts` and `_form/TagPills.tsx`
   added to file structure.
 
-## Step 6 — Full-text Search (next)
+## Step 6 — Full-text Search (done)
 
-- Typeahead input on overview
-- Backend: combine `search_vector` (GIN, ts_rank) with `pg_trgm` similarity
-  for typo tolerance on `question` + `summary`
-- Debounce on the client; cap results
+In-place search input above the toolbar at `/apps/knowledge-base`. Composes
+with tag filters via the same `search_knowledge` RPC, which now accepts a
+`q text` parameter.
+
+- **RPC** `supabase/migrations/20260514000000_search_knowledge_q.sql`:
+  - New 5-arg signature `(topic_ids uuid[], concept_ids uuid[], q text,
+p_offset int, p_limit int)`. The old 4-arg signature is dropped so
+    PostgREST resolves to the new overload unambiguously.
+  - When `q is null` (or trimmed to empty), behavior matches step 5:
+    reverse-chronological order, no text filter. When `q` is set, a row
+    matches if `search_vector @@ plainto_tsquery('english', q)`
+    OR `q <% question` OR `q <% summary` (word_similarity > threshold).
+  - Order when `q` is set: `ts_rank(search_vector, tsq) +
+greatest(word_similarity(q, question), word_similarity(q, summary))`
+    DESC, tie-break `created_at` DESC.
+  - Function-local `set pg_trgm.word_similarity_threshold = 0.2`. The
+    default (0.6) was too strict for short typos; 0.2 catches
+    `inexing → index` while keeping noise low. Relevance ranking pushes
+    the right match to the top.
+- **API** (`_form/api.ts`): `listKnowledge` now accepts `q?: string` and
+  passes the trimmed value (or `undefined`) to the RPC.
+- **URL state**: `?q=<text>` (single-value param). Composes with the
+  step-5 `?topics=…&concepts=…` repeated params. Updated via
+  `router.replace(..., { scroll: false })`.
+- **filterParams** (`_form/filterParams.ts`): added `Q_PARAM` constant;
+  `buildKnowledgeQuery` now takes a third `q` argument and trims before
+  setting (empty/whitespace → omitted).
+- **UI**:
+  - New `_form/SearchBox.tsx` + `SearchBox.module.css` — a debounced
+    text input (250ms default) with a search-icon prefix and an `×`
+    clear button. Clear cancels the pending timer and fires the
+    callback with `""` synchronously so the URL clears immediately.
+  - Page reads `q = searchParams.get(Q_PARAM)?.trim()`. The SearchBox is
+    keyed on `q` so URL-driven changes (back nav, bookmark) refresh the
+    input value without violating the `set-state-in-effect` lint rule.
+  - `hasFilters` now includes `q.length > 0`; "Clear filters" resets q
+    too. A separate `hasTagFilters` guards the fetch-waits-for-tags
+    gate so a query-only fetch doesn't wait unnecessarily.
+  - Empty state: `No entries match "<q>".` when q is set,
+    `No entries match the current filters.` for tag-only, original copy
+    otherwise.
+  - New `SearchIcon` + `XIcon` added to `src/constants/icons.tsx` and
+    `/dev/icons`.
+- **Tests**: 188 total (+4 from step 5): SearchBox debounce (5),
+  filterParams q cases (4), listKnowledge q param cases (3).
+- **CLAUDE.md** updated.
 
 ## Open questions
 
-- (Step 6) Search debounce + result cap
+(none active)
 
 ### Resolved in step 3
 
@@ -293,3 +335,24 @@ int, p_limit int)` returns `setof (knowledge + tags json)`. Tags are
   shareable. Names → ids resolved client-side from the already-fetched tag
   list; renaming a tag breaks any saved URLs, which is acceptable for a
   personal KB with few renames
+
+### Resolved in step 6
+
+- Search UX → **in-place list filter** above the toolbar. Same cards,
+  same pagination, composes with tag filters. Floating typeahead dropdown
+  rejected (cards are richer than a dropdown row can show)
+- Ranking when `q` is set → **relevance, then date**.
+  `ts_rank + greatest(word_similarity(q, question), word_similarity(q,
+summary))` DESC, tie-break `created_at` DESC. `q` empty/null falls back
+  to reverse-chrono
+- Fuzzy matching → **pg_trgm `word_similarity`** (finds best matching
+  substring) via `<%` operator, with function-local
+  `set pg_trgm.word_similarity_threshold = 0.2`. The default 0.6 was too
+  strict for short typos; 0.2 catches typos like `inexing → index` while
+  the ranking still surfaces the correct match first
+- Debounce → **250ms**, owned by the `SearchBox` component via a
+  `setTimeout` ref (same shape as `StationSearch`). Clear (×) cancels the
+  pending timer and fires the callback immediately
+- URL state → **`?q=<text>`** single-value param, composes with
+  `?topics=…&concepts=…`. Backspacing to empty / clicking × removes the
+  param

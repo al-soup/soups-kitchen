@@ -3,28 +3,50 @@ import {
   toggleString,
   TOPICS_PARAM,
   CONCEPTS_PARAM,
+  Q_PARAM,
 } from "./filterParams";
 
 describe("buildKnowledgeQuery", () => {
-  it("returns empty string when both lists empty", () => {
-    expect(buildKnowledgeQuery([], [])).toBe("");
+  it("returns empty string when all inputs empty", () => {
+    expect(buildKnowledgeQuery([], [], "")).toBe("");
   });
 
-  it("uses repeated params (multi-value)", () => {
-    const q = buildKnowledgeQuery(["Databases", "Networking"], []);
+  it("uses repeated params for tag names", () => {
+    const q = buildKnowledgeQuery(["Databases", "Networking"], [], "");
     expect(q).toBe(`?${TOPICS_PARAM}=Databases&${TOPICS_PARAM}=Networking`);
   });
 
-  it("includes both topic and concept params", () => {
-    const q = buildKnowledgeQuery(["Databases"], ["DB Indexing"]);
+  it("includes topic and concept params", () => {
+    const q = buildKnowledgeQuery(["Databases"], ["DB Indexing"], "");
     expect(q).toContain(`${TOPICS_PARAM}=Databases`);
     expect(q).toContain(`${CONCEPTS_PARAM}=DB+Indexing`);
     expect(q.startsWith("?")).toBe(true);
   });
 
+  it("includes q param when set", () => {
+    const url = buildKnowledgeQuery([], [], "indexing");
+    expect(url).toBe(`?${Q_PARAM}=indexing`);
+  });
+
+  it("trims q before including", () => {
+    const url = buildKnowledgeQuery([], [], "  indexing  ");
+    expect(url).toBe(`?${Q_PARAM}=indexing`);
+  });
+
+  it("omits q when only whitespace", () => {
+    expect(buildKnowledgeQuery([], [], "   ")).toBe("");
+  });
+
+  it("combines tags + q", () => {
+    const url = buildKnowledgeQuery(["Databases"], ["DB Indexing"], "btree");
+    expect(url).toContain(`${TOPICS_PARAM}=Databases`);
+    expect(url).toContain(`${CONCEPTS_PARAM}=DB+Indexing`);
+    expect(url).toContain(`${Q_PARAM}=btree`);
+  });
+
   it("encodes special characters in names", () => {
-    const q = buildKnowledgeQuery(["A&B", "C D"], []);
-    const parsed = new URLSearchParams(q.slice(1));
+    const url = buildKnowledgeQuery(["A&B", "C D"], [], "");
+    const parsed = new URLSearchParams(url.slice(1));
     expect(parsed.getAll(TOPICS_PARAM)).toEqual(["A&B", "C D"]);
   });
 });

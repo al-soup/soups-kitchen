@@ -10,10 +10,12 @@ import { listKnowledge } from "./_form/api";
 import { listTags } from "./tags/api";
 import { TagBreadcrumb } from "./_form/TagBreadcrumb";
 import { TagPills } from "./_form/TagPills";
+import { SearchBox } from "./_form/SearchBox";
 import { formatDate } from "./_form/format";
 import {
   TOPICS_PARAM,
   CONCEPTS_PARAM,
+  Q_PARAM,
   buildKnowledgeQuery,
   toggleString,
 } from "./_form/filterParams";
@@ -46,7 +48,9 @@ function KnowledgeBasePageInner() {
     () => searchParams.getAll(CONCEPTS_PARAM),
     [searchParams]
   );
-  const hasFilters = topicNames.length > 0 || conceptNames.length > 0;
+  const q = (searchParams.get(Q_PARAM) ?? "").trim();
+  const hasFilters =
+    topicNames.length > 0 || conceptNames.length > 0 || q.length > 0;
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [tagsLoaded, setTagsLoaded] = useState(false);
@@ -86,7 +90,8 @@ function KnowledgeBasePageInner() {
 
   const topicIdsKey = topicIds.join(",");
   const conceptIdsKey = conceptIds.join(",");
-  const knowledgeFetchReady = !hasFilters || tagsLoaded;
+  const hasTagFilters = topicNames.length > 0 || conceptNames.length > 0;
+  const knowledgeFetchReady = !hasTagFilters || tagsLoaded;
 
   useEffect(() => {
     if (authLoading) return;
@@ -116,7 +121,7 @@ function KnowledgeBasePageInner() {
     if (authLoading || !user) return;
     if (!knowledgeFetchReady) return;
     const controller = new AbortController();
-    listKnowledge({ offset: 0, limit: PAGE_SIZE, topicIds, conceptIds })
+    listKnowledge({ offset: 0, limit: PAGE_SIZE, topicIds, conceptIds, q })
       .then((page) => {
         if (controller.signal.aborted) return;
         setItems(page.items);
@@ -139,6 +144,7 @@ function KnowledgeBasePageInner() {
     knowledgeFetchReady,
     topicIdsKey,
     conceptIdsKey,
+    q,
     topicIds,
     conceptIds,
   ]);
@@ -151,28 +157,33 @@ function KnowledgeBasePageInner() {
 
   const updateFilters = (
     nextTopicNames: string[],
-    nextConceptNames: string[]
+    nextConceptNames: string[],
+    nextQ: string
   ) => {
     setLoading(true);
     const url =
-      pathname + buildKnowledgeQuery(nextTopicNames, nextConceptNames);
+      pathname + buildKnowledgeQuery(nextTopicNames, nextConceptNames, nextQ);
     router.replace(url, { scroll: false });
   };
 
   const handleToggleTopic = (id: string) => {
     const tag = tagsById.get(id);
     if (!tag) return;
-    updateFilters(toggleString(topicNames, tag.name), conceptNames);
+    updateFilters(toggleString(topicNames, tag.name), conceptNames, q);
   };
 
   const handleToggleConcept = (id: string) => {
     const tag = tagsById.get(id);
     if (!tag) return;
-    updateFilters(topicNames, toggleString(conceptNames, tag.name));
+    updateFilters(topicNames, toggleString(conceptNames, tag.name), q);
   };
 
   const handleClearFilters = () => {
-    updateFilters([], []);
+    updateFilters([], [], "");
+  };
+
+  const handleSearchChange = (nextQ: string) => {
+    updateFilters(topicNames, conceptNames, nextQ);
   };
 
   const handleLoadMore = () => {
@@ -182,6 +193,7 @@ function KnowledgeBasePageInner() {
       limit: PAGE_SIZE,
       topicIds,
       conceptIds,
+      q,
     })
       .then((page) => {
         setItems((prev) => [...prev, ...page.items]);
@@ -203,6 +215,14 @@ function KnowledgeBasePageInner() {
   return (
     <div className={sharedStyles.page}>
       <h1 className={sharedStyles.title}>Knowledge Base</h1>
+
+      <div className={styles.searchRow}>
+        <SearchBox
+          initialValue={q}
+          onDebouncedChange={handleSearchChange}
+          placeholder="Search entries…"
+        />
+      </div>
 
       <div className={styles.toolbar}>
         <Link
@@ -263,9 +283,11 @@ function KnowledgeBasePageInner() {
         <p className={styles.error}>{error}</p>
       ) : items.length === 0 ? (
         <p className={styles.note}>
-          {hasFilters
-            ? "No entries match the current filters."
-            : "No entries yet. Create your first entry."}
+          {q
+            ? `No entries match "${q}".`
+            : hasTagFilters
+              ? "No entries match the current filters."
+              : "No entries yet. Create your first entry."}
         </p>
       ) : (
         <ul className={styles.list}>

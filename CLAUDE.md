@@ -53,7 +53,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit + tag filters; full-text search pending), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit + tag filters + full-text search w/ typo tolerance), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
 
 #### Habits: Graph→Feed interaction
 
@@ -109,13 +109,19 @@ src/
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
       knowledge-base/ # Overview list (compact cards, reverse-chrono, pagination)
                       # + top toolbar linking to /create, /tags, /resources.
+                      # SearchBox above the toolbar: debounced 250ms, URL-driven
+                      # (?q=…). Full-text search via search_vector tsvector +
+                      # pg_trgm word_similarity fallback for typo tolerance
+                      # (function-local threshold 0.2). When q is set, results
+                      # rank by ts_rank + word_similarity, tie-break by date.
                       # Tag filter rows (Topics + Concepts) below the toolbar:
                       # multi-select pills, URL-driven by tag NAMES via repeated
                       # params (?topics=Databases&topics=Networking&concepts=…).
                       # Names → ids resolved client-side via tagsByName map; the
-                      # knowledge fetch waits for the tag list when filters are
-                      # in the URL. OR within a category, AND across categories.
-                      # Tags render as a mono-font breadcrumb path
+                      # knowledge fetch waits for the tag list when tag filters
+                      # are in the URL (q-only fetches don't wait). OR within a
+                      # category, AND across categories; q AND-composes with
+                      # both. Tags render as a mono-font breadcrumb path
                       # ([topic1, topic2 > concept1 concept2]).
       knowledge-base/tags/  # Tags admin (api.ts CRUD, TagSection, TagRow); topic & concept
       knowledge-base/create/  # New entry form page (uses KnowledgeForm)
@@ -131,9 +137,11 @@ src/
                               # MarkdownDetail (react-markdown + remark-gfm),
                               # TagBreadcrumb (uppercase topics ❯ concepts, size sm|md),
                               # TagPills (multi-select filter pills, shared
-                              # pills.module.css), filterParams (buildKnowledgeQuery
-                              # using repeated URLSearchParams; toggleString;
-                              # TOPICS/CONCEPTS_PARAM),
+                              # pills.module.css), SearchBox (debounced text
+                              # input + clear button), filterParams
+                              # (buildKnowledgeQuery using repeated
+                              # URLSearchParams + ?q=…; toggleString;
+                              # TOPICS/CONCEPTS/Q_PARAM),
                               # format.ts (formatDate "1. May 2026" + formatDateTime
                               # "1. May 2026, 14:30" — 24h), resolveResourceTokens
                               # (regex extract/replace), types.ts (KnowledgeFormInitial,
@@ -148,7 +156,7 @@ src/
   components/
     layout/      # Shell, Navbar, Sidebar, Footer, ProfileDropdown
     ui/          # HabitScoreGraph, PageTitle, ThemeSwitcher
-  constants/     # Theme config, theme icons, shared icons (Menu, User, LogIn, Settings, LogOut, Pencil, Eye, Trash, Copy, Check)
+  constants/     # Theme config, theme icons, shared icons (Menu, User, LogIn, Settings, LogOut, Pencil, Eye, Trash, Copy, Check, Search, X)
   context/       # ThemeContext, PageContext, AuthContext
   hooks/         # usePageTitle, useUserRole
   lib/

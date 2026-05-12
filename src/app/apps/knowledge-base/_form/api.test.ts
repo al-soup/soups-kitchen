@@ -295,6 +295,7 @@ describe("listKnowledge", () => {
     expect(rpc).toHaveBeenCalledWith("search_knowledge", {
       topic_ids: undefined,
       concept_ids: undefined,
+      q: undefined,
       p_offset: 0,
       p_limit: 20,
     });
@@ -306,6 +307,7 @@ describe("listKnowledge", () => {
     expect(rpc).toHaveBeenCalledWith("search_knowledge", {
       topic_ids: ["t1", "t2"],
       concept_ids: undefined,
+      q: undefined,
       p_offset: 20,
       p_limit: 10,
     });
@@ -317,6 +319,7 @@ describe("listKnowledge", () => {
     expect(rpc).toHaveBeenCalledWith("search_knowledge", {
       topic_ids: ["t1"],
       concept_ids: ["c1", "c2"],
+      q: undefined,
       p_offset: 0,
       p_limit: 20,
     });
@@ -332,6 +335,40 @@ describe("listKnowledge", () => {
         concept_ids: undefined,
       })
     );
+  });
+
+  it("passes trimmed q when set", async () => {
+    const { rpc } = setup([]);
+    await listKnowledge({ q: "  indexing  " });
+    expect(rpc).toHaveBeenCalledWith(
+      "search_knowledge",
+      expect.objectContaining({ q: "indexing" })
+    );
+  });
+
+  it("treats whitespace-only q as undefined", async () => {
+    const { rpc } = setup([]);
+    await listKnowledge({ q: "   " });
+    expect(rpc).toHaveBeenCalledWith(
+      "search_knowledge",
+      expect.objectContaining({ q: undefined })
+    );
+  });
+
+  it("passes q together with topic + concept filters", async () => {
+    const { rpc } = setup([]);
+    await listKnowledge({
+      topicIds: ["t1"],
+      conceptIds: ["c1"],
+      q: "btree",
+    });
+    expect(rpc).toHaveBeenCalledWith("search_knowledge", {
+      topic_ids: ["t1"],
+      concept_ids: ["c1"],
+      q: "btree",
+      p_offset: 0,
+      p_limit: 20,
+    });
   });
 
   it("maps tags from JSON and reports hasMore=false at end", async () => {
