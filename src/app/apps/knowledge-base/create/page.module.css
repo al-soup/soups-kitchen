@@ -1,0 +1,43 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.backLink {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--foreground-muted);
+  text-decoration: none;
+  padding: 4px 8px 4px 0;
+  transition: color var(--transition-fast);
+}
+
+.backLink:hover {
+  color: var(--foreground);
+}
+
+.deleteBtn {
+  margin-left: auto;
+  padding: 10px 16px;
+  font-size: 14px;
+  background: var(--background);
+  color: var(--color-error, #ef4444);
+  border: var(--border-width, 1px) solid var(--color-error, #ef4444);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.deleteBtn:hover:not(:disabled) {
+  background: var(--color-error, #ef4444);
+  color: var(--background);
+}
+
+.deleteBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

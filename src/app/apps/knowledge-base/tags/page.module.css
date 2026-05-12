@@ -1,0 +1,32 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.backLink {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--foreground-muted);
+  text-decoration: none;
+  padding: 4px 8px 4px 0;
+  transition: color var(--transition-fast);
+}
+
+.backLink:hover {
+  color: var(--foreground);
+}
+
+.intro {
+  color: var(--foreground-muted);
+  font-size: 0.9375rem;
+  margin: 0 0 8px;
+  max-width: 60ch;
+}
+
+.error {
+  color: var(--color-error, #ef4444);
+  font-size: 14px;
+  margin-top: 16px;
+}

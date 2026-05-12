@@ -16,7 +16,8 @@
     "test:e2e:ui": "playwright test --ui",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
-    "supabase:reset": "supabase db reset",
+    "supabase:reset": "supabase db reset && node scripts/seed-resources.mjs",
+    "seed:resources": "node scripts/seed-resources.mjs",
     "supabase:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
     "generate-icons": "node scripts/generate-icons.mjs",
     "generate-tech-logos": "node scripts/generate-tech-logos.mjs",
@@ -27,7 +28,9 @@
     "@supabase/supabase-js": "^2.95.3",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.1",

@@ -1,0 +1,60 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 12px;
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: 999px;
+  background: var(--background);
+  transition: border-color var(--transition-fast);
+}
+
+.wrapper:focus-within {
+  border-color: var(--foreground);
+}
+
+.searchIcon {
+  color: var(--foreground-muted);
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.input {
+  flex: 1 1 0;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 0;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--foreground-muted);
+}
+
+.clearBtn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--foreground-muted);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.clearBtn:hover {
+  background: var(--background-alt);
+  color: var(--foreground);
+}

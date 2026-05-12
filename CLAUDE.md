@@ -10,6 +10,8 @@
 ### CI
 
 - Run `pnpm run format` at the end of every task.
+- CI runs on push: build, format:check, lint:check, unit tests
+- PR workflow: CI + e2e (Playwright, chromium only, local Supabase via `config.ci.toml`)
 
 ### Grammar & Style
 
@@ -51,7 +53,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit + tag filters + full-text search w/ typo tolerance), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
 
 #### Habits: Graph→Feed interaction
 
@@ -101,17 +103,60 @@ src/
   app/           # Next.js app router pages
     about/       # About stub + Experience + Me pages
     api/fahrplan/ # Proxy routes for search.ch (completion, stationboard)
-    apps/        # Apps hub + Habit tracker + Fahrplan
+    apps/        # Apps hub + Habit tracker + Fahrplan + Knowledge Base
       fahrplan/       # Swiss departure board (StationSearch, DepartureBoard, DepartureRow)
       habits/         # HabitFeed (paginated feed, grouped by date), HabitTypeSelector
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
+      knowledge-base/ # Overview list (compact cards, reverse-chrono, pagination)
+                      # + top toolbar linking to /create, /tags, /resources.
+                      # SearchBox above the toolbar: debounced 250ms, URL-driven
+                      # (?q=…). Full-text search via search_vector tsvector +
+                      # pg_trgm word_similarity fallback for typo tolerance
+                      # (function-local threshold 0.2). When q is set, results
+                      # rank by ts_rank + word_similarity, tie-break by date.
+                      # Tag filter rows (Topics + Concepts) below the toolbar:
+                      # multi-select pills, URL-driven by tag NAMES via repeated
+                      # params (?topics=Databases&topics=Networking&concepts=…).
+                      # Names → ids resolved client-side via tagsByName map; the
+                      # knowledge fetch waits for the tag list when tag filters
+                      # are in the URL (q-only fetches don't wait). OR within a
+                      # category, AND across categories; q AND-composes with
+                      # both. Tags render as a mono-font breadcrumb path
+                      # ([topic1, topic2 > concept1 concept2]).
+      knowledge-base/tags/  # Tags admin (api.ts CRUD, TagSection, TagRow); topic & concept
+      knowledge-base/create/  # New entry form page (uses KnowledgeForm)
+      knowledge-base/[id]/   # Single route per entry: Preview ↔ Edit toggle.
+                             # Page owns draft+committed state so the preview reflects
+                             # in-progress edits. Cancel/Save/Delete action bar appears
+                             # in both views once dirty (and always in edit mode).
+                             # Back arrow + beforeunload prompt when dirty. Mode toggle
+                             # uses PencilIcon (Edit) / EyeIcon (Preview).
+      knowledge-base/_form/   # Private shared: KnowledgeFields (controlled fields:
+                              # question, summary, detail, TagPicker, ResourcePicker),
+                              # KnowledgeForm (uncontrolled wrapper for create page),
+                              # MarkdownDetail (react-markdown + remark-gfm),
+                              # TagBreadcrumb (uppercase topics ❯ concepts, size sm|md),
+                              # TagPills (multi-select filter pills, shared
+                              # pills.module.css), SearchBox (debounced text
+                              # input + clear button), filterParams
+                              # (buildKnowledgeQuery using repeated
+                              # URLSearchParams + ?q=…; toggleString;
+                              # TOPICS/CONCEPTS/Q_PARAM),
+                              # format.ts (formatDate "1. May 2026" + formatDateTime
+                              # "1. May 2026, 14:30" — 24h), resolveResourceTokens
+                              # (regex extract/replace), types.ts (KnowledgeFormInitial,
+                              # isDraftDirty), api.ts (listKnowledge via
+                              # search_knowledge RPC, get/update/delete by number id)
+    resources/   # Standalone resources module (upload to Supabase Storage)
+                 # UploadDropzone, ResourceGrid, ResourceCard; api.ts CRUD + signed URLs
+                 # Placeholder token: {{resource:<uuid>}}
     auth/        # OAuth callback route
     login/       # Login page
     settings/    # Settings page
   components/
     layout/      # Shell, Navbar, Sidebar, Footer, ProfileDropdown
     ui/          # HabitScoreGraph, PageTitle, ThemeSwitcher
-  constants/     # Theme config, theme icons, shared icons (Menu, User, LogIn, Settings, LogOut)
+  constants/     # Theme config, theme icons, shared icons (Menu, User, LogIn, Settings, LogOut, Pencil, Eye, Trash, Copy, Check, Search, X)
   context/       # ThemeContext, PageContext, AuthContext
   hooks/         # usePageTitle, useUserRole
   lib/
@@ -125,12 +170,13 @@ supabase/
   functions/     # Supabase Edge Functions (Deno)
     strava-activity/  # Daily cron: fetch Strava activities
   migrations/    # Schema migrations (pulled from remote)
-  seed.sql       # Dev seed data (3 users, 6 actions, 5 habits)
+  seed.sql       # Dev seed data (3 users, actions, habits, KB tags + 5 KB entries)
 public/
   tech/          # Generated tech logo PNGs (via generate-tech-logos)
 scripts/
   ensure-supabase.sh  # Auto-starts local Supabase if not running
   generate-tech-logos.mjs  # Generate tech stack tag PNGs
+  seed-resources.mjs   # Upload supabase/seed-files/* into Storage (chained after reset)
   strava-auth.mjs  # One-time Strava OAuth token setup
 ```
 
@@ -146,7 +192,8 @@ scripts/
 - `pnpm test:e2e:ui` - Playwright UI mode
 - `pnpm supabase:start` - start local Supabase (requires Docker)
 - `pnpm supabase:stop` - stop local Supabase
-- `pnpm supabase:reset` - reset DB + re-run migrations & seed
+- `pnpm supabase:reset` - reset DB + re-run migrations & seed + upload any dev resources
+- `pnpm seed:resources` - upload files from `supabase/seed-files/` to Storage
 - `pnpm supabase:types` - regenerate `database.types.ts` from local DB
 - `pnpm generate-icons` - regenerate per-app PWA icons in `public/icons/`
 - `pnpm generate-tech-logos` - regenerate tech stack tag PNGs in `public/tech/`
@@ -159,8 +206,3 @@ scripts/
 - Endpoint protected by `x-cron-secret` header (not JWT)
 - Setup: run `pnpm strava:auth` once, then deploy edge function + set secrets
 - Secrets: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `CRON_SECRET`
-
-### CI
-
-- CI runs on push: build, format:check, lint:check, unit tests
-- PR workflow: CI + e2e (Playwright, chromium only, local Supabase via `config.ci.toml`)

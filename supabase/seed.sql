@@ -114,3 +114,102 @@ need to add hip flexor work'),
   (14, now() - interval '45 days', 'NYE party'),
   (19, now() - interval '50 days', 'started cert prep'),
   (8, now() - interval '55 days', 'snowboarding day trip');
+
+-- Knowledge base tags
+INSERT INTO public.tags (name, type) VALUES
+  ('System Design',       'topic'),
+  ('Databases',           'topic'),
+  ('Web Development',     'topic'),
+  ('DevOps',              'topic'),
+  ('Algorithms',          'topic'),
+  ('DB Indexing',         'concept'),
+  ('Caching',             'concept'),
+  ('Concurrency',         'concept'),
+  ('REST',                'concept'),
+  ('Authentication',      'concept')
+ON CONFLICT (name) DO NOTHING;
+
+-- Knowledge entries (no resources). Spaced via created_at so the overview is
+-- not all clustered at one timestamp.
+WITH inserted AS (
+  INSERT INTO public.knowledge (question, summary, detail, created_at) VALUES
+    (
+      'Why use a B-tree index?',
+      'B-trees keep keys sorted on disk in shallow, balanced pages — point and range lookups stay O(log n) even for billions of rows.',
+      $md$A B-tree node holds many keys (hundreds), so the tree is **wide and shallow**. A few page reads is enough to find any key.
+
+- **Point lookups**: `WHERE id = ?` — walk root → leaf.
+- **Range scans**: `WHERE created_at BETWEEN …` — find start key, then scan leaves sequentially (leaves are linked).
+- **Ordered iteration**: `ORDER BY indexed_col` is free.
+
+Beats hash indexes for ranges and ordering; beats a heap scan for selective lookups.$md$,
+      now() - interval '5 days'
+    ),
+    (
+      'Optimistic vs pessimistic concurrency — when each?',
+      'Optimistic: assume no conflict, validate on commit. Pessimistic: lock up front. Pick by conflict rate.',
+      $md$**Optimistic** (version column / `WHERE updated_at = ?`):
+- Cheap when conflicts are rare.
+- Loser retries.
+- Great for web apps with mostly-read traffic.
+
+**Pessimistic** (`SELECT … FOR UPDATE`):
+- Holds a row lock until commit.
+- Use when conflicts are common or retries are expensive (long workflows, side effects).
+- Watch for deadlocks — acquire locks in a consistent order.$md$,
+      now() - interval '4 days'
+    ),
+    (
+      'When is cache-aside the wrong pattern?',
+      'Cache-aside falls apart under thundering-herd reads on a cold key and under write-heavy workloads where the cache is mostly stale.',
+      $md$Cache-aside = app reads cache, on miss reads DB and writes back.
+
+Bad fits:
+
+- **Hot key, cold cache** — every request misses at once, all hit the DB. Mitigate with request coalescing or a probabilistic early-refresh.
+- **Write-heavy** — invalidation races mean stale reads are common. Consider write-through or just skipping the cache.
+- **Strong consistency required** — there's always a window where cache ≠ DB.$md$,
+      now() - interval '3 days'
+    ),
+    (
+      '401 vs 403 — which for missing auth?',
+      '401 = "I don''t know who you are". 403 = "I know who you are and you can''t do this".',
+      $md$- **401 Unauthorized** → no credentials, or credentials are invalid/expired. Send `WWW-Authenticate` to tell the client how to authenticate.
+- **403 Forbidden** → authenticated but not permitted. No challenge — re-auth won't help.
+
+Common mistake: returning 403 when no token was provided. That misleads clients (and middlewares) into thinking the user is logged in but lacks permission.$md$,
+      now() - interval '2 days'
+    ),
+    (
+      'Hash-map lookup worst case — why O(n)?',
+      'All keys hash to one bucket → lookup degenerates to a linear scan of that bucket.',
+      $md$Average is O(1) because keys spread across buckets uniformly.
+
+Worst case happens when:
+
+1. Adversarial input picks keys with colliding hashes (HashDoS).
+2. The hash function is weak.
+3. The bucket array is too small and was never resized.
+
+Defenses: randomized hash seeds (Python, Java since 8), tree-ified buckets above a threshold (Java's `HashMap` switches to a red-black tree at 8 entries → worst case O(log n)).$md$,
+      now() - interval '1 day'
+    )
+  RETURNING id, question
+)
+INSERT INTO public.knowledge_tags (knowledge_id, tag_id)
+SELECT i.id, t.id
+FROM inserted i
+JOIN public.tags t ON t.name = ANY(
+  CASE i.question
+    WHEN 'Why use a B-tree index?'
+      THEN ARRAY['Databases', 'DB Indexing']
+    WHEN 'Optimistic vs pessimistic concurrency — when each?'
+      THEN ARRAY['Databases', 'Concurrency']
+    WHEN 'When is cache-aside the wrong pattern?'
+      THEN ARRAY['System Design', 'Caching']
+    WHEN '401 vs 403 — which for missing auth?'
+      THEN ARRAY['Web Development', 'REST', 'Authentication']
+    WHEN 'Hash-map lookup worst case — why O(n)?'
+      THEN ARRAY['Algorithms']
+  END
+);

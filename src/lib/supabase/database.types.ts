@@ -7,10 +7,30 @@ export type Json =
   | Json[];
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)";
+  graphql_public: {
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+        };
+        Returns: Json;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
   };
   public: {
     Tables: {
@@ -73,6 +93,180 @@ export type Database = {
           },
         ];
       };
+      knowledge: {
+        Row: {
+          created_at: string | null;
+          detail: string | null;
+          id: number;
+          question: string;
+          search_vector: unknown;
+          summary: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          detail?: string | null;
+          id?: number;
+          question: string;
+          search_vector?: unknown;
+          summary: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          detail?: string | null;
+          id?: number;
+          question?: string;
+          search_vector?: unknown;
+          summary?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      knowledge_tags: {
+        Row: {
+          knowledge_id: number;
+          tag_id: string;
+        };
+        Insert: {
+          knowledge_id: number;
+          tag_id: string;
+        };
+        Update: {
+          knowledge_id?: number;
+          tag_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_tags_knowledge_id_fkey";
+            columns: ["knowledge_id"];
+            isOneToOne: false;
+            referencedRelation: "knowledge";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "knowledge_tags_tag_id_fkey";
+            columns: ["tag_id"];
+            isOneToOne: false;
+            referencedRelation: "tags";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      resources: {
+        Row: {
+          bucket: string;
+          created_at: string | null;
+          filename: string | null;
+          id: string;
+          label: string | null;
+          mime_type: string | null;
+          size_bytes: number | null;
+          storage_path: string;
+        };
+        Insert: {
+          bucket: string;
+          created_at?: string | null;
+          filename?: string | null;
+          id?: string;
+          label?: string | null;
+          mime_type?: string | null;
+          size_bytes?: number | null;
+          storage_path: string;
+        };
+        Update: {
+          bucket?: string;
+          created_at?: string | null;
+          filename?: string | null;
+          id?: string;
+          label?: string | null;
+          mime_type?: string | null;
+          size_bytes?: number | null;
+          storage_path?: string;
+        };
+        Relationships: [];
+      };
+      strava_rides: {
+        Row: {
+          average_speed_kmh: number;
+          created_at: string | null;
+          distance_km: number;
+          elevation_gain_m: number;
+          id: number;
+          raw_response: Json;
+          ride_date: string;
+          strava_activity_id: number;
+        };
+        Insert: {
+          average_speed_kmh: number;
+          created_at?: string | null;
+          distance_km: number;
+          elevation_gain_m: number;
+          id?: number;
+          raw_response: Json;
+          ride_date: string;
+          strava_activity_id: number;
+        };
+        Update: {
+          average_speed_kmh?: number;
+          created_at?: string | null;
+          distance_km?: number;
+          elevation_gain_m?: number;
+          id?: number;
+          raw_response?: Json;
+          ride_date?: string;
+          strava_activity_id?: number;
+        };
+        Relationships: [];
+      };
+      strava_tokens: {
+        Row: {
+          access_token: string;
+          athlete_id: number;
+          created_at: string | null;
+          expires_at: number;
+          id: number;
+          refresh_token: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          access_token: string;
+          athlete_id: number;
+          created_at?: string | null;
+          expires_at: number;
+          id?: never;
+          refresh_token: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          access_token?: string;
+          athlete_id?: number;
+          created_at?: string | null;
+          expires_at?: number;
+          id?: never;
+          refresh_token?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      tags: {
+        Row: {
+          id: string;
+          name: string;
+          type: Database["public"]["Enums"]["tag_type"];
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          type?: Database["public"]["Enums"]["tag_type"];
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          type?: Database["public"]["Enums"]["tag_type"];
+        };
+        Relationships: [];
+      };
       user_roles: {
         Row: {
           created_at: string | null;
@@ -116,8 +310,30 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"];
       };
       is_global_admin: { Args: never; Returns: boolean };
+      search_knowledge: {
+        Args: {
+          concept_ids?: string[];
+          p_limit?: number;
+          p_offset?: number;
+          q?: string;
+          topic_ids?: string[];
+        };
+        Returns: {
+          created_at: string;
+          detail: string;
+          id: number;
+          question: string;
+          search_vector: unknown;
+          summary: string;
+          tags: Json;
+          updated_at: string;
+        }[];
+      };
+      show_limit: { Args: never; Returns: number };
+      show_trgm: { Args: { "": string }; Returns: string[] };
     };
     Enums: {
+      tag_type: "topic" | "concept";
       user_role: "admin" | "manager" | "viewer";
     };
     CompositeTypes: {
@@ -247,8 +463,12 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
+      tag_type: ["topic", "concept"],
       user_role: ["admin", "manager", "viewer"],
     },
   },
