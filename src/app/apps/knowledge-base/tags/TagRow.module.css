@@ -1,37 +1,58 @@
 .row {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 4px 3px 10px;
+  gap: 2px;
+  padding: 2px 4px 2px 10px;
   border-radius: 999px;
-  background: var(--background-alt);
-  border: var(--border-width, 1px) solid var(--border-color);
+  border: var(--border-width, 1px) solid;
   transition:
     border-color var(--transition-fast),
-    background var(--transition-fast);
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
   position: relative;
 }
 
+.topic {
+  --row-color: var(--tag-topic);
+  color: var(--row-color);
+  border-color: var(--row-color);
+  background-color: color-mix(in srgb, var(--row-color) 12%, transparent);
+}
+
+.concept {
+  --row-color: var(--tag-concept);
+  color: var(--row-color);
+  border-color: var(--row-color);
+  background-color: color-mix(in srgb, var(--row-color) 12%, transparent);
+}
+
 .row:hover {
-  border-color: var(--foreground-muted);
+  background-color: color-mix(in srgb, var(--row-color) 18%, transparent);
 }
 
 .rowEditing {
-  background: var(--background);
-  border-color: var(--foreground);
+  background-color: var(--background);
+  box-shadow: 0 0 0 1px var(--row-color);
 }
 
 .name {
   font: inherit;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--foreground);
+  color: inherit;
   background: none;
   border: none;
   padding: 2px 0;
   cursor: text;
   white-space: nowrap;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+}
+
+.topic .name {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .name:disabled {
@@ -46,10 +67,18 @@
   padding: 2px 0;
   border: none;
   background: none;
-  color: var(--foreground);
+  color: inherit;
   width: 9ch;
   min-width: 4ch;
   field-sizing: content;
+  letter-spacing: 0.02em;
+}
+
+.topic .input {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .input:focus {
@@ -57,31 +86,34 @@
 }
 
 .deleteBtn {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1;
-  color: var(--foreground-muted);
+  color: inherit;
+  opacity: 0.7;
   background: transparent;
   border: none;
   border-radius: 999px;
   cursor: pointer;
   transition:
     color var(--transition-fast),
-    background var(--transition-fast);
+    background var(--transition-fast),
+    opacity var(--transition-fast);
 }
 
 .deleteBtn:hover:not(:disabled) {
+  opacity: 1;
   color: var(--background);
-  background: var(--foreground);
+  background: var(--row-color);
 }
 
 .deleteBtn:disabled {
   cursor: not-allowed;
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
 .error {

@@ -6,6 +6,10 @@
   --color-accent: #891817;
   --color-accent-secondary: #0d1931;
 
+  /* Knowledge-base tag colors. Theme can override for contrast on dark bg. */
+  --tag-topic: var(--color-primary);
+  --tag-concept: var(--color-secondary);
+
   /* Light theme (default) */
   --background: #ffffff;
   --background-alt: #f5f5f5;
@@ -66,6 +70,9 @@
   --border-color: #2a2a2a;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  /* Lighter concept color: original navy is unreadable on dark bg. */
+  --tag-concept: #88aedc;
 
   /* Habit score graph levels */
   --habit-score-level-0: #161b22;

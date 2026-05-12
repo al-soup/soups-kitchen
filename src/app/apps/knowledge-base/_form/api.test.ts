@@ -7,11 +7,12 @@ import {
   setKnowledgeTags,
   getKnowledge,
   deleteKnowledge,
+  listKnowledge,
   NotFoundError,
 } from "./api";
 
 const entry = {
-  id: "k1",
+  id: 1,
   question: "What is X?",
   summary: "X is a thing.",
   detail: null,
@@ -58,8 +59,8 @@ describe("createKnowledge", () => {
       detail: null,
     });
     expect(tagsInsert).toHaveBeenCalledWith([
-      { knowledge_id: "k1", tag_id: "t1" },
-      { knowledge_id: "k1", tag_id: "t2" },
+      { knowledge_id: 1, tag_id: "t1" },
+      { knowledge_id: 1, tag_id: "t2" },
     ]);
     expect(result).toEqual(entry);
   });
@@ -97,7 +98,7 @@ describe("createKnowledge", () => {
       })
     ).rejects.toThrow("FK violation");
 
-    expect(knowledgeDeleteEq).toHaveBeenCalledWith("id", "k1");
+    expect(knowledgeDeleteEq).toHaveBeenCalledWith("id", 1);
   });
 
   it("throws if question is blank after trim", async () => {
@@ -134,11 +135,11 @@ describe("setKnowledgeTags", () => {
       from: () => ({ delete: deleteMock, insert: insertMock }),
     });
 
-    await setKnowledgeTags("k1", ["t1", "t2"]);
-    expect(eqMock).toHaveBeenCalledWith("knowledge_id", "k1");
+    await setKnowledgeTags(1, ["t1", "t2"]);
+    expect(eqMock).toHaveBeenCalledWith("knowledge_id", 1);
     expect(insertMock).toHaveBeenCalledWith([
-      { knowledge_id: "k1", tag_id: "t1" },
-      { knowledge_id: "k1", tag_id: "t2" },
+      { knowledge_id: 1, tag_id: "t1" },
+      { knowledge_id: 1, tag_id: "t2" },
     ]);
   });
 
@@ -151,7 +152,7 @@ describe("setKnowledgeTags", () => {
       from: () => ({ delete: deleteMock, insert: insertMock }),
     });
 
-    await setKnowledgeTags("k1", []);
+    await setKnowledgeTags(1, []);
     expect(deleteMock).toHaveBeenCalled();
     expect(insertMock).not.toHaveBeenCalled();
   });
@@ -169,17 +170,15 @@ describe("getKnowledge", () => {
       from: () => ({ select: knowledgeSelect }),
     });
 
-    await expect(getKnowledge("does-not-exist")).rejects.toBeInstanceOf(
-      NotFoundError
-    );
+    await expect(getKnowledge(999)).rejects.toBeInstanceOf(NotFoundError);
   });
 
-  it("throws NotFoundError when the id is not a valid UUID (22P02)", async () => {
+  it("throws NotFoundError when the id is invalid (22P02)", async () => {
     const entrySingle = jest.fn().mockResolvedValue({
       data: null,
       error: {
         code: "22P02",
-        message: 'invalid input syntax for type uuid: "abc"',
+        message: 'invalid input syntax for type bigint: "abc"',
       },
     });
     const entryEq = jest.fn().mockReturnValue({ single: entrySingle });
@@ -188,7 +187,7 @@ describe("getKnowledge", () => {
       from: () => ({ select: knowledgeSelect }),
     });
 
-    await expect(getKnowledge("abc")).rejects.toBeInstanceOf(NotFoundError);
+    await expect(getKnowledge(0)).rejects.toBeInstanceOf(NotFoundError);
   });
 
   it("returns the entry plus tag ids", async () => {
@@ -212,7 +211,7 @@ describe("getKnowledge", () => {
       },
     });
 
-    const result = await getKnowledge("k1");
+    const result = await getKnowledge(1);
     expect(result.entry).toEqual(entry);
     expect(result.tagIds).toEqual(["t1", "t2"]);
   });
@@ -226,8 +225,8 @@ describe("deleteKnowledge", () => {
       from: () => ({ delete: deleteMock }),
     });
 
-    await deleteKnowledge("k1");
-    expect(eqMock).toHaveBeenCalledWith("id", "k1");
+    await deleteKnowledge(1);
+    expect(eqMock).toHaveBeenCalledWith("id", 1);
   });
 
   it("throws on DB error", async () => {
@@ -237,7 +236,7 @@ describe("deleteKnowledge", () => {
     (getSupabase as jest.Mock).mockReturnValue({
       from: () => ({ delete: () => ({ eq: eqMock }) }),
     });
-    await expect(deleteKnowledge("k1")).rejects.toThrow("FK constraint");
+    await expect(deleteKnowledge(1)).rejects.toThrow("FK constraint");
   });
 });
 
@@ -263,7 +262,7 @@ describe("updateKnowledge", () => {
       },
     });
 
-    await updateKnowledge("k1", {
+    await updateKnowledge(1, {
       question: "Q",
       summary: "S",
       detail: "D",
@@ -275,10 +274,72 @@ describe("updateKnowledge", () => {
       summary: "S",
       detail: "D",
     });
-    expect(entryEq).toHaveBeenCalledWith("id", "k1");
-    expect(tagsDeleteEq).toHaveBeenCalledWith("knowledge_id", "k1");
+    expect(entryEq).toHaveBeenCalledWith("id", 1);
+    expect(tagsDeleteEq).toHaveBeenCalledWith("knowledge_id", 1);
     expect(tagsInsert).toHaveBeenCalledWith([
-      { knowledge_id: "k1", tag_id: "t1" },
+      { knowledge_id: 1, tag_id: "t1" },
     ]);
+  });
+});
+
+describe("listKnowledge", () => {
+  function setup(rows: unknown[]) {
+    const range = jest.fn().mockResolvedValue({ data: rows, error: null });
+    const order = jest.fn().mockReturnValue({ range });
+    const select = jest.fn().mockReturnValue({ order });
+    (getSupabase as jest.Mock).mockReturnValue({
+      from: () => ({ select }),
+    });
+    return { range, order, select };
+  }
+
+  it("flattens nested tag join and reports hasMore=false at end", async () => {
+    const topic = { id: "t1", name: "Databases", type: "topic" };
+    const concept = { id: "c1", name: "DB Indexing", type: "concept" };
+    setup([
+      {
+        ...entry,
+        id: 2,
+        knowledge_tags: [{ tag: topic }, { tag: concept }],
+      },
+      { ...entry, id: 1, knowledge_tags: [] },
+    ]);
+
+    const page = await listKnowledge({ limit: 20 });
+
+    expect(page.hasMore).toBe(false);
+    expect(page.items).toHaveLength(2);
+    expect(page.items[0].id).toBe(2);
+    expect(page.items[0].tags.map((t) => t.name)).toEqual([
+      "Databases",
+      "DB Indexing",
+    ]);
+    expect(page.items[1].tags).toEqual([]);
+  });
+
+  it("trims overflow row when limit+1 returned and sets hasMore=true", async () => {
+    const rows = Array.from({ length: 3 }, (_, i) => ({
+      ...entry,
+      id: i + 1,
+      knowledge_tags: [],
+    }));
+    setup(rows);
+
+    const page = await listKnowledge({ limit: 2 });
+
+    expect(page.hasMore).toBe(true);
+    expect(page.items).toHaveLength(2);
+  });
+
+  it("drops null tag entries gracefully", async () => {
+    setup([
+      {
+        ...entry,
+        id: 1,
+        knowledge_tags: [{ tag: null }],
+      },
+    ]);
+    const page = await listKnowledge();
+    expect(page.items[0].tags).toEqual([]);
   });
 });

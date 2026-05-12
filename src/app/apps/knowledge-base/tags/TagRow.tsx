@@ -99,8 +99,11 @@ export function TagRow({ tag, onRename, onDelete }: TagRowProps) {
     }
   }, [busy, tag.id, tag.name, onDelete]);
 
+  const typeClass = tag.type === "topic" ? styles.topic : styles.concept;
   return (
-    <li className={`${styles.row} ${editing ? styles.rowEditing : ""}`}>
+    <li
+      className={`${styles.row} ${typeClass} ${editing ? styles.rowEditing : ""}`}
+    >
       {editing ? (
         <input
           ref={inputRef}

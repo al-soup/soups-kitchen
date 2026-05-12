@@ -97,7 +97,7 @@ export type Database = {
         Row: {
           created_at: string | null;
           detail: string | null;
-          id: string;
+          id: number;
           question: string;
           search_vector: unknown;
           summary: string;
@@ -106,7 +106,7 @@ export type Database = {
         Insert: {
           created_at?: string | null;
           detail?: string | null;
-          id?: string;
+          id?: number;
           question: string;
           search_vector?: unknown;
           summary: string;
@@ -115,7 +115,7 @@ export type Database = {
         Update: {
           created_at?: string | null;
           detail?: string | null;
-          id?: string;
+          id?: number;
           question?: string;
           search_vector?: unknown;
           summary?: string;
@@ -125,15 +125,15 @@ export type Database = {
       };
       knowledge_tags: {
         Row: {
-          knowledge_id: string;
+          knowledge_id: number;
           tag_id: string;
         };
         Insert: {
-          knowledge_id: string;
+          knowledge_id: number;
           tag_id: string;
         };
         Update: {
-          knowledge_id?: string;
+          knowledge_id?: number;
           tag_id?: string;
         };
         Relationships: [

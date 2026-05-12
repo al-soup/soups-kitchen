@@ -10,6 +10,13 @@ export type Resource = Tables<"resources">;
 export type Knowledge = Tables<"knowledge">;
 export type KnowledgeTag = Tables<"knowledge_tags">;
 
+export type KnowledgeListItem = Knowledge & { tags: Tag[] };
+
+export type KnowledgeListPage = {
+  items: KnowledgeListItem[];
+  hasMore: boolean;
+};
+
 export const RESOURCES_BUCKET = "resources";
 
 export type DailyHabitScore =

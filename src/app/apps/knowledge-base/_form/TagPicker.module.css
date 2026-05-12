@@ -91,13 +91,13 @@
 }
 
 .createBtn.topic {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  color: var(--tag-topic);
+  border-color: var(--tag-topic);
 }
 
 .createBtn.concept {
-  color: var(--color-secondary);
-  border-color: var(--color-secondary);
+  color: var(--tag-concept);
+  border-color: var(--tag-concept);
 }
 
 .error {
@@ -186,13 +186,13 @@
 }
 
 .pill.topic {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  color: var(--tag-topic);
+  border-color: var(--tag-topic);
 }
 
 .pill.concept {
-  color: var(--color-secondary);
-  border-color: var(--color-secondary);
+  color: var(--tag-concept);
+  border-color: var(--tag-concept);
 }
 
 .pill:hover {
@@ -200,13 +200,13 @@
 }
 
 .pill.topic.pillSelected {
-  background: var(--color-primary);
+  background: var(--tag-topic);
   color: var(--background);
-  border-color: var(--color-primary);
+  border-color: var(--tag-topic);
 }
 
 .pill.concept.pillSelected {
-  background: var(--color-secondary);
+  background: var(--tag-concept);
   color: var(--background);
-  border-color: var(--color-secondary);
+  border-color: var(--tag-concept);
 }

@@ -1,5 +1,10 @@
 import { getSupabase } from "@/lib/supabase/client";
-import type { Knowledge } from "@/lib/supabase/types";
+import type {
+  Knowledge,
+  KnowledgeListItem,
+  KnowledgeListPage,
+  Tag,
+} from "@/lib/supabase/types";
 
 export interface KnowledgeFormInput {
   question: string;
@@ -9,7 +14,7 @@ export interface KnowledgeFormInput {
 }
 
 export class NotFoundError extends Error {
-  constructor(id: string) {
+  constructor(id: number | string) {
     super(`Knowledge entry ${id} not found`);
     this.name = "NotFoundError";
   }
@@ -17,7 +22,7 @@ export class NotFoundError extends Error {
 
 function isNotFound(err: { code?: string; message: string }) {
   // PGRST116: .single() returned no rows. 22P02: invalid_text_representation
-  // (e.g. malformed UUID).
+  // (e.g. id is not parseable as bigint).
   return err.code === "PGRST116" || err.code === "22P02";
 }
 
@@ -60,7 +65,7 @@ export async function createKnowledge(
 }
 
 export async function updateKnowledge(
-  id: string,
+  id: number,
   input: KnowledgeFormInput
 ): Promise<Knowledge> {
   const fields = normalizeInput(input);
@@ -79,7 +84,7 @@ export async function updateKnowledge(
 }
 
 export async function setKnowledgeTags(
-  knowledgeId: string,
+  knowledgeId: number,
   tagIds: string[]
 ): Promise<void> {
   const supabase = getSupabase();
@@ -103,7 +108,7 @@ export async function setKnowledgeTags(
 }
 
 export async function getKnowledge(
-  id: string
+  id: number
 ): Promise<{ entry: Knowledge; tagIds: string[] }> {
   const supabase = getSupabase();
 
@@ -129,7 +134,45 @@ export async function getKnowledge(
   };
 }
 
-export async function deleteKnowledge(id: string): Promise<void> {
+export async function deleteKnowledge(id: number): Promise<void> {
   const { error } = await getSupabase().from("knowledge").delete().eq("id", id);
   if (error) throw new Error(error.message);
+}
+
+export interface ListKnowledgeParams {
+  offset?: number;
+  limit?: number;
+}
+
+interface JoinedRow extends Knowledge {
+  knowledge_tags: { tag: Tag | null }[] | null;
+}
+
+export async function listKnowledge({
+  offset = 0,
+  limit = 20,
+}: ListKnowledgeParams = {}): Promise<KnowledgeListPage> {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("knowledge")
+    .select("*, knowledge_tags(tag:tags(*))")
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit);
+  if (error) throw new Error(error.message);
+
+  const rows = (data ?? []) as JoinedRow[];
+  const hasMore = rows.length > limit;
+  const visible = hasMore ? rows.slice(0, limit) : rows;
+
+  const items: KnowledgeListItem[] = visible.map((row) => {
+    const tags = (row.knowledge_tags ?? [])
+      .map((kt) => kt.tag)
+      .filter((t): t is Tag => t !== null)
+      .sort((a, b) => a.name.localeCompare(b.name));
+    const { knowledge_tags: _ignored, ...rest } = row;
+    void _ignored;
+    return { ...rest, tags };
+  });
+
+  return { items, hasMore };
 }

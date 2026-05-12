@@ -6,6 +6,14 @@
   margin-top: 24px;
 }
 
+.topic {
+  --section-color: var(--tag-topic);
+}
+
+.concept {
+  --section-color: var(--tag-concept);
+}
+
 .headingRow {
   display: flex;
   align-items: baseline;
@@ -19,8 +27,18 @@
   font-size: 1.25rem;
   margin: 0;
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+  color: var(--section-color);
+}
+
+.headingDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background-color: var(--section-color);
+  flex-shrink: 0;
 }
 
 .count {
@@ -55,7 +73,7 @@
 
 .input:focus {
   outline: none;
-  border-color: var(--foreground);
+  border-color: var(--section-color);
 }
 
 .input:disabled {
@@ -67,12 +85,16 @@
   padding: 0 16px;
   font-size: 13px;
   font-weight: 600;
-  background: var(--foreground);
+  background: var(--section-color);
   color: var(--background);
   border: none;
   border-radius: 999px;
   cursor: pointer;
   transition: opacity var(--transition-fast);
+}
+
+.addBtn:hover:not(:disabled) {
+  opacity: 0.9;
 }
 
 .addBtn:disabled {

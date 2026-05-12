@@ -62,9 +62,17 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 
 #### Fahrplan
 
-#### Knowledge Graph (working title)
+- [ ] Instead of changing the location and then using the current location, there should be a sync button for the current location
+
+#### Knowledge Base
+
+- [ ] Star / Favorite questions
+- [ ] Create a learning or revision mode
+- [ ] Instead (or in addtion to) the Speech-Notes app, i could create an API to create new knowledge entries via Speech/LLM
 
 #### Question Game
+
+tbd
 
 #### Live-Poll
 
@@ -127,6 +135,7 @@ Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. Not yet
 
 ### AI
 
+- [ ] Rerun an audit on the React code
 - [ ] Build agent for writing and improving e2e test
 
 ### API

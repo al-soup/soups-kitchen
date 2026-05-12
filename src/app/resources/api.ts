@@ -118,3 +118,43 @@ export async function getSignedUrl(resource: Resource): Promise<string> {
 export function placeholderToken(resourceId: string): string {
   return `{{resource:${resourceId}}}`;
 }
+
+export async function listResourcesByIds(ids: string[]): Promise<Resource[]> {
+  if (ids.length === 0) return [];
+  const { data, error } = await getSupabase()
+    .from("resources")
+    .select("*")
+    .in("id", ids);
+  if (error) throw new Error(error.message);
+  return (data ?? []) as Resource[];
+}
+
+export interface ResolvedResource {
+  url: string | null;
+  mime: string | null;
+  filename: string | null;
+}
+
+export async function getSignedUrlsByIds(
+  ids: string[]
+): Promise<Record<string, ResolvedResource>> {
+  const unique = Array.from(new Set(ids));
+  const out: Record<string, ResolvedResource> = {};
+  for (const id of unique) {
+    out[id] = { url: null, mime: null, filename: null };
+  }
+  if (unique.length === 0) return out;
+
+  const resources = await listResourcesByIds(unique);
+  await Promise.all(
+    resources.map(async (r) => {
+      try {
+        const url = await getSignedUrl(r);
+        out[r.id] = { url, mime: r.mime_type, filename: r.filename };
+      } catch {
+        out[r.id] = { url: null, mime: r.mime_type, filename: r.filename };
+      }
+    })
+  );
+  return out;
+}

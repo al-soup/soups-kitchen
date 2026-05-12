@@ -9,6 +9,8 @@ import {
   getSignedUrl,
   sanitizeFilename,
   placeholderToken,
+  listResourcesByIds,
+  getSignedUrlsByIds,
   UploadError,
 } from "./api";
 import type { Resource } from "@/lib/supabase/types";
@@ -228,5 +230,77 @@ describe("getSignedUrl", () => {
       storage: { from: () => ({ createSignedUrl }) },
     });
     await expect(getSignedUrl(baseResource)).rejects.toThrow("Forbidden");
+  });
+});
+
+describe("listResourcesByIds", () => {
+  it("returns empty list without hitting Supabase when ids are empty", async () => {
+    const out = await listResourcesByIds([]);
+    expect(out).toEqual([]);
+    expect(getSupabase).not.toHaveBeenCalled();
+  });
+
+  it("issues a single .in() query for the unique ids", async () => {
+    const inMock = jest
+      .fn()
+      .mockResolvedValue({ data: [baseResource], error: null });
+    const select = jest.fn().mockReturnValue({ in: inMock });
+    (getSupabase as jest.Mock).mockReturnValue({ from: () => ({ select }) });
+
+    const result = await listResourcesByIds(["r1", "r2"]);
+    expect(inMock).toHaveBeenCalledWith("id", ["r1", "r2"]);
+    expect(result).toEqual([baseResource]);
+  });
+});
+
+describe("getSignedUrlsByIds", () => {
+  it("returns a map with nulls for unknown ids and signed urls for known ones", async () => {
+    const inMock = jest
+      .fn()
+      .mockResolvedValue({ data: [baseResource], error: null });
+    const select = jest.fn().mockReturnValue({ in: inMock });
+    const createSignedUrl = jest.fn().mockResolvedValue({
+      data: { signedUrl: "https://signed/r1" },
+      error: null,
+    });
+    (getSupabase as jest.Mock).mockReturnValue({
+      from: () => ({ select }),
+      storage: { from: () => ({ createSignedUrl }) },
+    });
+
+    const out = await getSignedUrlsByIds(["r1", "missing"]);
+    expect(out).toEqual({
+      r1: {
+        url: "https://signed/r1",
+        mime: "image/png",
+        filename: "Diagram.png",
+      },
+      missing: { url: null, mime: null, filename: null },
+    });
+  });
+
+  it("treats createSignedUrl errors as missing url but keeps metadata", async () => {
+    const inMock = jest
+      .fn()
+      .mockResolvedValue({ data: [baseResource], error: null });
+    const select = jest.fn().mockReturnValue({ in: inMock });
+    const createSignedUrl = jest
+      .fn()
+      .mockResolvedValue({ data: null, error: { message: "Forbidden" } });
+    (getSupabase as jest.Mock).mockReturnValue({
+      from: () => ({ select }),
+      storage: { from: () => ({ createSignedUrl }) },
+    });
+
+    const out = await getSignedUrlsByIds(["r1"]);
+    expect(out.r1.url).toBeNull();
+    expect(out.r1.filename).toBe("Diagram.png");
+    expect(out.r1.mime).toBe("image/png");
+  });
+
+  it("returns empty map for empty input without calling Supabase", async () => {
+    const out = await getSignedUrlsByIds([]);
+    expect(out).toEqual({});
+    expect(getSupabase).not.toHaveBeenCalled();
   });
 });

@@ -54,9 +54,14 @@ export function TagSection({
   }, [draft, type, onCreate]);
 
   return (
-    <section className={styles.section}>
+    <section
+      className={`${styles.section} ${
+        type === "topic" ? styles.topic : styles.concept
+      }`}
+    >
       <div className={styles.headingRow}>
         <h2 className={styles.heading}>
+          <span className={styles.headingDot} aria-hidden="true" />
           {title}
           <span className={styles.count}>{tags.length}</span>
         </h2>

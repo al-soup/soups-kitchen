@@ -1,0 +1,77 @@
+.path {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 6px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--foreground-muted);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.topic,
+.concept {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: var(--border-width, 1px) solid;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  background-color: var(--background);
+}
+
+.topic {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--tag-topic);
+  border-color: var(--tag-topic);
+  background-color: color-mix(in srgb, var(--tag-topic) 12%, transparent);
+}
+
+.concept {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--tag-concept);
+  border-color: var(--tag-concept);
+  background-color: color-mix(in srgb, var(--tag-concept) 12%, transparent);
+}
+
+.chevron {
+  display: inline-block;
+  padding: 0 2px;
+  color: var(--foreground-muted);
+  opacity: 0.6;
+  font-size: 0.8125rem;
+  line-height: 1;
+}
+
+.md {
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.md .topic {
+  font-size: 0.6875rem;
+  padding: 3px 11px;
+}
+
+.md .concept {
+  font-size: 0.8125rem;
+  padding: 3px 11px;
+}
+
+.md .chevron {
+  font-size: 0.9375rem;
+  padding: 0 4px;
+}

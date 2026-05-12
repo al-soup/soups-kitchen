@@ -10,6 +10,8 @@
 ### CI
 
 - Run `pnpm run format` at the end of every task.
+- CI runs on push: build, format:check, lint:check, unit tests
+- PR workflow: CI + e2e (Playwright, chromium only, local Supabase via `config.ci.toml`)
 
 ### Grammar & Style
 
@@ -51,7 +53,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — tags admin only so far), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit; tag filters + search pending), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
 
 #### Habits: Graph→Feed interaction
 
@@ -105,12 +107,28 @@ src/
       fahrplan/       # Swiss departure board (StationSearch, DepartureBoard, DepartureRow)
       habits/         # HabitFeed (paginated feed, grouped by date), HabitTypeSelector
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
-      knowledge-base/ # Hub page (links to tags admin, resources, create entry)
+      knowledge-base/ # Overview list (compact cards, reverse-chrono, pagination)
+                      # + top toolbar linking to /create, /tags, /resources.
+                      # Tags render as a mono-font breadcrumb path
+                      # ([topic1, topic2 > concept1 concept2]).
       knowledge-base/tags/  # Tags admin (api.ts CRUD, TagSection, TagRow); topic & concept
-      knowledge-base/create/  # New entry form page
-      knowledge-base/[id]/edit/ # Edit entry form page
-      knowledge-base/_form/   # Private shared: KnowledgeForm, TagPicker (filtered/select pills,
-                              # create-new-tag inline), ResourcePickerModal, api.ts
+      knowledge-base/create/  # New entry form page (uses KnowledgeForm)
+      knowledge-base/[id]/   # Single route per entry: Preview ↔ Edit toggle.
+                             # Page owns draft+committed state so the preview reflects
+                             # in-progress edits. Cancel/Save/Delete action bar appears
+                             # in both views once dirty (and always in edit mode).
+                             # Back arrow + beforeunload prompt when dirty. Mode toggle
+                             # uses PencilIcon (Edit) / EyeIcon (Preview).
+      knowledge-base/_form/   # Private shared: KnowledgeFields (controlled fields:
+                              # question, summary, detail, TagPicker, ResourcePicker),
+                              # KnowledgeForm (uncontrolled wrapper for create page),
+                              # MarkdownDetail (react-markdown + remark-gfm),
+                              # TagBreadcrumb (uppercase topics ❯ concepts, size sm|md),
+                              # format.ts (formatDate "1. May 2026" + formatDateTime
+                              # "1. May 2026, 14:30" — 24h), resolveResourceTokens
+                              # (regex extract/replace), types.ts (KnowledgeFormInitial,
+                              # isDraftDirty), api.ts (listKnowledge w/ tag join,
+                              # get/update/delete by number id)
     resources/   # Standalone resources module (upload to Supabase Storage)
                  # UploadDropzone, ResourceGrid, ResourceCard; api.ts CRUD + signed URLs
                  # Placeholder token: {{resource:<uuid>}}
@@ -120,7 +138,7 @@ src/
   components/
     layout/      # Shell, Navbar, Sidebar, Footer, ProfileDropdown
     ui/          # HabitScoreGraph, PageTitle, ThemeSwitcher
-  constants/     # Theme config, theme icons, shared icons (Menu, User, LogIn, Settings, LogOut)
+  constants/     # Theme config, theme icons, shared icons (Menu, User, LogIn, Settings, LogOut, Pencil, Eye, Trash, Copy, Check)
   context/       # ThemeContext, PageContext, AuthContext
   hooks/         # usePageTitle, useUserRole
   lib/
@@ -134,7 +152,7 @@ supabase/
   functions/     # Supabase Edge Functions (Deno)
     strava-activity/  # Daily cron: fetch Strava activities
   migrations/    # Schema migrations (pulled from remote)
-  seed.sql       # Dev seed data (3 users, actions, habits, KB tags)
+  seed.sql       # Dev seed data (3 users, actions, habits, KB tags + 5 KB entries)
 public/
   tech/          # Generated tech logo PNGs (via generate-tech-logos)
 scripts/
@@ -170,8 +188,3 @@ scripts/
 - Endpoint protected by `x-cron-secret` header (not JWT)
 - Setup: run `pnpm strava:auth` once, then deploy edge function + set secrets
 - Secrets: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `CRON_SECRET`
-
-### CI
-
-- CI runs on push: build, format:check, lint:check, unit tests
-- PR workflow: CI + e2e (Playwright, chromium only, local Supabase via `config.ci.toml`)
