@@ -31,7 +31,7 @@ jobs:
       - name: Start and seed Supabase
         run: |
           cp supabase/config.ci.toml supabase/config.toml
-          supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+          supabase start -x realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
 
       - name: Run e2e tests
         run: pnpm test:e2e
