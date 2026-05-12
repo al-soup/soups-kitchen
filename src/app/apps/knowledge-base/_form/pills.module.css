@@ -1,0 +1,50 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pill {
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--background);
+  cursor: pointer;
+  border: var(--border-width, 1px) solid var(--border-color);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+  letter-spacing: 0.01em;
+}
+
+.pill.topic {
+  color: var(--tag-topic);
+  border-color: var(--tag-topic);
+}
+
+.pill.concept {
+  color: var(--tag-concept);
+  border-color: var(--tag-concept);
+}
+
+.pill:hover {
+  background: var(--background-alt);
+}
+
+.pill.topic.pillSelected {
+  background: var(--tag-topic);
+  color: var(--background);
+  border-color: var(--tag-topic);
+}
+
+.pill.concept.pillSelected {
+  background: var(--tag-concept);
+  color: var(--background);
+  border-color: var(--tag-concept);
+}

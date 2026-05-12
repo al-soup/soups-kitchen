@@ -2,7 +2,59 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 16px 0 24px;
+  margin: 16px 0 12px;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--foreground-muted);
+  flex: 0 0 auto;
+  min-width: 64px;
+}
+
+.clearFiltersRow {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.clearFilters {
+  font: inherit;
+  font-size: 12px;
+  background: none;
+  border: none;
+  color: var(--foreground-muted);
+  cursor: pointer;
+  padding: 4px 6px;
+  text-decoration: underline;
+  align-self: flex-start;
+  transition: opacity var(--transition-fast);
+}
+
+.clearFilters:hover:not(:disabled) {
+  color: var(--foreground);
+}
+
+.clearFilters:disabled {
+  opacity: 0;
+  cursor: default;
+  pointer-events: none;
 }
 
 .toolbarBtn {

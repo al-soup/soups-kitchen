@@ -310,6 +310,24 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"];
       };
       is_global_admin: { Args: never; Returns: boolean };
+      search_knowledge: {
+        Args: {
+          concept_ids?: string[];
+          p_limit?: number;
+          p_offset?: number;
+          topic_ids?: string[];
+        };
+        Returns: {
+          created_at: string;
+          detail: string;
+          id: number;
+          question: string;
+          search_vector: unknown;
+          summary: string;
+          tags: Json;
+          updated_at: string;
+        }[];
+      };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { "": string }; Returns: string[] };
     };

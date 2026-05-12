@@ -284,25 +284,62 @@ describe("updateKnowledge", () => {
 
 describe("listKnowledge", () => {
   function setup(rows: unknown[]) {
-    const range = jest.fn().mockResolvedValue({ data: rows, error: null });
-    const order = jest.fn().mockReturnValue({ range });
-    const select = jest.fn().mockReturnValue({ order });
-    (getSupabase as jest.Mock).mockReturnValue({
-      from: () => ({ select }),
-    });
-    return { range, order, select };
+    const rpc = jest.fn().mockResolvedValue({ data: rows, error: null });
+    (getSupabase as jest.Mock).mockReturnValue({ rpc });
+    return { rpc };
   }
 
-  it("flattens nested tag join and reports hasMore=false at end", async () => {
+  it("calls search_knowledge RPC with undefined when no filters provided", async () => {
+    const { rpc } = setup([]);
+    await listKnowledge({ limit: 20 });
+    expect(rpc).toHaveBeenCalledWith("search_knowledge", {
+      topic_ids: undefined,
+      concept_ids: undefined,
+      p_offset: 0,
+      p_limit: 20,
+    });
+  });
+
+  it("passes topic_ids when topicIds non-empty", async () => {
+    const { rpc } = setup([]);
+    await listKnowledge({ topicIds: ["t1", "t2"], limit: 10, offset: 20 });
+    expect(rpc).toHaveBeenCalledWith("search_knowledge", {
+      topic_ids: ["t1", "t2"],
+      concept_ids: undefined,
+      p_offset: 20,
+      p_limit: 10,
+    });
+  });
+
+  it("passes both topic_ids and concept_ids when set", async () => {
+    const { rpc } = setup([]);
+    await listKnowledge({ topicIds: ["t1"], conceptIds: ["c1", "c2"] });
+    expect(rpc).toHaveBeenCalledWith("search_knowledge", {
+      topic_ids: ["t1"],
+      concept_ids: ["c1", "c2"],
+      p_offset: 0,
+      p_limit: 20,
+    });
+  });
+
+  it("treats empty arrays as no filter (undefined param)", async () => {
+    const { rpc } = setup([]);
+    await listKnowledge({ topicIds: [], conceptIds: [] });
+    expect(rpc).toHaveBeenCalledWith(
+      "search_knowledge",
+      expect.objectContaining({
+        topic_ids: undefined,
+        concept_ids: undefined,
+      })
+    );
+  });
+
+  it("maps tags from JSON and reports hasMore=false at end", async () => {
     const topic = { id: "t1", name: "Databases", type: "topic" };
     const concept = { id: "c1", name: "DB Indexing", type: "concept" };
     setup([
-      {
-        ...entry,
-        id: 2,
-        knowledge_tags: [{ tag: topic }, { tag: concept }],
-      },
-      { ...entry, id: 1, knowledge_tags: [] },
+      { ...entry, id: 2, tags: [topic, concept] },
+      { ...entry, id: 1, tags: [] },
     ]);
 
     const page = await listKnowledge({ limit: 20 });
@@ -321,7 +358,7 @@ describe("listKnowledge", () => {
     const rows = Array.from({ length: 3 }, (_, i) => ({
       ...entry,
       id: i + 1,
-      knowledge_tags: [],
+      tags: [],
     }));
     setup(rows);
 
@@ -331,15 +368,11 @@ describe("listKnowledge", () => {
     expect(page.items).toHaveLength(2);
   });
 
-  it("drops null tag entries gracefully", async () => {
-    setup([
-      {
-        ...entry,
-        id: 1,
-        knowledge_tags: [{ tag: null }],
-      },
-    ]);
-    const page = await listKnowledge();
-    expect(page.items[0].tags).toEqual([]);
+  it("throws on RPC error", async () => {
+    const rpc = jest
+      .fn()
+      .mockResolvedValue({ data: null, error: { message: "boom" } });
+    (getSupabase as jest.Mock).mockReturnValue({ rpc });
+    await expect(listKnowledge()).rejects.toThrow("boom");
   });
 });

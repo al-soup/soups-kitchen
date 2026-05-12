@@ -53,7 +53,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit; tag filters + search pending), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit + tag filters; full-text search pending), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
 
 #### Habits: Graph→Feed interaction
 
@@ -109,6 +109,12 @@ src/
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
       knowledge-base/ # Overview list (compact cards, reverse-chrono, pagination)
                       # + top toolbar linking to /create, /tags, /resources.
+                      # Tag filter rows (Topics + Concepts) below the toolbar:
+                      # multi-select pills, URL-driven by tag NAMES via repeated
+                      # params (?topics=Databases&topics=Networking&concepts=…).
+                      # Names → ids resolved client-side via tagsByName map; the
+                      # knowledge fetch waits for the tag list when filters are
+                      # in the URL. OR within a category, AND across categories.
                       # Tags render as a mono-font breadcrumb path
                       # ([topic1, topic2 > concept1 concept2]).
       knowledge-base/tags/  # Tags admin (api.ts CRUD, TagSection, TagRow); topic & concept
@@ -124,11 +130,15 @@ src/
                               # KnowledgeForm (uncontrolled wrapper for create page),
                               # MarkdownDetail (react-markdown + remark-gfm),
                               # TagBreadcrumb (uppercase topics ❯ concepts, size sm|md),
+                              # TagPills (multi-select filter pills, shared
+                              # pills.module.css), filterParams (buildKnowledgeQuery
+                              # using repeated URLSearchParams; toggleString;
+                              # TOPICS/CONCEPTS_PARAM),
                               # format.ts (formatDate "1. May 2026" + formatDateTime
                               # "1. May 2026, 14:30" — 24h), resolveResourceTokens
                               # (regex extract/replace), types.ts (KnowledgeFormInitial,
-                              # isDraftDirty), api.ts (listKnowledge w/ tag join,
-                              # get/update/delete by number id)
+                              # isDraftDirty), api.ts (listKnowledge via
+                              # search_knowledge RPC, get/update/delete by number id)
     resources/   # Standalone resources module (upload to Supabase Storage)
                  # UploadDropzone, ResourceGrid, ResourceCard; api.ts CRUD + signed URLs
                  # Placeholder token: {{resource:<uuid>}}

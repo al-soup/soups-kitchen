@@ -142,36 +142,32 @@ export async function deleteKnowledge(id: number): Promise<void> {
 export interface ListKnowledgeParams {
   offset?: number;
   limit?: number;
-}
-
-interface JoinedRow extends Knowledge {
-  knowledge_tags: { tag: Tag | null }[] | null;
+  topicIds?: string[];
+  conceptIds?: string[];
 }
 
 export async function listKnowledge({
   offset = 0,
   limit = 20,
+  topicIds,
+  conceptIds,
 }: ListKnowledgeParams = {}): Promise<KnowledgeListPage> {
   const supabase = getSupabase();
-  const { data, error } = await supabase
-    .from("knowledge")
-    .select("*, knowledge_tags(tag:tags(*))")
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit);
+  const { data, error } = await supabase.rpc("search_knowledge", {
+    topic_ids: topicIds?.length ? topicIds : undefined,
+    concept_ids: conceptIds?.length ? conceptIds : undefined,
+    p_offset: offset,
+    p_limit: limit,
+  });
   if (error) throw new Error(error.message);
 
-  const rows = (data ?? []) as JoinedRow[];
+  const rows = data ?? [];
   const hasMore = rows.length > limit;
   const visible = hasMore ? rows.slice(0, limit) : rows;
 
   const items: KnowledgeListItem[] = visible.map((row) => {
-    const tags = (row.knowledge_tags ?? [])
-      .map((kt) => kt.tag)
-      .filter((t): t is Tag => t !== null)
-      .sort((a, b) => a.name.localeCompare(b.name));
-    const { knowledge_tags: _ignored, ...rest } = row;
-    void _ignored;
-    return { ...rest, tags };
+    const { tags: tagsJson, ...rest } = row;
+    return { ...rest, tags: (tagsJson ?? []) as Tag[] };
   });
 
   return { items, hasMore };

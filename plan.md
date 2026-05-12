@@ -21,8 +21,8 @@ markdown via placeholder tokens (`{{resource:<uuid>}}`), no FK.
 | 2   | Decouple resources + standalone Resources module                                      | ✅ done |
 | 3   | Knowledge entry create/edit (form: q, summary, markdown, tag picker, resource picker) | ✅ done |
 | 4   | Overview list + detail view; resolve placeholders to signed Storage URLs              | ✅ done |
-| 5   | Filter overview by topic + concept tags                                               | ⏳ next |
-| 6   | Full-text search + fuzzy typeahead (`search_vector` + `pg_trgm`)                      | —       |
+| 5   | Filter overview by topic + concept tags                                               | ✅ done |
+| 6   | Full-text search + fuzzy typeahead (`search_vector` + `pg_trgm`)                      | ⏳ next |
 
 ## Step 1 — Tags Admin (done)
 
@@ -204,12 +204,54 @@ single detail route at `/apps/knowledge-base/<id>` that toggles between
   resource batch helpers 5; plus updated id types across the api suite).
 - **CLAUDE.md**: file structure + apps line updated.
 
-## Step 5 — Tag Filters (next)
+## Step 5 — Tag Filters (done)
 
-- Reuse `PillFilter` for topic + concept filters on overview
-- Multi-select; AND across tag categories, OR within a category (TBD)
+Routes unchanged. Overview at `/apps/knowledge-base` gains two
+always-visible multi-select pill rows under the toolbar (Topics + Concepts),
+driven by URL params and a Postgres RPC.
 
-## Step 6 — Full-text Search (later)
+- **Combinator**: OR within a category, AND across categories.
+- **RPC** `supabase/migrations/20260513000000_search_knowledge_rpc.sql` →
+  `public.search_knowledge(topic_ids uuid[], concept_ids uuid[], p_offset
+int, p_limit int)` returns `setof (knowledge + tags json)`. Tags are
+  pre-joined as `json_agg(...)` so a single call yields the full
+  `KnowledgeListItem` shape. `LIMIT p_limit + 1` preserves the existing
+  `hasMore` pattern. Grants `execute` to `authenticated`.
+- **API** (`_form/api.ts`): `listKnowledge` now calls
+  `supabase.rpc("search_knowledge", …)`. Empty / undefined filter arrays
+  become `undefined` (RPC treats `NULL` arrays as "no filter").
+- **URL params** (`_form/filterParams.ts`): tag **names** (not ids) in
+  repeated multi-value params, e.g.
+  `?topics=Databases&topics=Networking&concepts=DB+Indexing`. Names are
+  resolved client-side to ids via a `tagsByName` map built from the same
+  `listTags()` result that powers the pill rows; unknown names silently drop.
+  Helpers `buildKnowledgeQuery`, `toggleString`. Update via
+  `router.replace(..., { scroll: false })`, mirroring the habits pattern.
+- **Fetch sequencing**: when the URL has filter params, the knowledge fetch
+  waits for `tagsLoaded` before firing — otherwise the first paint would
+  briefly show all entries unfiltered while the tag map is still empty.
+- **UI**:
+  - `_form/TagPills.tsx` — presentational multi-select pill row (filled =
+    selected, outlined = unselected, `aria-pressed`). Hidden when no tags of
+    that variant exist.
+  - `_form/pills.module.css` — standalone pill styles (copied from
+    `TagPicker.module.css` — left intact to avoid invasive refactor).
+  - Overview page wrapped in `<Suspense>` so it can use `useSearchParams`.
+    Adds a `.filters` block with two `.filterRow`s (`Topics` + `Concepts`
+    labels), a `Clear filters` button when any filter is active, and a
+    distinct empty-state copy when filters yield zero rows.
+  - Page sets `loading=true` inside the toggle handlers (not inside the
+    effect) to keep `react-hooks/set-state-in-effect` happy.
+  - Clear filters button sits in a fixed-height row (`.clearFiltersRow`,
+    `min-height: 24px`) and uses `:disabled { opacity: 0 }` so the list
+    below doesn't jump when filters are toggled on/off.
+- **Tests**: 184 total (+5 from step 4): listKnowledge RPC arg shaping (4),
+  `filterParams` helpers (10), `TagPills` toggle/render (4). Replaces the
+  old PostgREST-join cases.
+- **CLAUDE.md** updated; `_form/filterParams.ts` and `_form/TagPills.tsx`
+  added to file structure.
+
+## Step 6 — Full-text Search (next)
 
 - Typeahead input on overview
 - Backend: combine `search_vector` (GIN, ts_rank) with `pg_trgm` similarity
@@ -218,8 +260,6 @@ single detail route at `/apps/knowledge-base/<id>` that toggles between
 
 ## Open questions
 
-- (Step 5) Tag filter combinator semantics (AND across categories, OR
-  within?)
 - (Step 6) Search debounce + result cap
 
 ### Resolved in step 3
@@ -235,3 +275,21 @@ single detail route at `/apps/knowledge-base/<id>` that toggles between
   summaries so no resolution needed there). No cross-page cache for now —
   add only if it becomes a bottleneck
 - `knowledge.id` → `bigserial` (recommended; nicer URLs, low cost pre-data)
+
+### Resolved in step 5
+
+- Combinator → **OR within, AND across**. Within a category, more pills
+  broaden the result; across categories they narrow it (Gmail/Linear model)
+- Backend → **Postgres RPC** (`search_knowledge`), not client-side intersect
+  or PostgREST inner-join. Pagination stays correct; step 6 can extend the
+  same function with a `q text` param + ranking
+- UI → **two always-visible pill rows** under the toolbar (multi-select, no
+  counts). `PillFilter` was rejected for this surface because it's
+  single-select with counts — different shape, not worth merging
+- State → **URL params** (`?topics=…&concepts=…`), matching the
+  `useSearchParams` + `router.replace({ scroll: false })` pattern from the
+  habits page
+- URL identifier → **tag names**, not UUIDs. Shorter, human-readable,
+  shareable. Names → ids resolved client-side from the already-fetched tag
+  list; renaming a tag breaks any saved URLs, which is acceptable for a
+  personal KB with few renames
