@@ -133,10 +133,10 @@ async function ensureFreshToken(
 // ---------------------------------------------------------------------------
 
 async function fetchActivities(
-  accessToken: string,
-  after: number
+  accessToken: string
 ): Promise<StravaSummaryActivity[]> {
-  const url = `${STRAVA_ACTIVITIES_URL}?after=${after}&per_page=30`;
+  // Latest 20 activities (Strava returns most-recent-first when no before/after is given) and dedupe on insert.
+  const url = `${STRAVA_ACTIVITIES_URL}?per_page=20`;
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
@@ -236,9 +236,7 @@ Deno.serve(async (req) => {
       token as TokenRow
     );
 
-    // Fetch activities from the last 24 hours
-    const since = Math.floor(Date.now() / 1000) - 86400;
-    const activities = await fetchActivities(accessToken, since);
+    const activities = await fetchActivities(accessToken);
     log("info", "activities fetched", { fetched: activities.length });
 
     const rides = activities.filter((a) =>
