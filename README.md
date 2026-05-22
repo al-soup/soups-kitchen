@@ -47,6 +47,7 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 
 ## TODO
 
+- [ ] Connect the domain
 - [ ] Add `redirectTo` param to all protected page redirects (currently only `/habits/create`)
 - [ ] Some apps will not require a theme / should be able to introduce their own theme and overwrite the defaults so there is more of a standalone app feel.
 - [ ] Set-up proper error handling
@@ -69,6 +70,8 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Star / Favorite questions
 - [ ] Create a learning or revision mode
 - [ ] Instead (or in addtion to) the Speech-Notes app, i could create an API to create new knowledge entries via Speech/LLM
+- [ ] Create an Interview-me feature
+- [ ] Open for public reads
 
 #### Question Game
 
@@ -137,6 +140,7 @@ Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. Not yet
 
 - [ ] Rerun an audit on the React code
 - [ ] Build agent for writing and improving e2e test
+- [ ] Setup Hermes on the VPS and assign issues
 
 ### API
 
