@@ -35,7 +35,7 @@ self-maintain its credentials after each refresh.
 │     a. POST refresh_token to Strava token endpoint      │
 │     b. Receive new access_token + refresh_token         │
 │     c. Update strava_tokens row                         │
-│  3. GET /api/v3/athlete/activities?after=<24h ago>      │
+│  3. GET /api/v3/athlete/activities?per_page=20          │
 │  4. Filter to ride sport_types, convert units           │
 │  5. Upsert into strava_rides (idempotent on             │
 │     strava_activity_id)                                 │
