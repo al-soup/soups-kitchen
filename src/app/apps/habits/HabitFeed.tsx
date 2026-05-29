@@ -3,11 +3,22 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ActionType, HabitDetail } from "@/lib/supabase/types";
 import { useUserRole } from "@/hooks/useUserRole";
+import { getLocalToday } from "@/lib/dateUtils";
 import { getHabitFeed, PAGE_SIZE } from "./api";
 import { HabitFeedItem } from "./HabitFeedItem";
 import styles from "./HabitFeed.module.css";
 
 type DateGroup = { date: string; label: string; habits: HabitDetail[] };
+
+function formatDateLabel(date: string): string {
+  const base = new Date(date + "T12:00:00").toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  return date === getLocalToday() ? `${base} (Today)` : base;
+}
 
 function groupByDate(items: HabitDetail[]): DateGroup[] {
   const map = new Map<string, HabitDetail[]>();
@@ -18,11 +29,7 @@ function groupByDate(items: HabitDetail[]): DateGroup[] {
   }
   return Array.from(map.entries()).map(([date, habits]) => ({
     date,
-    label: new Date(date + "T12:00:00").toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
+    label: formatDateLabel(date),
     habits,
   }));
 }
@@ -87,13 +94,7 @@ export function HabitFeed({
     return <div className={styles.emptyState}>{error}</div>;
   }
 
-  const filterLabel = selectedDate
-    ? new Date(selectedDate + "T12:00:00").toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : null;
+  const filterLabel = selectedDate ? formatDateLabel(selectedDate) : null;
 
   return (
     <div className={styles.feed}>
