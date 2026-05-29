@@ -2,6 +2,7 @@
 
 import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useAuth } from "@/context/AuthContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { listTags } from "@/app/apps/knowledge-base/tags/api";
@@ -15,7 +16,6 @@ import {
   updateKnowledge,
 } from "../_form/api";
 import { KnowledgeFields } from "../_form/KnowledgeFields";
-import { MarkdownDetail } from "../_form/MarkdownDetail";
 import {
   extractResourceIds,
   replaceResourceTokens,
@@ -25,6 +25,11 @@ import { TagBreadcrumb } from "../_form/TagBreadcrumb";
 import { formatDate, formatDateTime } from "../_form/format";
 import sharedStyles from "../../../shared-page.module.css";
 import styles from "./page.module.css";
+
+const MarkdownDetail = dynamic(
+  () => import("../_form/MarkdownDetail").then((m) => m.MarkdownDetail),
+  { ssr: false, loading: () => <div className={styles.detailSkeleton} /> }
+);
 
 interface DetailPageProps {
   params: Promise<{ id: string }>;

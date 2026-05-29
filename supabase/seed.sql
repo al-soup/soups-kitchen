@@ -156,7 +156,15 @@ Beats hash indexes for ranges and ordering; beats a heap scan for selective look
 **Pessimistic** (`SELECT … FOR UPDATE`):
 - Holds a row lock until commit.
 - Use when conflicts are common or retries are expensive (long workflows, side effects).
-- Watch for deadlocks — acquire locks in a consistent order.$md$,
+- Watch for deadlocks — acquire locks in a consistent order.
+
+```sql
+-- Pessimistic: lock the row, then update
+BEGIN;
+SELECT balance FROM account WHERE id = 42 FOR UPDATE;
+UPDATE account SET balance = balance - 100 WHERE id = 42;
+COMMIT;
+```$md$,
       now() - interval '4 days'
     ),
     (
@@ -191,7 +199,16 @@ Worst case happens when:
 2. The hash function is weak.
 3. The bucket array is too small and was never resized.
 
-Defenses: randomized hash seeds (Python, Java since 8), tree-ified buckets above a threshold (Java's `HashMap` switches to a red-black tree at 8 entries → worst case O(log n)).$md$,
+Defenses: randomized hash seeds (Python, Java since 8), tree-ified buckets above a threshold (Java's `HashMap` switches to a red-black tree at 8 entries → worst case O(log n)).
+
+```ts
+// Worst case: every key hashes to the same bucket
+const buckets: string[][] = Array.from({ length: 8 }, () => []);
+for (const key of adversarialKeys) {
+  const i = weakHash(key) % buckets.length; // always returns 0
+  buckets[i].push(key); // one bucket grows → lookup is O(n)
+}
+```$md$,
       now() - interval '1 day'
     )
   RETURNING id, question

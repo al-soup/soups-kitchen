@@ -60,6 +60,7 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Create an overview chart option where the different action types can be combined
 - [ ] Create other types of insight graphs for habits
 - [ ] Include tracking of productive hours
+- [ ] Show "Today" label in the feed
 
 #### Fahrplan
 
@@ -72,6 +73,9 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Instead (or in addtion to) the Speech-Notes app, i could create an API to create new knowledge entries via Speech/LLM
 - [ ] Create an Interview-me feature
 - [ ] Open for public reads
+- [ ] Returning from detail to list should retain the selected search & filter
+- [ ] Display warning for unsaved changes
+- [ ] Add button that inserts a code-block
 
 #### Question Game
 

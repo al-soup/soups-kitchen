@@ -83,6 +83,75 @@
   font-size: inherit;
 }
 
+/* Syntax highlighting (hljs-* classes added by the highlight plugin).
+   Colors are theme-driven via --hl-* variables in globals.css. */
+.md :global(.hljs-comment),
+.md :global(.hljs-quote) {
+  color: var(--hl-comment);
+  font-style: italic;
+}
+
+.md :global(.hljs-keyword),
+.md :global(.hljs-selector-tag),
+.md :global(.hljs-literal),
+.md :global(.hljs-section),
+.md :global(.hljs-doctag),
+.md :global(.hljs-name) {
+  color: var(--hl-keyword);
+}
+
+.md :global(.hljs-string),
+.md :global(.hljs-regexp),
+.md :global(.hljs-addition) {
+  color: var(--hl-string);
+}
+
+.md :global(.hljs-number),
+.md :global(.hljs-symbol),
+.md :global(.hljs-bullet) {
+  color: var(--hl-number);
+}
+
+.md :global(.hljs-title),
+.md :global(.hljs-title.function_),
+.md :global(.hljs-title.class_) {
+  color: var(--hl-function);
+}
+
+.md :global(.hljs-variable),
+.md :global(.hljs-template-variable),
+.md :global(.hljs-attr),
+.md :global(.hljs-attribute),
+.md :global(.hljs-params) {
+  color: var(--hl-variable);
+}
+
+.md :global(.hljs-type),
+.md :global(.hljs-built_in) {
+  color: var(--hl-type);
+}
+
+.md :global(.hljs-meta),
+.md :global(.hljs-meta .hljs-keyword) {
+  color: var(--hl-meta);
+}
+
+.md :global(.hljs-deletion) {
+  color: var(--color-error, #ef4444);
+}
+
+.md :global(.hljs-emphasis) {
+  font-style: italic;
+}
+
+.md :global(.hljs-strong) {
+  font-weight: 600;
+}
+
+.md :global(.hljs-link) {
+  text-decoration: underline;
+}
+
 .md blockquote {
   margin: 0 0 12px;
   padding: 4px 0 4px 14px;

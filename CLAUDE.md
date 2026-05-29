@@ -134,7 +134,10 @@ src/
       knowledge-base/_form/   # Private shared: KnowledgeFields (controlled fields:
                               # question, summary, detail, TagPicker, ResourcePicker),
                               # KnowledgeForm (uncontrolled wrapper for create page),
-                              # MarkdownDetail (react-markdown + remark-gfm),
+                              # MarkdownDetail (react-markdown + remark-gfm
+                              # + curated highlight.js syntax highlighting via
+                              # local highlight.ts rehype plugin; theme colors
+                              # via --hl-* vars in globals.css),
                               # TagBreadcrumb (uppercase topics ❯ concepts, size sm|md),
                               # TagPills (multi-select filter pills, shared
                               # pills.module.css), SearchBox (debounced text
