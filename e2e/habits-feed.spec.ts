@@ -21,8 +21,8 @@ test.describe("Habits — Feed", () => {
   }) => {
     const header = page.locator("[class*='dateHeader']").first();
     await expect(header).toBeVisible({ timeout: 10000 });
-    // e.g. "28 Feb 2026"
-    await expect(header).toHaveText(/^\d{1,2} \w{3} \d{4}$/);
+    // e.g. "Friday, 28 Feb 2026" or "Friday, 28 Feb 2026 (Today)"
+    await expect(header).toHaveText(/^\w+, \d{1,2} \w{3} \d{4}( \(Today\))?$/);
   });
 
   test("level badges show L{n} format", async ({ page }) => {

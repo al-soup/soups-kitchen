@@ -2,6 +2,7 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { rehypeHighlightCurated } from "./highlight";
 import styles from "./MarkdownDetail.module.css";
 
 interface MarkdownDetailProps {
@@ -13,6 +14,7 @@ export function MarkdownDetail({ source }: MarkdownDetailProps) {
     <div className={styles.md}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeHighlightCurated]}
         skipHtml
         components={{
           a: ({ href, children, ...rest }) => (

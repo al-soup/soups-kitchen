@@ -51,6 +51,7 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Add `redirectTo` param to all protected page redirects (currently only `/habits/create`)
 - [ ] Some apps will not require a theme / should be able to introduce their own theme and overwrite the defaults so there is more of a standalone app feel.
 - [ ] Set-up proper error handling
+- [ ] Solve GH issues automatically via agents
 
 ### Apps
 
@@ -59,11 +60,8 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Create filter and sorting for overview page
 - [ ] Create an overview chart option where the different action types can be combined
 - [ ] Create other types of insight graphs for habits
-- [ ] Include tracking of productive hours
 
 #### Fahrplan
-
-- [ ] Instead of changing the location and then using the current location, there should be a sync button for the current location
 
 #### Knowledge Base
 
@@ -72,6 +70,9 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Instead (or in addtion to) the Speech-Notes app, i could create an API to create new knowledge entries via Speech/LLM
 - [ ] Create an Interview-me feature
 - [ ] Open for public reads
+- [ ] Returning from detail to list should retain the selected search & filter
+- [ ] Display warning for unsaved changes
+- [ ] Add button that inserts a code-block
 
 #### Question Game
 

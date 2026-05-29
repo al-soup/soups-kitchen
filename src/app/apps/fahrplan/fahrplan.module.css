@@ -30,6 +30,14 @@
   justify-content: center;
 }
 
+.stationActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .stationName {
   font-size: 1.4rem;
   font-weight: 700;
@@ -52,6 +60,32 @@
 .changeButton:hover {
   border-color: var(--zvv-accent);
   color: var(--zvv-accent);
+}
+
+.syncButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border: 1px solid var(--zvv-text-muted);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--zvv-text-muted);
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.syncButton:hover:not(:disabled) {
+  border-color: var(--zvv-accent);
+  color: var(--zvv-accent);
+}
+
+.syncButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .locateButton {
@@ -78,6 +112,21 @@
 .locateButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.cancelButton {
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--zvv-text-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.cancelButton:hover {
+  color: var(--zvv-accent);
 }
 
 .locateError {

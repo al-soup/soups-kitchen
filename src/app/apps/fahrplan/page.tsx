@@ -69,19 +69,43 @@ export default function FahrplanPage() {
             <LocateIcon size={18} />
             {locating ? "Locating…" : "Use my location"}
           </button>
+          {station && changing && (
+            <button
+              className={styles.cancelButton}
+              onClick={() => {
+                setChanging(false);
+                setLocateError(null);
+              }}
+            >
+              Cancel
+            </button>
+          )}
           {locateError && <p className={styles.locateError}>{locateError}</p>}
         </>
       ) : (
         <>
           <div className={styles.stationHeader}>
             <span className={styles.stationName}>{station}</span>
+          </div>
+          <div className={styles.stationActions}>
             <button
               className={styles.changeButton}
               onClick={() => setChanging(true)}
             >
               Change
             </button>
+            <button
+              className={styles.syncButton}
+              onClick={handleLocate}
+              disabled={locating}
+              aria-label="Sync to current location"
+              title="Sync to current location"
+            >
+              <LocateIcon size={16} />
+              {locating ? "Syncing…" : "Current Location"}
+            </button>
           </div>
+          {locateError && <p className={styles.locateError}>{locateError}</p>}
           <DepartureBoard key={station} station={station} />
         </>
       )}

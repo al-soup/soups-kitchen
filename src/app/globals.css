@@ -17,6 +17,16 @@
   --foreground-muted: #666666;
   --border-color: #e5e5e5;
 
+  /* Syntax highlighting tokens (light) */
+  --hl-comment: #6a737d;
+  --hl-keyword: #d73a49;
+  --hl-string: #032f62;
+  --hl-number: #005cc5;
+  --hl-function: #6f42c1;
+  --hl-variable: #e36209;
+  --hl-type: #005cc5;
+  --hl-meta: #6a737d;
+
   /* Habit score graph levels — type 1 (green) */
   --habit-score-level-0: #ebedf0;
   --habit-score-level-1: #dafee0;
@@ -74,6 +84,16 @@
   /* Lighter concept color: original navy is unreadable on dark bg. */
   --tag-concept: #88aedc;
 
+  /* Syntax highlighting tokens (dark) */
+  --hl-comment: #8b949e;
+  --hl-keyword: #ff7b72;
+  --hl-string: #a5d6ff;
+  --hl-number: #79c0ff;
+  --hl-function: #d2a8ff;
+  --hl-variable: #ffa657;
+  --hl-type: #79c0ff;
+  --hl-meta: #8b949e;
+
   /* Habit score graph levels */
   --habit-score-level-0: #161b22;
   --habit-score-level-1: #0a3219;
@@ -112,6 +132,16 @@
   --radius-sm: 0;
   --radius-md: 0;
   --radius-lg: 0;
+
+  /* Syntax highlighting tokens (neo-brutalist) — bold hues on cream bg */
+  --hl-comment: #767600;
+  --hl-keyword: #c2185b;
+  --hl-string: #1b7a35;
+  --hl-number: #1456b8;
+  --hl-function: #6a1b9a;
+  --hl-variable: #c44a00;
+  --hl-type: #1456b8;
+  --hl-meta: #555555;
 
   /* Habit score graph levels */
   --habit-score-level-0: #e0dfc0;
