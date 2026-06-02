@@ -26,8 +26,8 @@ export default function CreateKnowledgePage() {
 
   const handleSubmit = useCallback(
     async (input: KnowledgeFormInput) => {
-      await createKnowledge(input);
-      router.push("/apps/knowledge-base");
+      const entry = await createKnowledge(input);
+      router.push(`/apps/knowledge-base/${entry.id}`);
     },
     [router]
   );
