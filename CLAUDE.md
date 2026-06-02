@@ -146,6 +146,8 @@ src/
                               # + curated highlight.js syntax highlighting via
                               # local highlight.ts rehype plugin; theme colors
                               # via --hl-* vars in globals.css),
+                              # MarkdownSummary (inline-only react-markdown for
+                              # the entry summary — bold/italic/links/code),
                               # TagBreadcrumb (uppercase topics ❯ concepts, size sm|md),
                               # TagPills (multi-select filter pills, shared
                               # pills.module.css), SearchBox (debounced text
