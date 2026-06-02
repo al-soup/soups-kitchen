@@ -70,7 +70,7 @@ export function KnowledgeFields({ value, onChange }: KnowledgeFieldsProps) {
   );
 
   const insertAtCursor = useCallback(
-    (text: string) => {
+    (text: string, cursorOffset?: number) => {
       const textarea = detailRef.current;
       const current = value.detail ?? "";
       if (!textarea) {
@@ -86,12 +86,28 @@ export function KnowledgeFields({ value, onChange }: KnowledgeFieldsProps) {
       update({ detail: next });
       requestAnimationFrame(() => {
         textarea.focus();
-        const pos = start + text.length;
+        const pos = start + (cursorOffset ?? text.length);
         textarea.setSelectionRange(pos, pos);
       });
     },
     [value.detail, update]
   );
+
+  const insertCodeBlock = useCallback(() => {
+    const textarea = detailRef.current;
+    const current = value.detail ?? "";
+    const start = textarea?.selectionStart ?? current.length;
+    const end = textarea?.selectionEnd ?? current.length;
+    const before = current.slice(0, start);
+    const after = current.slice(end);
+    const leadingNewlines =
+      before.length === 0 || before.endsWith("\n") ? "" : "\n";
+    const trailingNewlines =
+      after.length === 0 || after.startsWith("\n") ? "" : "\n";
+    const block = `${leadingNewlines}\`\`\`\n\n\`\`\`${trailingNewlines}`;
+    const cursorOffset = leadingNewlines.length + 4;
+    insertAtCursor(block, cursorOffset);
+  }, [value.detail, insertAtCursor]);
 
   return (
     <div className={styles.fields}>
@@ -131,6 +147,13 @@ export function KnowledgeFields({ value, onChange }: KnowledgeFieldsProps) {
           rows={10}
         />
         <div className={styles.detailActions}>
+          <button
+            type="button"
+            className={styles.insertBtn}
+            onClick={insertCodeBlock}
+          >
+            Insert code block
+          </button>
           <button
             type="button"
             className={styles.insertBtn}
