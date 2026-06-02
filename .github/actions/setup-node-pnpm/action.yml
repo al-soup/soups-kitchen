@@ -13,6 +13,17 @@ runs:
       with:
         node-version: 25
         cache: "pnpm"
+    - name: Debug pnpm config
+      shell: bash
+      run: |
+        echo "pnpm version:"
+        pnpm --version
+        echo "---"
+        echo "pnpm-workspace.yaml:"
+        cat pnpm-workspace.yaml || echo "(missing)"
+        echo "---"
+        echo "onlyBuiltDependencies:"
+        pnpm config get onlyBuiltDependencies
     - name: Install dependencies
       shell: bash
       run: pnpm install
