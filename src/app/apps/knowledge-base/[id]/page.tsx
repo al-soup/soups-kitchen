@@ -153,6 +153,23 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
     return () => window.removeEventListener("beforeunload", handler);
   }, [isDirty]);
 
+  // Intercept browser back/forward navigation while there are unsaved changes.
+  // Pushes a sentinel history entry; on popstate we prompt and either let the
+  // navigation proceed or re-push the sentinel to stay put.
+  useEffect(() => {
+    if (!isDirty) return;
+    window.history.pushState({ __kbGuard: true }, "");
+    const handler = () => {
+      if (window.confirm("You have unsaved changes. Leave without saving?")) {
+        window.history.back();
+      } else {
+        window.history.pushState({ __kbGuard: true }, "");
+      }
+    };
+    window.addEventListener("popstate", handler);
+    return () => window.removeEventListener("popstate", handler);
+  }, [isDirty]);
+
   const handleSave = useCallback(async () => {
     if (!draft) return;
     setSubmitting(true);
