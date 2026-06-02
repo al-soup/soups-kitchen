@@ -28,7 +28,10 @@ returns table (
 )
 language sql
 stable
-set pg_trgm.word_similarity_threshold = 0.2
+-- Inlines the trigram threshold (0.2) via explicit word_similarity() > 0.2
+-- comparisons instead of `set pg_trgm.word_similarity_threshold` + `<%`,
+-- because hosted Supabase forbids non-superusers from setting that GUC in a
+-- function definition (SQLSTATE 42501).
 as $$
   with query as (
     select
@@ -72,8 +75,8 @@ as $$
   and (
     query.q is null
     or k.search_vector @@ query.tsq
-    or query.q <% k.question
-    or query.q <% k.summary
+    or word_similarity(query.q, k.question) > 0.2
+    or word_similarity(query.q, k.summary) > 0.2
   )
   order by
     case
