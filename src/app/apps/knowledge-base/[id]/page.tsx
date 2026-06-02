@@ -93,8 +93,9 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
     }
   }, [authLoading, user, router, pathname]);
 
+  const userId = user?.id;
   useEffect(() => {
-    if (authLoading || !user || !idValid) return;
+    if (authLoading || !userId || !idValid) return;
     const controller = new AbortController();
     Promise.all([getKnowledge(id), listTags()])
       .then(([{ entry, tagIds }, allTags]) => {
@@ -113,7 +114,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
         }
       });
     return () => controller.abort();
-  }, [id, idValid, authLoading, user]);
+  }, [id, idValid, authLoading, userId]);
 
   const isDirty = useMemo(
     () => (draft && committed ? isDraftDirty(draft, committed) : false),
