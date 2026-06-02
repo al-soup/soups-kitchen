@@ -284,28 +284,6 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
         <h1 className={styles.question}>
           {mode === "preview" ? draft.question || entry.question : "Edit entry"}
         </h1>
-        <button
-          type="button"
-          className={styles.modeToggle}
-          onClick={() => setMode(mode === "preview" ? "edit" : "preview")}
-          aria-label={
-            mode === "preview"
-              ? "Switch to edit mode"
-              : "Switch to preview mode"
-          }
-        >
-          {mode === "preview" ? (
-            <>
-              <PencilIcon size={14} />
-              <span>Edit</span>
-            </>
-          ) : (
-            <>
-              <EyeIcon size={14} />
-              <span>Preview</span>
-            </>
-          )}
-        </button>
       </div>
 
       {mode === "preview" ? (
@@ -371,6 +349,27 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
           <span className={styles.saved}>Saved.</span>
         ) : null}
       </div>
+
+      <button
+        type="button"
+        className={styles.modeFab}
+        onClick={() => setMode(mode === "preview" ? "edit" : "preview")}
+        aria-label={
+          mode === "preview" ? "Switch to edit mode" : "Switch to preview mode"
+        }
+      >
+        {mode === "preview" ? (
+          <>
+            <PencilIcon size={14} />
+            <span>Edit</span>
+          </>
+        ) : (
+          <>
+            <EyeIcon size={14} />
+            <span>Preview</span>
+          </>
+        )}
+      </button>
     </div>
   );
 }
