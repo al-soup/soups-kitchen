@@ -15,6 +15,7 @@ export type KnowledgeListItem = Knowledge & { tags: Tag[] };
 export type KnowledgeListPage = {
   items: KnowledgeListItem[];
   hasMore: boolean;
+  total: number;
 };
 
 export const RESOURCES_BUCKET = "resources";

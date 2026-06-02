@@ -131,6 +131,11 @@ src/
                       # category, AND across categories; q AND-composes with
                       # both. Tags render as a mono-font breadcrumb path
                       # ([topic1, topic2 > concept1 concept2]).
+                      # Right-aligned counter row above the list shows
+                      # "X of Y entries" (filtered) or "Y entries" (unfiltered).
+                      # Matching count comes from search_knowledge via a
+                      # count(*) over () window column (total_count); total
+                      # comes from a separate head:true count of knowledge.
       knowledge-base/tags/  # Tags admin (api.ts CRUD, TagSection, TagRow); topic & concept
       knowledge-base/create/  # New entry form page (uses KnowledgeForm)
       knowledge-base/[id]/   # Single route per entry: Preview ↔ Edit toggle.
