@@ -168,11 +168,26 @@ export async function listKnowledge({
   const rows = data ?? [];
   const hasMore = rows.length > limit;
   const visible = hasMore ? rows.slice(0, limit) : rows;
+  const total = Number(rows[0]?.total_count ?? 0);
 
-  const items: KnowledgeListItem[] = visible.map((row) => {
-    const { tags: tagsJson, ...rest } = row;
-    return { ...rest, tags: (tagsJson ?? []) as Tag[] };
-  });
+  const items: KnowledgeListItem[] = visible.map((row) => ({
+    id: row.id,
+    question: row.question,
+    summary: row.summary,
+    detail: row.detail,
+    search_vector: row.search_vector,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    tags: (row.tags ?? []) as Tag[],
+  }));
 
-  return { items, hasMore };
+  return { items, hasMore, total };
+}
+
+export async function getKnowledgeTotal(): Promise<number> {
+  const { count, error } = await getSupabase()
+    .from("knowledge")
+    .select("id", { count: "exact", head: true });
+  if (error) throw new Error(error.message);
+  return count ?? 0;
 }

@@ -31,6 +31,11 @@ const MarkdownDetail = dynamic(
   { ssr: false, loading: () => <div className={styles.detailSkeleton} /> }
 );
 
+const MarkdownSummary = dynamic(
+  () => import("../_form/MarkdownSummary").then((m) => m.MarkdownSummary),
+  { ssr: false, loading: () => null }
+);
+
 interface DetailPageProps {
   params: Promise<{ id: string }>;
 }
@@ -307,7 +312,9 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
             </p>
           )}
 
-          <p className={styles.summary}>{draft.summary}</p>
+          <div className={styles.summary}>
+            <MarkdownSummary source={draft.summary} />
+          </div>
 
           {renderedDetail && <MarkdownDetail source={renderedDetail} />}
 

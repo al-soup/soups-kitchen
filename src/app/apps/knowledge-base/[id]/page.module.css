@@ -72,11 +72,6 @@
 
 .summary {
   position: relative;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  line-height: 1.45;
-  font-weight: 500;
-  color: var(--foreground);
   margin: 8px 0 28px;
   padding: 22px 24px;
   background: transparent;

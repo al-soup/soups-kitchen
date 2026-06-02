@@ -8,6 +8,7 @@ import {
   getKnowledge,
   deleteKnowledge,
   listKnowledge,
+  getKnowledgeTotal,
   NotFoundError,
 } from "./api";
 
@@ -411,5 +412,39 @@ describe("listKnowledge", () => {
       .mockResolvedValue({ data: null, error: { message: "boom" } });
     (getSupabase as jest.Mock).mockReturnValue({ rpc });
     await expect(listKnowledge()).rejects.toThrow("boom");
+  });
+
+  it("reads total from total_count on first row; defaults to 0 when empty", async () => {
+    setup([{ ...entry, id: 1, tags: [], total_count: 42 }]);
+    expect((await listKnowledge({ limit: 20 })).total).toBe(42);
+
+    setup([]);
+    expect((await listKnowledge({ limit: 20 })).total).toBe(0);
+  });
+});
+
+describe("getKnowledgeTotal", () => {
+  it("returns exact head-only count", async () => {
+    const select = jest.fn().mockResolvedValue({ count: 17, error: null });
+    (getSupabase as jest.Mock).mockReturnValue({
+      from: () => ({ select }),
+    });
+
+    expect(await getKnowledgeTotal()).toBe(17);
+    expect(select).toHaveBeenCalledWith("id", { count: "exact", head: true });
+  });
+
+  it("returns 0 when count is null", async () => {
+    const select = jest.fn().mockResolvedValue({ count: null, error: null });
+    (getSupabase as jest.Mock).mockReturnValue({ from: () => ({ select }) });
+    expect(await getKnowledgeTotal()).toBe(0);
+  });
+
+  it("throws on error", async () => {
+    const select = jest
+      .fn()
+      .mockResolvedValue({ count: null, error: { message: "perm denied" } });
+    (getSupabase as jest.Mock).mockReturnValue({ from: () => ({ select }) });
+    await expect(getKnowledgeTotal()).rejects.toThrow("perm denied");
   });
 });

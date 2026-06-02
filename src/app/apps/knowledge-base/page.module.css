@@ -94,6 +94,15 @@
   border-color: var(--foreground);
 }
 
+.statsRow {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.75rem;
+  color: var(--foreground-muted);
+  margin: 0 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+
 .list {
   display: flex;
   flex-direction: column;

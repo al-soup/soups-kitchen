@@ -6,7 +6,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useCanManage } from "@/hooks/useCanManage";
 import type { KnowledgeListItem, Tag } from "@/lib/supabase/types";
-import { listKnowledge } from "./_form/api";
+import { getKnowledgeTotal, listKnowledge } from "./_form/api";
 import { listTags } from "./tags/api";
 import { TagBreadcrumb } from "./_form/TagBreadcrumb";
 import { TagPills } from "./_form/TagPills";
@@ -60,6 +60,8 @@ function KnowledgeBasePageInner() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+  const [filteredCount, setFilteredCount] = useState<number | null>(null);
 
   const tagsByName = useMemo(() => {
     const m = new Map<string, Tag>();
@@ -110,6 +112,19 @@ function KnowledgeBasePageInner() {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
+    getKnowledgeTotal()
+      .then((n) => {
+        if (controller.signal.aborted) return;
+        setTotalCount(n);
+      })
+      .catch(() => {
+        // Counter is non-critical; swallow so it doesn't replace the list error.
+      });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
     if (!knowledgeFetchReady) return;
     const controller = new AbortController();
     listKnowledge({ offset: 0, limit: PAGE_SIZE, topicIds, conceptIds, q })
@@ -118,6 +133,7 @@ function KnowledgeBasePageInner() {
         setItems(page.items);
         setOffset(PAGE_SIZE);
         setHasMore(page.hasMore);
+        setFilteredCount(page.total);
         setError(null);
       })
       .catch((err: Error) => {
@@ -188,6 +204,7 @@ function KnowledgeBasePageInner() {
         setItems((prev) => [...prev, ...page.items]);
         setOffset((prev) => prev + PAGE_SIZE);
         setHasMore(page.hasMore);
+        setFilteredCount(page.total);
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoadingMore(false));
@@ -263,6 +280,14 @@ function KnowledgeBasePageInner() {
             </button>
           </div>
         </div>
+      )}
+
+      {!loading && !error && totalCount !== null && filteredCount !== null && (
+        <p className={styles.statsRow}>
+          {hasFilters
+            ? `${filteredCount} of ${totalCount} entries`
+            : `${totalCount} entries`}
+        </p>
       )}
 
       {loading ? (

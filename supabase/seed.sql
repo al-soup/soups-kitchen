@@ -137,7 +137,7 @@ WITH inserted AS (
   INSERT INTO public.knowledge (question, summary, detail, created_at) VALUES
     (
       'Why use a B-tree index?',
-      'B-trees keep keys sorted on disk in shallow, balanced pages — point and range lookups stay O(log n) even for billions of rows.',
+      '**B-trees** keep keys sorted on disk in shallow, *balanced* pages — point and range lookups stay `O(log n)` even for [billions of rows](https://en.wikipedia.org/wiki/B-tree).',
       $md$A B-tree node holds many keys (hundreds), so the tree is **wide and shallow**. A few page reads is enough to find any key.
 
 - **Point lookups**: `WHERE id = ?` — walk root → leaf.

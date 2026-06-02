@@ -310,6 +310,7 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"];
       };
       is_global_admin: { Args: never; Returns: boolean };
+      is_manager_of: { Args: { target_table: string }; Returns: boolean };
       search_knowledge: {
         Args: {
           concept_ids?: string[];
@@ -326,6 +327,7 @@ export type Database = {
           search_vector: unknown;
           summary: string;
           tags: Json;
+          total_count: number;
           updated_at: string;
         }[];
       };
