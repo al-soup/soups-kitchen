@@ -13,9 +13,9 @@ test.describe("Knowledge Base", () => {
     ).toBeVisible();
 
     // No manager-only toolbar buttons.
-    await expect(
-      page.getByRole("link", { name: "+ New entry" })
-    ).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "+ New entry" })).toHaveCount(
+      0
+    );
     await expect(
       page.getByRole("link", { name: "Tags", exact: true })
     ).toHaveCount(0);
