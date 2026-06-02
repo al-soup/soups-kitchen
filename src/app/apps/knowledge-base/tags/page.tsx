@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useCanManage } from "@/hooks/useCanManage";
 import type { Tag, TagType } from "@/lib/supabase/types";
 import { listTags, createTag, renameTag, deleteTag } from "./api";
 import { TagSection } from "./TagSection";
@@ -15,22 +15,19 @@ export default function TagsAdminPage() {
   usePageTitle("Tags", "Knowledge Base");
 
   const router = useRouter();
-  const pathname = usePathname();
-  const { user, loading: authLoading } = useAuth();
+  const { canManage, loading: roleLoading } = useCanManage("knowledge");
 
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      router.replace(`/login?redirectTo=${encodeURIComponent(pathname)}`);
-    }
-  }, [authLoading, user, router, pathname]);
+    if (roleLoading) return;
+    if (!canManage) router.replace("/apps/knowledge-base");
+  }, [roleLoading, canManage, router]);
 
   useEffect(() => {
-    if (authLoading || !user) return;
+    if (roleLoading || !canManage) return;
     const controller = new AbortController();
     listTags()
       .then((data) => {
@@ -47,7 +44,7 @@ export default function TagsAdminPage() {
         setLoading(false);
       });
     return () => controller.abort();
-  }, [authLoading, user]);
+  }, [roleLoading, canManage]);
 
   const handleCreate = useCallback(async (name: string, type: TagType) => {
     const created = await createTag(name, type);
@@ -77,7 +74,7 @@ export default function TagsAdminPage() {
     };
   }, [tags]);
 
-  if (authLoading || !user) {
+  if (roleLoading || !canManage) {
     return (
       <div className={sharedStyles.page}>
         <p>Loading...</p>

@@ -1,10 +1,10 @@
 "use client";
 
 import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { useAuth } from "@/context/AuthContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useCanManage } from "@/hooks/useCanManage";
 import { listTags } from "@/app/apps/knowledge-base/tags/api";
 import { getSignedUrlsByIds, type ResolvedResource } from "@/app/resources/api";
 import { EyeIcon, PencilIcon } from "@/constants/icons";
@@ -62,8 +62,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   usePageTitle("Entry", "Knowledge Base");
 
   const router = useRouter();
-  const pathname = usePathname();
-  const { user, loading: authLoading } = useAuth();
+  const { canManage } = useCanManage("knowledge");
 
   const [state, setState] = useState<LoadState>(
     idValid ? { kind: "loading" } : { kind: "notFound" }
@@ -87,14 +86,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   );
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      router.replace(`/login?redirectTo=${encodeURIComponent(pathname)}`);
-    }
-  }, [authLoading, user, router, pathname]);
-
-  useEffect(() => {
-    if (authLoading || !user || !idValid) return;
+    if (!idValid) return;
     const controller = new AbortController();
     Promise.all([getKnowledge(id), listTags()])
       .then(([{ entry, tagIds }, allTags]) => {
@@ -113,7 +105,13 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
         }
       });
     return () => controller.abort();
-  }, [id, idValid, authLoading, user]);
+  }, [id, idValid]);
+
+  // Snap back to preview if a viewer somehow ends up in edit mode (e.g. lost
+  // role between mounts).
+  useEffect(() => {
+    if (!canManage && mode !== "preview") setMode("preview");
+  }, [canManage, mode]);
 
   const isDirty = useMemo(
     () => (draft && committed ? isDraftDirty(draft, committed) : false),
@@ -150,6 +148,23 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
     };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
+
+  // Intercept browser back/forward navigation while there are unsaved changes.
+  // Pushes a sentinel history entry; on popstate we prompt and either let the
+  // navigation proceed or re-push the sentinel to stay put.
+  useEffect(() => {
+    if (!isDirty) return;
+    window.history.pushState({ __kbGuard: true }, "");
+    const handler = () => {
+      if (window.confirm("You have unsaved changes. Leave without saving?")) {
+        window.history.back();
+      } else {
+        window.history.pushState({ __kbGuard: true }, "");
+      }
+    };
+    window.addEventListener("popstate", handler);
+    return () => window.removeEventListener("popstate", handler);
   }, [isDirty]);
 
   const handleSave = useCallback(async () => {
@@ -202,22 +217,21 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   }, [id, deleting, router]);
 
   const handleBack = useCallback(() => {
-    if (
-      isDirty &&
-      !window.confirm("You have unsaved changes. Leave without saving?")
-    ) {
+    if (isDirty) {
+      if (!window.confirm("You have unsaved changes. Leave without saving?")) {
+        return;
+      }
+      // Dirty path also pushed a popstate sentinel; falling through to back()
+      // would only consume the sentinel. Push the list URL directly instead.
+      router.push("/apps/knowledge-base");
       return;
     }
-    router.push("/apps/knowledge-base");
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/apps/knowledge-base");
+    }
   }, [isDirty, router]);
-
-  if (authLoading || !user) {
-    return (
-      <div className={sharedStyles.page}>
-        <p>Loading…</p>
-      </div>
-    );
-  }
 
   if (state.kind === "loading" || !draft) {
     return (
@@ -267,7 +281,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
     !submitting &&
     isDirty;
 
-  const showActions = isDirty || mode === "edit";
+  const showActions = canManage && (isDirty || mode === "edit");
 
   return (
     <div className={sharedStyles.page}>
@@ -283,28 +297,6 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
         <h1 className={styles.question}>
           {mode === "preview" ? draft.question || entry.question : "Edit entry"}
         </h1>
-        <button
-          type="button"
-          className={styles.modeToggle}
-          onClick={() => setMode(mode === "preview" ? "edit" : "preview")}
-          aria-label={
-            mode === "preview"
-              ? "Switch to edit mode"
-              : "Switch to preview mode"
-          }
-        >
-          {mode === "preview" ? (
-            <>
-              <PencilIcon size={14} />
-              <span>Edit</span>
-            </>
-          ) : (
-            <>
-              <EyeIcon size={14} />
-              <span>Preview</span>
-            </>
-          )}
-        </button>
       </div>
 
       {mode === "preview" ? (
@@ -370,6 +362,31 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
           <span className={styles.saved}>Saved.</span>
         ) : null}
       </div>
+
+      {canManage && (
+        <button
+          type="button"
+          className={styles.modeFab}
+          onClick={() => setMode(mode === "preview" ? "edit" : "preview")}
+          aria-label={
+            mode === "preview"
+              ? "Switch to edit mode"
+              : "Switch to preview mode"
+          }
+        >
+          {mode === "preview" ? (
+            <>
+              <PencilIcon size={14} />
+              <span>Edit</span>
+            </>
+          ) : (
+            <>
+              <EyeIcon size={14} />
+              <span>Preview</span>
+            </>
+          )}
+        </button>
+      )}
     </div>
   );
 }

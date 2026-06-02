@@ -3,8 +3,8 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useCanManage } from "@/hooks/useCanManage";
 import type { KnowledgeListItem, Tag } from "@/lib/supabase/types";
 import { listKnowledge } from "./_form/api";
 import { listTags } from "./tags/api";
@@ -38,7 +38,7 @@ function KnowledgeBasePageInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { user, loading: authLoading } = useAuth();
+  const { canManage } = useCanManage("knowledge");
 
   const topicNames = useMemo(
     () => searchParams.getAll(TOPICS_PARAM),
@@ -94,14 +94,6 @@ function KnowledgeBasePageInner() {
   const knowledgeFetchReady = !hasTagFilters || tagsLoaded;
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      router.replace(`/login?redirectTo=${encodeURIComponent(pathname)}`);
-    }
-  }, [authLoading, user, router, pathname]);
-
-  useEffect(() => {
-    if (authLoading || !user) return;
     const controller = new AbortController();
     listTags()
       .then((all) => {
@@ -115,10 +107,9 @@ function KnowledgeBasePageInner() {
         setTagsLoaded(true);
       });
     return () => controller.abort();
-  }, [authLoading, user]);
+  }, []);
 
   useEffect(() => {
-    if (authLoading || !user) return;
     if (!knowledgeFetchReady) return;
     const controller = new AbortController();
     listKnowledge({ offset: 0, limit: PAGE_SIZE, topicIds, conceptIds, q })
@@ -139,8 +130,6 @@ function KnowledgeBasePageInner() {
       });
     return () => controller.abort();
   }, [
-    authLoading,
-    user,
     knowledgeFetchReady,
     topicIdsKey,
     conceptIdsKey,
@@ -204,14 +193,6 @@ function KnowledgeBasePageInner() {
       .finally(() => setLoadingMore(false));
   };
 
-  if (authLoading || !user) {
-    return (
-      <div className={sharedStyles.page}>
-        <p>Loading…</p>
-      </div>
-    );
-  }
-
   return (
     <div className={sharedStyles.page}>
       <h1 className={sharedStyles.title}>Knowledge Base</h1>
@@ -225,15 +206,22 @@ function KnowledgeBasePageInner() {
       </div>
 
       <div className={styles.toolbar}>
-        <Link
-          href="/apps/knowledge-base/create"
-          className={`${styles.toolbarBtn} ${styles.toolbarBtnPrimary}`}
-        >
-          + New entry
-        </Link>
-        <Link href="/apps/knowledge-base/tags" className={styles.toolbarBtn}>
-          Tags
-        </Link>
+        {canManage && (
+          <>
+            <Link
+              href="/apps/knowledge-base/create"
+              className={`${styles.toolbarBtn} ${styles.toolbarBtnPrimary}`}
+            >
+              + New entry
+            </Link>
+            <Link
+              href="/apps/knowledge-base/tags"
+              className={styles.toolbarBtn}
+            >
+              Tags
+            </Link>
+          </>
+        )}
         <Link href="/resources" className={styles.toolbarBtn}>
           Resources
         </Link>
@@ -287,7 +275,9 @@ function KnowledgeBasePageInner() {
             ? `No entries match "${q}".`
             : hasTagFilters
               ? "No entries match the current filters."
-              : "No entries yet. Create your first entry."}
+              : canManage
+                ? "No entries yet. Create your first entry."
+                : "No entries yet."}
         </p>
       ) : (
         <ul className={styles.list}>

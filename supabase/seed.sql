@@ -22,10 +22,12 @@ VALUES
 DELETE FROM public.user_roles;
 
 INSERT INTO public.user_roles (user_id, table_name, role) VALUES
-  ('a1111111-1111-1111-1111-111111111111', '_global', 'admin'),
-  ('a1111111-1111-1111-1111-111111111111', 'habit',   'admin'),
-  ('b2222222-2222-2222-2222-222222222222', 'habit',   'manager'),
-  ('c3333333-3333-3333-3333-333333333333', 'habit',   'viewer');
+  ('a1111111-1111-1111-1111-111111111111', '_global',   'admin'),
+  ('a1111111-1111-1111-1111-111111111111', 'habit',     'admin'),
+  ('b2222222-2222-2222-2222-222222222222', 'habit',     'manager'),
+  ('b2222222-2222-2222-2222-222222222222', 'knowledge', 'manager'),
+  ('b2222222-2222-2222-2222-222222222222', 'resources', 'manager'),
+  ('c3333333-3333-3333-3333-333333333333', 'habit',     'viewer');
 
 -- Actions: type 1-3 (1=sport, 2=bad habits, 3=learning)
 INSERT INTO public.action (name, description, type, level, created_at)

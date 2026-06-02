@@ -2,6 +2,7 @@
   "name": "soups-kitchen",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.5.0",
   "scripts": {
     "dev": "next dev",
     "dev:remote": "dotenv -e .env.remote -o -- next dev",
@@ -56,11 +57,5 @@
     "supabase": "^2.76.14",
     "ts-jest": "^29.4.6",
     "typescript": "^5"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp",
-      "supabase"
-    ]
   }
 }

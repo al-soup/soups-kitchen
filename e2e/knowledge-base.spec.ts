@@ -2,9 +2,42 @@ import { test, expect } from "@playwright/test";
 import { login } from "./helpers";
 
 test.describe("Knowledge Base", () => {
-  test("unauthenticated user redirected to login", async ({ page }) => {
+  test("anon can browse list and detail; no manager UI is shown", async ({
+    page,
+  }) => {
+    // List is public.
     await page.goto("/apps/knowledge-base");
-    await expect(page).toHaveURL("/login?redirectTo=%2Fapps%2Fknowledge-base");
+    await expect(page).toHaveURL("/apps/knowledge-base");
+    await expect(
+      page.getByRole("heading", { name: "Why use a B-tree index?" })
+    ).toBeVisible();
+
+    // No manager-only toolbar buttons.
+    await expect(page.getByRole("link", { name: "+ New entry" })).toHaveCount(
+      0
+    );
+    await expect(
+      page.getByRole("link", { name: "Tags", exact: true })
+    ).toHaveCount(0);
+
+    // Detail page is public.
+    await page.getByRole("link", { name: /Why use a B-tree index\?/ }).click();
+    await expect(page).toHaveURL(/\/apps\/knowledge-base\/\d+/);
+    await expect(
+      page.getByRole("heading", { name: "Why use a B-tree index?" })
+    ).toBeVisible();
+
+    // No Edit FAB / actions visible to anon.
+    await expect(
+      page.getByRole("button", { name: "Switch to edit mode" })
+    ).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Delete" })).toHaveCount(0);
+  });
+
+  test("anon hitting /resources is redirected to login", async ({ page }) => {
+    await page.goto("/resources");
+    await expect(page).toHaveURL("/login?redirectTo=%2Fresources");
   });
 
   test("overview lists seed entries", async ({ page }) => {
@@ -104,8 +137,15 @@ test.describe("Knowledge Base", () => {
     await page.getByRole("button", { name: tagName }).click();
     await page.getByRole("button", { name: "Create entry" }).click();
 
-    // Lands on overview; the entry shows with the new tag in its breadcrumb.
-    await expect(page).toHaveURL("/apps/knowledge-base");
+    // Lands on the new entry's detail page; tag breadcrumb is visible.
+    await expect(page).toHaveURL(/\/apps\/knowledge-base\/\d+/);
+    await expect(page.getByRole("heading", { name: question })).toBeVisible();
+    await expect(page.getByLabel("Tags")).toContainText(tagName, {
+      ignoreCase: true,
+    });
+
+    // The overview now lists the new entry with the tag in its breadcrumb.
+    await page.goto("/apps/knowledge-base");
     const card = page.getByRole("link", {
       name: new RegExp(question.replace("?", "\\?")),
     });
@@ -120,18 +160,11 @@ test.describe("Knowledge Base", () => {
     const initialQuestion = `e2e crud ${stamp}?`;
     const updatedQuestion = `e2e crud ${stamp} (edited)?`;
 
-    // CREATE
+    // CREATE — lands directly on the new entry's detail page.
     await page.goto("/apps/knowledge-base/create");
     await page.getByLabel("Question").fill(initialQuestion);
     await page.getByLabel("Summary").fill("Initial summary.");
     await page.getByRole("button", { name: "Create entry" }).click();
-    await expect(page).toHaveURL("/apps/knowledge-base");
-    await expect(
-      page.getByRole("heading", { name: initialQuestion })
-    ).toBeVisible();
-
-    // READ
-    await page.getByRole("heading", { name: initialQuestion }).click();
     await expect(page).toHaveURL(/\/apps\/knowledge-base\/\d+/);
     await expect(
       page.getByRole("heading", { name: initialQuestion })
