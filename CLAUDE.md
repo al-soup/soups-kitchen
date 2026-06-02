@@ -72,6 +72,7 @@ Clicking a colored day in `HabitScoreGraph` sets `selectedDate` state, which fil
 - **ThemeContext**: Supports "light", "dark", "neo-brutalist" themes
 - **AuthContext**: `AuthProvider` wraps app, exposes `useAuth()` → `{ user, accessToken, loading }`. Client-side Supabase auth via `@supabase/ssr`.
 - **useUserRole(table)**: Decodes JWT to extract role for a given table. Returns `{ role, loading }`.
+- **useCanManage(table)**: Sugar over `useUserRole`. Returns `{ canManage, loading }` where `canManage` is true for `manager` or `admin` (incl. `_global=admin`). Use this for gating write UI.
 - **Proxy** (`src/proxy.ts`): Refreshes Supabase auth cookies on every request. Uses `createProxyClient` from `src/lib/supabase/proxy.ts`.
 - **Icons**: Shared icons live in `src/constants/icons.tsx`. Check there first before creating new SVG icons; add new ones there too. Domain-specific icons (e.g. transport types) live in their feature's `icons.tsx`. Display new icons `src/app/dev/icons/page.tsx`.
 - **CSS Modules**: All component styles use `.module.css` files
@@ -95,6 +96,13 @@ Three Supabase clients:
 - `client.ts` — browser client (`createBrowserClient`)
 - `server.ts` — server components/route handlers (`createServerClient` + cookies)
 - `proxy.ts` — proxy layer (`createServerClient` + request/response cookies)
+
+**Access model**
+
+- Public (anon allowed): KB list (`/apps/knowledge-base`) and KB detail (`/apps/knowledge-base/[id]`). RLS opens SELECT on `knowledge`, `knowledge_tags`, `tags`, `resources`, and `storage.objects` for the `resources` bucket to `anon, authenticated` — anon SELECT on `resources` is required so KB detail pages can resolve `{{resource:<id>}}` tokens to signed URLs for public viewers.
+- Authenticated-only (any role): `/resources` page is client-gated via `useAuth` and redirects anon to `/login`. Underlying RLS is still public-read (above); the gate is purely UX so the management surface isn't publicly browsable.
+- Manager-only writes: create/update/delete on KB entries + tags requires `manager` (or `admin`) role on table_name `knowledge`. Same for `resources` writes (table + storage) on table_name `resources`. Global admins (`_global=admin`) override.
+- Enforced two ways: SQL helper `public.is_manager_of(target_table text)` checks the JWT and gates RLS writes; client uses `useCanManage(table)` to hide write UI (New entry / Tags / Edit FAB / Cancel·Save·Delete / Upload / Rename / Delete).
 
 ### File Structure
 

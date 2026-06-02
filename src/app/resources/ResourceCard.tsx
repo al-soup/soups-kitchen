@@ -8,8 +8,8 @@ import styles from "./ResourceCard.module.css";
 
 interface ResourceCardProps {
   resource: Resource;
-  onRename: (id: string, label: string) => Promise<void>;
-  onDelete: (resource: Resource) => Promise<void>;
+  onRename?: (id: string, label: string) => Promise<void>;
+  onDelete?: (resource: Resource) => Promise<void>;
 }
 
 function isImage(mime: string | null): boolean {
@@ -68,6 +68,7 @@ export function ResourceCard({
   }, [editing]);
 
   const commitRename = useCallback(async () => {
+    if (!onRename) return;
     if (savingRef.current) return;
     const trimmed = label.trim();
     if (!trimmed) {
@@ -100,6 +101,7 @@ export function ResourceCard({
   }, [resource.label]);
 
   const handleDelete = useCallback(async () => {
+    if (!onDelete) return;
     if (busy) return;
     if (
       !window.confirm(
@@ -148,7 +150,7 @@ export function ResourceCard({
         )}
       </div>
       <div className={styles.body}>
-        {editing ? (
+        {onRename && editing ? (
           <input
             ref={inputRef}
             className={styles.labelInput}
@@ -167,7 +169,7 @@ export function ResourceCard({
             disabled={busy}
             aria-label="Rename resource"
           />
-        ) : (
+        ) : onRename ? (
           <button
             type="button"
             className={styles.label}
@@ -177,6 +179,10 @@ export function ResourceCard({
           >
             {resource.label || resource.filename || "Untitled"}
           </button>
+        ) : (
+          <span className={styles.label}>
+            {resource.label || resource.filename || "Untitled"}
+          </span>
         )}
         <div className={styles.meta}>
           <span className={styles.filename} title={resource.filename ?? ""}>
@@ -196,16 +202,18 @@ export function ResourceCard({
           >
             {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
           </button>
-          <button
-            type="button"
-            className={`${styles.iconBtn} ${styles.deleteBtn}`}
-            onClick={handleDelete}
-            disabled={busy}
-            aria-label="Delete"
-            title="Delete"
-          >
-            <TrashIcon size={16} />
-          </button>
+          {onDelete && (
+            <button
+              type="button"
+              className={`${styles.iconBtn} ${styles.deleteBtn}`}
+              onClick={handleDelete}
+              disabled={busy}
+              aria-label="Delete"
+              title="Delete"
+            >
+              <TrashIcon size={16} />
+            </button>
+          )}
         </div>
       </div>
     </article>

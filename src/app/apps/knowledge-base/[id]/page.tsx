@@ -1,10 +1,10 @@
 "use client";
 
 import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { useAuth } from "@/context/AuthContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useCanManage } from "@/hooks/useCanManage";
 import { listTags } from "@/app/apps/knowledge-base/tags/api";
 import { getSignedUrlsByIds, type ResolvedResource } from "@/app/resources/api";
 import { EyeIcon, PencilIcon } from "@/constants/icons";
@@ -62,8 +62,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   usePageTitle("Entry", "Knowledge Base");
 
   const router = useRouter();
-  const pathname = usePathname();
-  const { user, loading: authLoading } = useAuth();
+  const { canManage } = useCanManage("knowledge");
 
   const [state, setState] = useState<LoadState>(
     idValid ? { kind: "loading" } : { kind: "notFound" }
@@ -87,15 +86,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   );
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      router.replace(`/login?redirectTo=${encodeURIComponent(pathname)}`);
-    }
-  }, [authLoading, user, router, pathname]);
-
-  const userId = user?.id;
-  useEffect(() => {
-    if (authLoading || !userId || !idValid) return;
+    if (!idValid) return;
     const controller = new AbortController();
     Promise.all([getKnowledge(id), listTags()])
       .then(([{ entry, tagIds }, allTags]) => {
@@ -114,7 +105,13 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
         }
       });
     return () => controller.abort();
-  }, [id, idValid, authLoading, userId]);
+  }, [id, idValid]);
+
+  // Snap back to preview if a viewer somehow ends up in edit mode (e.g. lost
+  // role between mounts).
+  useEffect(() => {
+    if (!canManage && mode !== "preview") setMode("preview");
+  }, [canManage, mode]);
 
   const isDirty = useMemo(
     () => (draft && committed ? isDraftDirty(draft, committed) : false),
@@ -236,14 +233,6 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
     }
   }, [isDirty, router]);
 
-  if (authLoading || !user) {
-    return (
-      <div className={sharedStyles.page}>
-        <p>Loading…</p>
-      </div>
-    );
-  }
-
   if (state.kind === "loading" || !draft) {
     return (
       <div className={sharedStyles.page}>
@@ -292,7 +281,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
     !submitting &&
     isDirty;
 
-  const showActions = isDirty || mode === "edit";
+  const showActions = canManage && (isDirty || mode === "edit");
 
   return (
     <div className={sharedStyles.page}>
@@ -374,26 +363,30 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
         ) : null}
       </div>
 
-      <button
-        type="button"
-        className={styles.modeFab}
-        onClick={() => setMode(mode === "preview" ? "edit" : "preview")}
-        aria-label={
-          mode === "preview" ? "Switch to edit mode" : "Switch to preview mode"
-        }
-      >
-        {mode === "preview" ? (
-          <>
-            <PencilIcon size={14} />
-            <span>Edit</span>
-          </>
-        ) : (
-          <>
-            <EyeIcon size={14} />
-            <span>Preview</span>
-          </>
-        )}
-      </button>
+      {canManage && (
+        <button
+          type="button"
+          className={styles.modeFab}
+          onClick={() => setMode(mode === "preview" ? "edit" : "preview")}
+          aria-label={
+            mode === "preview"
+              ? "Switch to edit mode"
+              : "Switch to preview mode"
+          }
+        >
+          {mode === "preview" ? (
+            <>
+              <PencilIcon size={14} />
+              <span>Edit</span>
+            </>
+          ) : (
+            <>
+              <EyeIcon size={14} />
+              <span>Preview</span>
+            </>
+          )}
+        </button>
+      )}
     </div>
   );
 }

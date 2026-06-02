@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useCanManage } from "@/hooks/useCanManage";
 import { KnowledgeForm } from "../_form/KnowledgeForm";
 import { createKnowledge, type KnowledgeFormInput } from "../_form/api";
 import sharedStyles from "../../../shared-page.module.css";
@@ -14,15 +14,12 @@ export default function CreateKnowledgePage() {
   usePageTitle("New Entry", "Knowledge Base");
 
   const router = useRouter();
-  const pathname = usePathname();
-  const { user, loading: authLoading } = useAuth();
+  const { canManage, loading: roleLoading } = useCanManage("knowledge");
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      router.replace(`/login?redirectTo=${encodeURIComponent(pathname)}`);
-    }
-  }, [authLoading, user, router, pathname]);
+    if (roleLoading) return;
+    if (!canManage) router.replace("/apps/knowledge-base");
+  }, [roleLoading, canManage, router]);
 
   const handleSubmit = useCallback(
     async (input: KnowledgeFormInput) => {
@@ -32,7 +29,7 @@ export default function CreateKnowledgePage() {
     [router]
   );
 
-  if (authLoading || !user) {
+  if (roleLoading || !canManage) {
     return (
       <div className={sharedStyles.page}>
         <p>Loading...</p>

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useCanManage } from "@/hooks/useCanManage";
 import type { Resource } from "@/lib/supabase/types";
 import { listResources, renameResource, deleteResource } from "./api";
 import { UploadDropzone } from "./UploadDropzone";
@@ -17,6 +18,7 @@ export default function ResourcesPage() {
   const router = useRouter();
   const pathname = usePathname();
   const { user, loading: authLoading } = useAuth();
+  const { canManage } = useCanManage("resources");
 
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +81,7 @@ export default function ResourcesPage() {
         <code className={styles.code}>{"{{resource:<id>}}"}</code> tokens.
       </p>
 
-      <UploadDropzone onUploaded={handleUploaded} />
+      {canManage && <UploadDropzone onUploaded={handleUploaded} />}
 
       {loading && (
         <p className={sharedStyles.description}>Loading resources...</p>
@@ -88,8 +90,8 @@ export default function ResourcesPage() {
       {!loading && !loadError && (
         <ResourceGrid
           resources={resources}
-          onRename={handleRename}
-          onDelete={handleDelete}
+          onRename={canManage ? handleRename : undefined}
+          onDelete={canManage ? handleDelete : undefined}
         />
       )}
     </div>

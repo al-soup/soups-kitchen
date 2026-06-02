@@ -69,10 +69,6 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Create a learning or revision mode
 - [ ] Instead (or in addtion to) the Speech-Notes app, i could create an API to create new knowledge entries via Speech/LLM
 - [ ] Create an Interview-me feature
-- [ ] Open for public reads
-- [ ] Returning from detail to list should retain the selected search & filter
-- [ ] Display warning for unsaved changes
-- [ ] Add button that inserts a code-block
 
 #### Question Game
 
