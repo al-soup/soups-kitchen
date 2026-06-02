@@ -1,1 +1,3 @@
-approveBuilds: supabase
+onlyBuiltDependencies:
+  - sharp
+  - supabase
