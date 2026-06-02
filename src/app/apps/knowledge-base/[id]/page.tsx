@@ -220,13 +220,20 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   }, [id, deleting, router]);
 
   const handleBack = useCallback(() => {
-    if (
-      isDirty &&
-      !window.confirm("You have unsaved changes. Leave without saving?")
-    ) {
+    if (isDirty) {
+      if (!window.confirm("You have unsaved changes. Leave without saving?")) {
+        return;
+      }
+      // Dirty path also pushed a popstate sentinel; falling through to back()
+      // would only consume the sentinel. Push the list URL directly instead.
+      router.push("/apps/knowledge-base");
       return;
     }
-    router.push("/apps/knowledge-base");
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/apps/knowledge-base");
+    }
   }, [isDirty, router]);
 
   if (authLoading || !user) {
