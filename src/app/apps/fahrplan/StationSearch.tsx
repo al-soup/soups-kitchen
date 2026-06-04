@@ -39,27 +39,39 @@ export function StationSearch({ onSelect }: StationSearchProps) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const controllerRef = useRef<AbortController | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   const search = useCallback((term: string) => {
     if (timerRef.current) clearTimeout(timerRef.current);
+    // Cancel any in-flight completion so rapid typing can't race —
+    // last-fired wins regardless of upstream latency.
+    controllerRef.current?.abort();
     if (!term.trim()) {
       setResults([]);
       setOpen(false);
       return;
     }
     timerRef.current = setTimeout(async () => {
-      const items = await fetchCompletions(term);
-      setResults(items);
-      setActiveIndex(-1);
-      setOpen(items.length > 0);
+      const controller = new AbortController();
+      controllerRef.current = controller;
+      try {
+        const items = await fetchCompletions(term, controller.signal);
+        if (controller.signal.aborted) return;
+        setResults(items);
+        setActiveIndex(-1);
+        setOpen(items.length > 0);
+      } catch {
+        // aborted or network error — drop silently
+      }
     }, 300);
   }, []);
 
   useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      controllerRef.current?.abort();
     };
   }, []);
 

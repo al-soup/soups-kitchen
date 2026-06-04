@@ -13,10 +13,12 @@ export async function fetchNearbyStation(
 }
 
 export async function fetchCompletions(
-  term: string
+  term: string,
+  signal?: AbortSignal
 ): Promise<CompletionItem[]> {
   const res = await fetch(
-    `/api/fahrplan/completion?term=${encodeURIComponent(term)}`
+    `/api/fahrplan/completion?term=${encodeURIComponent(term)}`,
+    { signal }
   );
   if (!res.ok) return [];
   return res.json();
