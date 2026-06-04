@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ActionType, HabitDetail } from "@/lib/supabase/types";
 import { useUserRole } from "@/hooks/useUserRole";
 import { getLocalToday } from "@/lib/dateUtils";
@@ -52,36 +52,64 @@ export function HabitFeed({
   const { role } = useUserRole("habit");
   const showDetailLink = role === "admin" || role === "manager";
 
+  const epochRef = useRef(0);
+  const loadMoreCtrlRef = useRef<AbortController | null>(null);
+
   useEffect(() => {
+    epochRef.current += 1;
+    loadMoreCtrlRef.current?.abort();
+    const myEpoch = epochRef.current;
     const controller = new AbortController();
 
-    getHabitFeed({ actionType, offset: 0, date: selectedDate })
+    getHabitFeed({
+      actionType,
+      offset: 0,
+      date: selectedDate,
+      signal: controller.signal,
+    })
       .then((page) => {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
         setItems(page.items);
         setOffset(PAGE_SIZE);
         setHasMore(page.hasMore);
       })
       .catch((err) => {
-        if (!controller.signal.aborted) setError(err.message);
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
+        setError(err.message);
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
+        setLoading(false);
       });
 
     return () => controller.abort();
   }, [actionType, selectedDate]);
 
   const handleLoadMore = () => {
+    const myEpoch = epochRef.current;
+    const controller = new AbortController();
+    loadMoreCtrlRef.current = controller;
     setLoadingMore(true);
-    getHabitFeed({ actionType, offset, date: selectedDate })
+    getHabitFeed({
+      actionType,
+      offset,
+      date: selectedDate,
+      signal: controller.signal,
+    })
       .then((page) => {
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
         setItems((prev) => [...prev, ...page.items]);
         setOffset((prev) => prev + PAGE_SIZE);
         setHasMore(page.hasMore);
       })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoadingMore(false));
+      .catch((err) => {
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
+        setError(err.message);
+      })
+      .finally(() => {
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
+        setLoadingMore(false);
+      });
   };
 
   const groups = useMemo(() => groupByDate(items), [items]);

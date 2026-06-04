@@ -12,10 +12,12 @@ export async function getHabitFeed({
   actionType,
   offset,
   date,
+  signal,
 }: {
   actionType: ActionType;
   offset: number;
   date?: string | null;
+  signal?: AbortSignal;
 }): Promise<HabitFeedPage> {
   let query = getSupabase()
     .from("habit")
@@ -31,9 +33,13 @@ export async function getHabitFeed({
       .lt("completed_at", `${date}T24:00:00`);
   }
 
-  const { data, error } = await query
+  const orderedQuery = query
     .order("completed_at", { ascending: false, nullsFirst: false })
     .range(offset, offset + PAGE_SIZE);
+
+  const { data, error } = await (signal
+    ? orderedQuery.abortSignal(signal)
+    : orderedQuery);
 
   if (error) throw new Error(error.message);
 

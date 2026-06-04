@@ -15,9 +15,9 @@ export async function GET(req: NextRequest) {
   if (!stop) return NextResponse.json({ connections: [] });
   const limit = parseLimit(req.nextUrl.searchParams.get("limit"));
 
-  const url = `https://search.ch/fahrplan/api/stationboard.json?stop=${
-    encodeURIComponent(stop)
-  }&limit=${limit}&mode=depart`;
+  const url = `https://search.ch/fahrplan/api/stationboard.json?stop=${encodeURIComponent(
+    stop
+  )}&limit=${limit}&mode=depart`;
   try {
     // Cache TTL matches the client poll interval — multiple tabs/users
     // hitting the same stop within one tick share an upstream call, but a
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
     if (!res.ok) {
       return NextResponse.json(
         { connections: [], error: "upstream_error" },
-        { status: 502 },
+        { status: 502 }
       );
     }
     const data = await res.json();
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
   } catch {
     return NextResponse.json(
       { connections: [], error: "upstream_unreachable" },
-      { status: 502 },
+      { status: 502 }
     );
   }
 }
