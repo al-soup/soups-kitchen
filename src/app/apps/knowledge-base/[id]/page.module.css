@@ -32,6 +32,24 @@
   min-width: 0;
 }
 
+.question code {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.875em;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--background-alt);
+  border: var(--border-width, 1px) solid var(--border-color);
+}
+
+.question strong {
+  font-weight: 700;
+}
+
+.question em {
+  font-style: italic;
+}
+
 .modeFab {
   position: fixed;
   right: calc(16px + env(safe-area-inset-right, 0px));

@@ -60,7 +60,6 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 
 #### Knowledge Base
 
-- [ ] Use Markdown in Title
 - [ ] Sort by date
 - [ ] Create a learning or revision mode
 - [ ] Instead (or in addition to) the Speech-Notes app, I could create an API to create new knowledge entries via Speech/LLM

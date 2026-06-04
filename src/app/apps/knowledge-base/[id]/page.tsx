@@ -36,6 +36,11 @@ const MarkdownSummary = dynamic(
   { ssr: false, loading: () => null }
 );
 
+const MarkdownInline = dynamic(
+  () => import("../_form/MarkdownInline").then((m) => m.MarkdownInline),
+  { ssr: false, loading: () => null }
+);
+
 interface DetailPageProps {
   params: Promise<{ id: string }>;
 }
@@ -316,7 +321,11 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
           ←
         </button>
         <h1 className={styles.question}>
-          {mode === "preview" ? draft.question || entry.question : "Edit entry"}
+          {mode === "preview" ? (
+            <MarkdownInline source={draft.question || entry.question} />
+          ) : (
+            "Edit entry"
+          )}
         </h1>
       </div>
 

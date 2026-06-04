@@ -13,6 +13,7 @@ import { TagBreadcrumb } from "./_form/TagBreadcrumb";
 import { TagPills } from "./_form/TagPills";
 import { SearchBox } from "./_form/SearchBox";
 import { MarkdownSummary } from "./_form/MarkdownSummary";
+import { MarkdownInline } from "./_form/MarkdownInline";
 import { formatDate } from "./_form/format";
 import {
   TOPICS_PARAM,
@@ -362,7 +363,9 @@ function KnowledgeBasePageInner() {
                           {formatDate(item.created_at)}
                         </span>
                       </div>
-                      <h2 className={styles.question}>{item.question}</h2>
+                      <h2 className={styles.question}>
+                        <MarkdownInline source={item.question} />
+                      </h2>
                       <div className={styles.cardBottom}>
                         <TagBreadcrumb
                           tags={item.tags}
