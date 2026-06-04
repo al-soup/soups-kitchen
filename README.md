@@ -60,7 +60,6 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 
 #### Knowledge Base
 
-- [ ] Summary text in back of card needs to be smaller
 - [ ] Use Markdown in Title
 - [ ] Sort by date
 - [ ] Create a learning or revision mode

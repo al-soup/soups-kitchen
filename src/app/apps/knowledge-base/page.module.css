@@ -225,12 +225,12 @@
 }
 
 .summary {
-  font-size: 0.8125rem;
-  line-height: 1.45;
+  font-size: 0.75rem;
+  line-height: 1.4;
   color: var(--foreground);
   text-align: center;
   display: -webkit-box;
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 7;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
