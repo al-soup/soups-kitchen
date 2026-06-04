@@ -145,7 +145,7 @@ export function StationSearch({ onSelect }: StationSearchProps) {
         >
           {results.map((item, i) => (
             <button
-              key={item.label}
+              key={`${i}:${item.label}`}
               id={`station-option-${i}`}
               className={`${styles.option}${i === activeIndex ? ` ${styles.active}` : ""}`}
               role="option"
