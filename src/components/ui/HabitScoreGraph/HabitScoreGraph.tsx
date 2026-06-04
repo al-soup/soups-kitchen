@@ -179,7 +179,7 @@ export function HabitScoreGraph({
 
             <div
               className={styles.grid}
-              role="grid"
+              role="img"
               aria-label="Habit score graph"
             >
               {days.map((day) => (
