@@ -139,7 +139,11 @@ export function HabitFeed({
         </div>
       )}
       {groups.length === 0 ? (
-        <div className={styles.emptyState}>No habits recorded.</div>
+        <div className={styles.emptyState}>
+          {filterLabel
+            ? `No habits recorded on ${filterLabel}.`
+            : "No habits recorded."}
+        </div>
       ) : (
         groups.map((group) => (
           <section key={group.date} id={`feed-date-${group.date}`}>
