@@ -75,3 +75,28 @@
   font-size: 0.9375rem;
   padding: 0 4px;
 }
+
+.xs {
+  gap: 4px;
+  font-size: 0.625rem;
+}
+
+.xs .group {
+  gap: 3px;
+}
+
+.xs .topic {
+  font-size: 0.5rem;
+  padding: 1px 6px;
+  letter-spacing: 0.08em;
+}
+
+.xs .concept {
+  font-size: 0.625rem;
+  padding: 1px 6px;
+}
+
+.xs .chevron {
+  font-size: 0.6875rem;
+  padding: 0 1px;
+}

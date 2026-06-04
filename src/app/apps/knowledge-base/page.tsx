@@ -11,6 +11,7 @@ import { listTags } from "./tags/api";
 import { TagBreadcrumb } from "./_form/TagBreadcrumb";
 import { TagPills } from "./_form/TagPills";
 import { SearchBox } from "./_form/SearchBox";
+import { MarkdownSummary } from "./_form/MarkdownSummary";
 import { formatDate } from "./_form/format";
 import {
   TOPICS_PARAM,
@@ -39,6 +40,7 @@ function KnowledgeBasePageInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { canManage } = useCanManage("knowledge");
+  const { canManage: canManageResources } = useCanManage("resources");
 
   const topicNames = useMemo(
     () => searchParams.getAll(TOPICS_PARAM),
@@ -237,7 +239,7 @@ function KnowledgeBasePageInner() {
   };
 
   return (
-    <div className={sharedStyles.page}>
+    <div className={styles.pageWide}>
       <h1 className={sharedStyles.title}>Knowledge Base</h1>
 
       <div className={styles.searchRow}>
@@ -265,90 +267,111 @@ function KnowledgeBasePageInner() {
             </Link>
           </>
         )}
-        <Link href="/resources" className={styles.toolbarBtn}>
-          Resources
-        </Link>
+        {canManageResources && (
+          <Link href="/resources" className={styles.toolbarBtn}>
+            Resources
+          </Link>
+        )}
       </div>
 
-      {(topics.length > 0 || concepts.length > 0) && (
-        <div className={styles.filters}>
-          {topics.length > 0 && (
-            <div className={styles.filterRow}>
-              <span className={styles.filterLabel}>Topics</span>
-              <TagPills
-                tags={topics}
-                selectedIds={topicIds}
-                onToggle={handleToggleTopic}
-                variant="topic"
-              />
-            </div>
-          )}
-          {concepts.length > 0 && (
-            <div className={styles.filterRow}>
-              <span className={styles.filterLabel}>Concepts</span>
-              <TagPills
-                tags={concepts}
-                selectedIds={conceptIds}
-                onToggle={handleToggleConcept}
-                variant="concept"
-              />
-            </div>
-          )}
-          <div className={styles.clearFiltersRow} aria-hidden={!hasFilters}>
-            <button
-              type="button"
-              className={styles.clearFilters}
-              onClick={handleClearFilters}
-              disabled={!hasFilters}
-            >
-              Clear filters
-            </button>
+      <div className={styles.filters}>
+        {topics.length > 0 && (
+          <div className={styles.filterRow}>
+            <span className={styles.filterLabel}>Topics</span>
+            <TagPills
+              tags={topics}
+              selectedIds={topicIds}
+              onToggle={handleToggleTopic}
+              variant="topic"
+            />
           </div>
+        )}
+        {concepts.length > 0 && (
+          <div className={styles.filterRow}>
+            <span className={styles.filterLabel}>Concepts</span>
+            <TagPills
+              tags={concepts}
+              selectedIds={conceptIds}
+              onToggle={handleToggleConcept}
+              variant="concept"
+            />
+          </div>
+        )}
+        <div className={styles.clearFiltersRow} aria-hidden={!hasFilters}>
+          <button
+            type="button"
+            className={styles.clearFilters}
+            onClick={handleClearFilters}
+            disabled={!hasFilters}
+          >
+            Clear filters
+          </button>
         </div>
-      )}
+      </div>
 
-      {!loading && !error && totalCount !== null && filteredCount !== null && (
-        <p className={styles.statsRow}>
-          {hasFilters
+      <p className={styles.statsRow} aria-live="polite">
+        {!loading && !error && totalCount !== null && filteredCount !== null
+          ? hasFilters
             ? `${filteredCount} of ${totalCount} entries`
-            : `${totalCount} entries`}
-        </p>
-      )}
+            : `${totalCount} entries`
+          : " "}
+      </p>
 
-      {loading ? (
-        <p className={styles.note}>Loading…</p>
-      ) : error ? (
-        <p className={styles.error}>{error}</p>
-      ) : items.length === 0 ? (
-        <p className={styles.note}>
-          {q
-            ? `No entries match "${q}".`
-            : hasTagFilters
-              ? "No entries match the current filters."
-              : canManage
-                ? "No entries yet. Create your first entry."
-                : "No entries yet."}
-        </p>
-      ) : (
-        <ul className={styles.list}>
-          {items.map((item) => (
+      <ul className={styles.list}>
+        {loading ? (
+          Array.from({ length: 10 }).map((_, i) => (
+            <li
+              key={`sk-${i}`}
+              className={styles.skeleton}
+              aria-hidden="true"
+            />
+          ))
+        ) : error ? (
+          <li className={styles.error}>{error}</li>
+        ) : items.length === 0 ? (
+          <li className={styles.emptyBanner}>
+            {q
+              ? `No entries match "${q}".`
+              : hasTagFilters
+                ? "No entries match the current filters."
+                : canManage
+                  ? "No entries yet. Create your first entry."
+                  : "No entries yet."}
+          </li>
+        ) : (
+          items.map((item) => (
             <li key={item.id}>
               <Link
                 href={`/apps/knowledge-base/${item.id}`}
                 className={styles.card}
               >
-                <h2 className={styles.question}>{item.question}</h2>
-                <div className={styles.cardFooter}>
-                  <TagBreadcrumb tags={item.tags} />
-                  <span className={styles.date}>
-                    {formatDate(item.created_at)}
-                  </span>
+                <div className={styles.cardInner}>
+                  <div className={styles.cardFront}>
+                    <div className={styles.cardTop}>
+                      <span className={styles.date}>
+                        {formatDate(item.created_at)}
+                      </span>
+                    </div>
+                    <h2 className={styles.question}>{item.question}</h2>
+                    <div className={styles.cardBottom}>
+                      <TagBreadcrumb
+                        tags={item.tags}
+                        size="xs"
+                        className={styles.cardTags}
+                      />
+                    </div>
+                  </div>
+                  <div className={styles.cardBack} aria-hidden="true">
+                    <div className={styles.summary}>
+                      <MarkdownSummary source={item.summary} />
+                    </div>
+                  </div>
                 </div>
               </Link>
             </li>
-          ))}
-        </ul>
-      )}
+          ))
+        )}
+      </ul>
 
       {hasMore && !loading && !error && (
         <button

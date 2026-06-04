@@ -115,7 +115,12 @@ src/
       fahrplan/       # Swiss departure board (StationSearch, DepartureBoard, DepartureRow)
       habits/         # HabitFeed (paginated feed, grouped by date), HabitTypeSelector
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
-      knowledge-base/ # Overview list (compact cards, reverse-chrono, pagination)
+      knowledge-base/ # Overview grid: responsive cards (~280px target,
+                      # auto-fill, page caps at 1400px), fixed 160px height,
+                      # flip on hover/focus (desktop only) to reveal entry
+                      # summary on back face. Reverse-chrono, pagination via
+                      # Load more. Skeleton cards during loading + always-rendered
+                      # filters/stats row to prevent layout shift.
                       # + top toolbar linking to /create, /tags, /resources.
                       # SearchBox above the toolbar: debounced 250ms, URL-driven
                       # (?q=…). Full-text search via search_vector tsvector +
