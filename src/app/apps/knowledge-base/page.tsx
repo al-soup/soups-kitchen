@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -95,6 +95,11 @@ function KnowledgeBasePageInner() {
   const hasTagFilters = topicNames.length > 0 || conceptNames.length > 0;
   const knowledgeFetchReady = !hasTagFilters || tagsLoaded;
 
+  // Bumped whenever the filter set changes. Async results (initial fetch +
+  // load-more) check the epoch they captured and bail if it's stale.
+  const epochRef = useRef(0);
+  const loadMoreCtrlRef = useRef<AbortController | null>(null);
+
   useEffect(() => {
     const controller = new AbortController();
     listTags()
@@ -126,10 +131,20 @@ function KnowledgeBasePageInner() {
 
   useEffect(() => {
     if (!knowledgeFetchReady) return;
+    epochRef.current += 1;
+    loadMoreCtrlRef.current?.abort();
+    const myEpoch = epochRef.current;
     const controller = new AbortController();
-    listKnowledge({ offset: 0, limit: PAGE_SIZE, topicIds, conceptIds, q })
+    listKnowledge({
+      offset: 0,
+      limit: PAGE_SIZE,
+      topicIds,
+      conceptIds,
+      q,
+      signal: controller.signal,
+    })
       .then((page) => {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
         setItems(page.items);
         setOffset(PAGE_SIZE);
         setHasMore(page.hasMore);
@@ -137,11 +152,11 @@ function KnowledgeBasePageInner() {
         setError(null);
       })
       .catch((err: Error) => {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
         setError(err.message);
       })
       .finally(() => {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
         setLoading(false);
       });
     return () => controller.abort();
@@ -192,6 +207,9 @@ function KnowledgeBasePageInner() {
   };
 
   const handleLoadMore = () => {
+    const myEpoch = epochRef.current;
+    const controller = new AbortController();
+    loadMoreCtrlRef.current = controller;
     setLoadingMore(true);
     listKnowledge({
       offset,
@@ -199,15 +217,23 @@ function KnowledgeBasePageInner() {
       topicIds,
       conceptIds,
       q,
+      signal: controller.signal,
     })
       .then((page) => {
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
         setItems((prev) => [...prev, ...page.items]);
         setOffset((prev) => prev + PAGE_SIZE);
         setHasMore(page.hasMore);
         setFilteredCount(page.total);
       })
-      .catch((err: Error) => setError(err.message))
-      .finally(() => setLoadingMore(false));
+      .catch((err: Error) => {
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
+        setError(err.message);
+      })
+      .finally(() => {
+        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
+        setLoadingMore(false);
+      });
   };
 
   return (

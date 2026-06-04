@@ -82,6 +82,9 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   const [savedFlash, setSavedFlash] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  const submittingRef = useRef(false);
+  const deletingRef = useRef(false);
+  const sentinelPushedRef = useRef(false);
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
     () => () => {
@@ -156,16 +159,22 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   }, [isDirty]);
 
   // Intercept browser back/forward navigation while there are unsaved changes.
-  // Pushes a sentinel history entry; on popstate we prompt and either let the
-  // navigation proceed or re-push the sentinel to stay put.
+  // Push one sentinel entry per dirty session (tracked via ref so repeated
+  // dirty cycles don't pile entries into history). Sentinel persists after
+  // save — a single extra back-press is acceptable to keep this simple.
   useEffect(() => {
     if (!isDirty) return;
-    window.history.pushState({ __kbGuard: true }, "");
+    if (!sentinelPushedRef.current) {
+      window.history.pushState({ __kbGuard: true }, "");
+      sentinelPushedRef.current = true;
+    }
     const handler = () => {
       if (window.confirm("You have unsaved changes. Leave without saving?")) {
+        sentinelPushedRef.current = false;
         window.history.back();
       } else {
         window.history.pushState({ __kbGuard: true }, "");
+        sentinelPushedRef.current = true;
       }
     };
     window.addEventListener("popstate", handler);
@@ -173,19 +182,23 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   }, [isDirty]);
 
   const handleSave = useCallback(async () => {
-    if (!draft) return;
+    if (submittingRef.current || !draft) return;
+    // Snapshot the draft *before* await so concurrent edits aren't lost.
+    const snapshot = draft;
+    submittingRef.current = true;
     setSubmitting(true);
     setSubmitError(null);
     try {
       const updated = await updateKnowledge(id, {
-        question: draft.question,
-        summary: draft.summary,
-        detail: draft.detail || null,
-        tagIds: draft.tagIds,
+        question: snapshot.question,
+        summary: snapshot.summary,
+        detail: snapshot.detail || null,
+        tagIds: snapshot.tagIds,
       });
-      const next = entryToInitial(updated, [...draft.tagIds]);
-      setCommitted(next);
-      setDraft(next);
+      const savedAs = entryToInitial(updated, [...snapshot.tagIds]);
+      // Only update `committed` — leave `draft` alone so edits made during
+      // the save survive and the form stays dirty if so.
+      setCommitted(savedAs);
       setState((prev) =>
         prev.kind === "loaded" ? { ...prev, entry: updated } : prev
       );
@@ -195,6 +208,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Save failed");
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   }, [draft, id]);
@@ -209,17 +223,19 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   }, [committed, isDirty]);
 
   const handleDelete = useCallback(async () => {
-    if (deleting) return;
+    if (deletingRef.current) return;
     if (!window.confirm("Delete this entry? This cannot be undone.")) return;
+    deletingRef.current = true;
     setDeleting(true);
     try {
       await deleteKnowledge(id);
       router.push("/apps/knowledge-base");
     } catch (err) {
       alert(err instanceof Error ? err.message : "Delete failed");
+      deletingRef.current = false;
       setDeleting(false);
     }
-  }, [id, deleting, router]);
+  }, [id, router]);
 
   const handleBack = useCallback(() => {
     if (isDirty) {

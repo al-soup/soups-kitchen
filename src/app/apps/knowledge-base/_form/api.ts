@@ -145,6 +145,7 @@ export interface ListKnowledgeParams {
   topicIds?: string[];
   conceptIds?: string[];
   q?: string;
+  signal?: AbortSignal;
 }
 
 export async function listKnowledge({
@@ -153,16 +154,18 @@ export async function listKnowledge({
   topicIds,
   conceptIds,
   q,
+  signal,
 }: ListKnowledgeParams = {}): Promise<KnowledgeListPage> {
   const supabase = getSupabase();
   const trimmed = q?.trim();
-  const { data, error } = await supabase.rpc("search_knowledge", {
+  const query = supabase.rpc("search_knowledge", {
     topic_ids: topicIds?.length ? topicIds : undefined,
     concept_ids: conceptIds?.length ? conceptIds : undefined,
     q: trimmed ? trimmed : undefined,
     p_offset: offset,
     p_limit: limit,
   });
+  const { data, error } = await (signal ? query.abortSignal(signal) : query);
   if (error) throw new Error(error.message);
 
   const rows = data ?? [];
