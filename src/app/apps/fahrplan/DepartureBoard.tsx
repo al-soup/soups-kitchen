@@ -1,16 +1,14 @@
 "use client";
 
-import {
-  useMemo,
-  useState,
-  useRef,
-  useSyncExternalStore,
-  useCallback,
-} from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { fetchStationboard } from "./api";
 import type { StationboardConnection } from "./types";
 import type { TransportFilterKey } from "./constants";
-import { ALL_FILTER_KEYS, TRANSPORT_FILTERS } from "./constants";
+import {
+  ALL_FILTER_KEYS,
+  STATIONBOARD_POLL_INTERVAL_MS,
+  TRANSPORT_FILTERS,
+} from "./constants";
 import { TransportFilter } from "./TransportFilter";
 import { DepartureRow } from "./DepartureRow";
 import styles from "./DepartureBoard.module.css";
@@ -72,56 +70,36 @@ interface BoardState {
 }
 
 function useBoardData(station: string): BoardState {
-  const ref = useRef({
-    state: { connections: [] as StationboardConnection[], loading: true },
-    listeners: [] as Array<() => void>,
-    started: false,
+  const [state, setState] = useState<BoardState>({
+    connections: [],
+    loading: true,
   });
 
-  const emit = useCallback(() => {
-    for (const l of ref.current.listeners) l();
-  }, []);
+  // Caller mounts with `key={station}`, so this effect only ever sees one
+  // station per instance — no need to reset state on station change here.
+  useEffect(() => {
+    let cancelled = false;
 
-  const subscribe = useCallback(
-    (listener: () => void) => {
-      ref.current.listeners.push(listener);
-
-      if (!ref.current.started) {
-        ref.current.started = true;
-
-        const load = async () => {
-          const data = await fetchStationboard(station);
-          ref.current.state = {
-            connections: data.connections ?? [],
-            loading: false,
-          };
-          emit();
-        };
-
-        load();
-        const id = setInterval(load, 15000);
-        return () => {
-          ref.current.listeners = ref.current.listeners.filter(
-            (l) => l !== listener
-          );
-          clearInterval(id);
-        };
+    const load = async () => {
+      try {
+        const data = await fetchStationboard(station);
+        if (cancelled) return;
+        setState({ connections: data.connections ?? [], loading: false });
+      } catch {
+        if (cancelled) return;
+        setState((prev) => ({ ...prev, loading: false }));
       }
+    };
 
-      return () => {
-        ref.current.listeners = ref.current.listeners.filter(
-          (l) => l !== listener
-        );
-      };
-    },
-    [station, emit]
-  );
+    load();
+    const id = setInterval(load, STATIONBOARD_POLL_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [station]);
 
-  return useSyncExternalStore(
-    subscribe,
-    () => ref.current.state,
-    () => ref.current.state
-  );
+  return state;
 }
 
 export function filterConnections(

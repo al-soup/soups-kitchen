@@ -115,7 +115,12 @@ src/
       fahrplan/       # Swiss departure board (StationSearch, DepartureBoard, DepartureRow)
       habits/         # HabitFeed (paginated feed, grouped by date), HabitTypeSelector
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
-      knowledge-base/ # Overview list (compact cards, reverse-chrono, pagination)
+      knowledge-base/ # Overview grid: responsive cards (~280px target,
+                      # auto-fill, page caps at 1400px), fixed 160px height,
+                      # flip on hover/focus (desktop only) to reveal entry
+                      # summary on back face. Reverse-chrono, pagination via
+                      # Load more. Skeleton cards during loading + always-rendered
+                      # filters/stats row to prevent layout shift.
                       # + top toolbar linking to /create, /tags, /resources.
                       # SearchBox above the toolbar: debounced 250ms, URL-driven
                       # (?q=…). Full-text search via search_vector tsvector +
@@ -220,7 +225,11 @@ scripts/
 ### Strava Integration
 
 - Edge function `strava-activity` fetches recent Strava activities via cron (daily)
-- Tokens stored in `strava_tokens` table, auto-refreshed on each run (Strava rotates refresh tokens)
-- Endpoint protected by `x-cron-secret` header (not JWT)
+- Tokens stored encrypted (pgcrypto) in `strava_tokens.access_token_enc` /
+  `refresh_token_enc`. Edge function + auth script access via SECURITY DEFINER
+  RPCs (`upsert_strava_tokens`, `get_strava_token`, `update_strava_access_token`)
+  passing `STRAVA_TOKEN_KEY` per call. Auto-refreshed on each run (Strava
+  rotates refresh tokens).
+- Endpoint protected by `x-cron-secret` header (timing-safe compare, not JWT)
 - Setup: run `pnpm strava:auth` once, then deploy edge function + set secrets
-- Secrets: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `CRON_SECRET`
+- Secrets: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `CRON_SECRET`, `STRAVA_TOKEN_KEY` (32+ chars)

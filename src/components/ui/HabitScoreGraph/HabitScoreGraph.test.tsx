@@ -33,7 +33,9 @@ describe("HabitScoreGraph", () => {
         actionType={1}
       />
     );
-    expect(screen.getByRole("grid")).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "Habit score graph" })
+    ).toBeInTheDocument();
   });
 
   it("renders day cells for a year (grid + legend)", () => {

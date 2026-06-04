@@ -1,3 +1,10 @@
+.pageWide {
+  width: 100%;
+  padding: 32px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 .searchRow {
   margin: 16px 0 12px;
 }
@@ -14,13 +21,14 @@
   flex-direction: column;
   gap: 8px;
   margin: 0 0 20px;
+  min-height: 96px;
 }
 
 .filterRow {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .filterLabel {
@@ -28,8 +36,6 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--foreground-muted);
-  flex: 0 0 auto;
-  min-width: 64px;
 }
 
 .clearFiltersRow {
@@ -96,17 +102,19 @@
 
 .statsRow {
   display: flex;
-  justify-content: flex-end;
-  font-size: 0.75rem;
-  color: var(--foreground-muted);
-  margin: 0 0 8px;
+  justify-content: center;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0 0 12px;
   font-variant-numeric: tabular-nums;
+  min-height: 1.3em;
 }
 
 .list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -114,20 +122,80 @@
 
 .card {
   display: block;
+  position: relative;
+  height: 160px;
+  perspective: 1000px;
+  background: transparent;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.cardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 400ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .cardInner,
+  .card:focus-visible .cardInner {
+    transform: rotateY(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardInner {
+    transition: none;
+  }
+}
+
+.cardFront,
+.cardBack {
+  position: absolute;
+  inset: 0;
   padding: 10px 14px;
   border: var(--border-width, 1px) solid var(--border-color);
   border-radius: var(--radius-sm);
   background: var(--background);
-  color: var(--foreground);
-  text-decoration: none;
-  transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  pointer-events: none;
+  transition: border-color var(--transition-fast);
 }
 
-.card:hover {
-  background: var(--background-alt);
+.card:hover .cardFront,
+.card:hover .cardBack,
+.card:focus-visible .cardFront,
+.card:focus-visible .cardBack {
   border-color: var(--foreground);
+}
+
+.cardFront {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 6px;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cardBottom {
+  display: flex;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.cardBack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotateY(180deg);
+  background: var(--background-alt);
 }
 
 .question {
@@ -136,30 +204,80 @@
   font-weight: 600;
   line-height: 1.35;
   margin: 0;
+  text-align: center;
+  align-self: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.cardFooter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 6px;
+.cardTags {
+  min-width: 0;
 }
 
 .date {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: var(--foreground-muted);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  flex: 0 0 auto;
 }
 
-.note {
-  font-size: 14px;
-  color: var(--foreground-muted);
+.summary {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--foreground);
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.summary p {
   margin: 0;
 }
 
+.summary p + p {
+  margin-top: 6px;
+}
+
+.skeleton {
+  height: 160px;
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--background-alt);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+.emptyBanner {
+  grid-column: 1 / -1;
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+  padding: 24px 0;
+  text-align: center;
+}
+
 .error {
+  grid-column: 1 / -1;
   font-size: 14px;
   color: var(--color-error, #ef4444);
   margin: 0;

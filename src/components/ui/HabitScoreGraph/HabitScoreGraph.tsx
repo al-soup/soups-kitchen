@@ -123,11 +123,19 @@ export function HabitScoreGraph({
     setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
   }, []);
 
-  // Scroll to end (today) on mount + update buttons
+  // Snap to "today" only on first paint and when the day count actually
+  // grows. Re-running on every scores change (e.g. action-type switch) would
+  // yank the user back to the right edge mid-scroll.
+  const didInitialSnapRef = useRef(false);
+  const prevDayCountRef = useRef(0);
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    el.scrollLeft = el.scrollWidth;
+    if (!didInitialSnapRef.current || days.length > prevDayCountRef.current) {
+      el.scrollLeft = el.scrollWidth;
+      didInitialSnapRef.current = true;
+    }
+    prevDayCountRef.current = days.length;
     updateScrollButtons();
   }, [days, updateScrollButtons]);
 
@@ -171,7 +179,7 @@ export function HabitScoreGraph({
 
             <div
               className={styles.grid}
-              role="grid"
+              role="img"
               aria-label="Habit score graph"
             >
               {days.map((day) => (

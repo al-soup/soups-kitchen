@@ -38,7 +38,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         />
         {title && (
           <div className={styles.titles}>
-            <h1 className={styles.title}>{title}</h1>
+            <span className={styles.title}>{title}</span>
             {subtitle && <span className={styles.subtitle}>{subtitle}</span>}
           </div>
         )}

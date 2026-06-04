@@ -19,6 +19,14 @@ export const ALL_FILTER_KEYS = Object.keys(
   TRANSPORT_FILTERS
 ) as TransportFilterKey[];
 
+// Shared by the client poll loop (DepartureBoard) and the server-side
+// stationboard route cache TTL. Keeping them equal means concurrent tabs
+// share an upstream call but no single client ever sees data older than its
+// own next poll.
+export const STATIONBOARD_POLL_INTERVAL_S = 15;
+export const STATIONBOARD_POLL_INTERVAL_MS =
+  STATIONBOARD_POLL_INTERVAL_S * 1000;
+
 export const TRANSPORT_COLORS: Record<string, string> = {
   train: "#e3000f",
   express_train: "#e3000f",

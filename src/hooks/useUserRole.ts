@@ -5,8 +5,9 @@ import type { Database } from "@/lib/supabase/database.types";
 type UserRole = Database["public"]["Enums"]["user_role"] | null;
 
 function decodeJwtPayload(token: string): Record<string, unknown> {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const parts = token.split(".");
+  if (parts.length !== 3) throw new Error("Malformed JWT");
+  const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
   return JSON.parse(atob(base64));
 }
 

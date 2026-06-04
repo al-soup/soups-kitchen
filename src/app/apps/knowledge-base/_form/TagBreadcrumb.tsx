@@ -3,7 +3,7 @@ import styles from "./TagBreadcrumb.module.css";
 
 interface TagBreadcrumbProps {
   tags: Tag[];
-  size?: "sm" | "md";
+  size?: "xs" | "sm" | "md";
   className?: string;
 }
 
@@ -16,9 +16,9 @@ export function TagBreadcrumb({
   const topics = tags.filter((t) => t.type === "topic");
   const concepts = tags.filter((t) => t.type === "concept");
 
-  const classes = [styles.path, size === "md" && styles.md, className]
-    .filter(Boolean)
-    .join(" ");
+  const sizeClass =
+    size === "md" ? styles.md : size === "xs" ? styles.xs : null;
+  const classes = [styles.path, sizeClass, className].filter(Boolean).join(" ");
 
   return (
     <span className={classes}>

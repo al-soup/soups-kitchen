@@ -47,10 +47,6 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 
 ## TODO
 
-- [ ] Connect the domain
-- [ ] Add `redirectTo` param to all protected page redirects (currently only `/habits/create`)
-- [ ] Some apps will not require a theme / should be able to introduce their own theme and overwrite the defaults so there is more of a standalone app feel.
-- [ ] Set-up proper error handling
 - [ ] Solve GH issues automatically via agents
 
 ### Apps
@@ -61,13 +57,11 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Create an overview chart option where the different action types can be combined
 - [ ] Create other types of insight graphs for habits
 
-#### Fahrplan
-
 #### Knowledge Base
 
 - [ ] Star / Favorite questions
 - [ ] Create a learning or revision mode
-- [ ] Instead (or in addtion to) the Speech-Notes app, i could create an API to create new knowledge entries via Speech/LLM
+- [ ] Instead (or in addition to) the Speech-Notes app, I could create an API to create new knowledge entries via Speech/LLM
 - [ ] Create an Interview-me feature
 
 #### Question Game
@@ -81,13 +75,6 @@ Use websockets, gRCP.
 #### Speech-to-Text Notes Interface
 
 Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. Not yet sure about the exact sync process.
-
-#### More App Ideas
-
-- Booking calendar for Cambrils
-- Boule Score
-- QR Code generator
-- Wheel of fortune
 
 ### About
 
@@ -110,16 +97,13 @@ Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. Not yet
 - soft skills
 - Can teach myself anything. Eager learner and motivated to build, improve, solve and optimize
 - Pays attention to detail, is reliable
+- Add a testimonial from Lino & Danijel
 
 #### Me
 
-- [ ] Replace contact email
-- [ ] Require magic link or account to see CV more details
-- [ ] Add a testimonial from Lino & Danijel
-- [ ] Link tags to blog entries
-- [ ] Add a general summary about your tech stack. What are you what are you confident with, where would you like to dive deeper.
+- [ ] Extend the job summaries. What have you done exactly and how has it benefitted the company?
 - [ ] Add a description about my work position (New Elements, EdTech, etc.)
-- [ ] Summarize some of my strengths. Find a nice way to display that
+- [ ] Link tags to blog entries
 
 #### Experience
 
@@ -132,12 +116,6 @@ Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. Not yet
 
 - [ ] Setup a logging lib (LogTape) and integrate it with a centralized logging platform (Grafana Cloud)
 - [ ] Add CI user that can create a habit entry when working on the app
-
-### AI
-
-- [ ] Rerun an audit on the React code
-- [ ] Build agent for writing and improving e2e test
-- [ ] Setup Hermes on the VPS and assign issues
 
 ### API
 
