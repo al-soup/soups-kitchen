@@ -300,7 +300,6 @@ function KnowledgeBasePageInner() {
               className={styles.clearFilters}
               onClick={handleClearFilters}
               disabled={!hasFilters}
-              tabIndex={hasFilters ? 0 : -1}
             >
               Clear filters
             </button>
