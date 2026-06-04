@@ -113,14 +113,17 @@ src/
     api/fahrplan/ # Proxy routes for search.ch (completion, stationboard)
     apps/        # Apps hub + Habit tracker + Fahrplan + Knowledge Base
       fahrplan/       # Swiss departure board (StationSearch, DepartureBoard, DepartureRow)
-      habits/         # HabitFeed (paginated feed, grouped by date), HabitTypeSelector
+      habits/         # HabitFeed (infinite-scroll feed, grouped by date,
+                      # skeleton rows while next page loads), HabitTypeSelector
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
       knowledge-base/ # Overview grid: responsive cards (~280px target,
                       # auto-fill, page caps at 1400px), fixed 160px height,
                       # flip on hover/focus (desktop only) to reveal entry
-                      # summary on back face. Reverse-chrono, pagination via
-                      # Load more. Skeleton cards during loading + always-rendered
-                      # filters/stats row to prevent layout shift.
+                      # summary on back face. Reverse-chrono, infinite scroll
+                      # via IntersectionObserver sentinel (useInfiniteScroll).
+                      # Skeleton cards during initial loading + appended while
+                      # next page loads + always-rendered filters/stats row to
+                      # prevent layout shift.
                       # + top toolbar linking to /create, /tags, /resources.
                       # SearchBox above the toolbar: debounced 250ms, URL-driven
                       # (?q=…). Full-text search via search_vector tsvector +

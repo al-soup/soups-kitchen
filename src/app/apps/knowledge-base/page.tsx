@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useCanManage } from "@/hooks/useCanManage";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import type { KnowledgeListItem, Tag } from "@/lib/supabase/types";
 import { getKnowledgeTotal, listKnowledge } from "./_form/api";
 import { listTags } from "./tags/api";
@@ -24,6 +25,7 @@ import sharedStyles from "../../shared-page.module.css";
 import styles from "./page.module.css";
 
 const PAGE_SIZE = 20;
+const LOAD_MORE_SKELETON_COUNT = 4;
 
 export default function KnowledgeBasePage() {
   return (
@@ -209,6 +211,7 @@ function KnowledgeBasePageInner() {
   };
 
   const handleLoadMore = () => {
+    if (loadingMore) return;
     const myEpoch = epochRef.current;
     const controller = new AbortController();
     loadMoreCtrlRef.current = controller;
@@ -237,6 +240,12 @@ function KnowledgeBasePageInner() {
         setLoadingMore(false);
       });
   };
+
+  const sentinelRef = useInfiniteScroll<HTMLDivElement>({
+    hasMore,
+    loading: loading || loadingMore || !!error,
+    onLoadMore: handleLoadMore,
+  });
 
   return (
     <div className={styles.pageWide}>
@@ -339,49 +348,52 @@ function KnowledgeBasePageInner() {
                   : "No entries yet."}
           </li>
         ) : (
-          items.map((item) => (
-            <li key={item.id}>
-              <Link
-                href={`/apps/knowledge-base/${item.id}`}
-                className={styles.card}
-              >
-                <div className={styles.cardInner}>
-                  <div className={styles.cardFront}>
-                    <div className={styles.cardTop}>
-                      <span className={styles.date}>
-                        {formatDate(item.created_at)}
-                      </span>
+          <>
+            {items.map((item) => (
+              <li key={item.id}>
+                <Link
+                  href={`/apps/knowledge-base/${item.id}`}
+                  className={styles.card}
+                >
+                  <div className={styles.cardInner}>
+                    <div className={styles.cardFront}>
+                      <div className={styles.cardTop}>
+                        <span className={styles.date}>
+                          {formatDate(item.created_at)}
+                        </span>
+                      </div>
+                      <h2 className={styles.question}>{item.question}</h2>
+                      <div className={styles.cardBottom}>
+                        <TagBreadcrumb
+                          tags={item.tags}
+                          size="xs"
+                          className={styles.cardTags}
+                        />
+                      </div>
                     </div>
-                    <h2 className={styles.question}>{item.question}</h2>
-                    <div className={styles.cardBottom}>
-                      <TagBreadcrumb
-                        tags={item.tags}
-                        size="xs"
-                        className={styles.cardTags}
-                      />
+                    <div className={styles.cardBack} aria-hidden="true">
+                      <div className={styles.summary}>
+                        <MarkdownSummary source={item.summary} />
+                      </div>
                     </div>
                   </div>
-                  <div className={styles.cardBack} aria-hidden="true">
-                    <div className={styles.summary}>
-                      <MarkdownSummary source={item.summary} />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </li>
-          ))
+                </Link>
+              </li>
+            ))}
+            {loadingMore &&
+              Array.from({ length: LOAD_MORE_SKELETON_COUNT }).map((_, i) => (
+                <li
+                  key={`sk-more-${i}`}
+                  className={styles.skeleton}
+                  aria-hidden="true"
+                />
+              ))}
+          </>
         )}
       </ul>
 
-      {hasMore && !loading && !error && (
-        <button
-          type="button"
-          className={styles.loadMore}
-          onClick={handleLoadMore}
-          disabled={loadingMore}
-        >
-          {loadingMore ? "Loading…" : "Load more"}
-        </button>
+      {hasMore && !loading && !loadingMore && !error && (
+        <div ref={sentinelRef} className={styles.sentinel} aria-hidden="true" />
       )}
     </div>
   );

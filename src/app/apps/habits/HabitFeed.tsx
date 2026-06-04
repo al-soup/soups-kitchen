@@ -3,10 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ActionType, HabitDetail } from "@/lib/supabase/types";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { getLocalToday } from "@/lib/dateUtils";
 import { getHabitFeed, PAGE_SIZE } from "./api";
 import { HabitFeedItem } from "./HabitFeedItem";
 import styles from "./HabitFeed.module.css";
+
+const LOAD_MORE_SKELETON_COUNT = 4;
 
 type DateGroup = { date: string; label: string; habits: HabitDetail[] };
 
@@ -86,6 +89,7 @@ export function HabitFeed({
   }, [actionType, selectedDate]);
 
   const handleLoadMore = () => {
+    if (loadingMore) return;
     const myEpoch = epochRef.current;
     const controller = new AbortController();
     loadMoreCtrlRef.current = controller;
@@ -113,6 +117,12 @@ export function HabitFeed({
   };
 
   const groups = useMemo(() => groupByDate(items), [items]);
+
+  const sentinelRef = useInfiniteScroll<HTMLDivElement>({
+    hasMore,
+    loading: loading || loadingMore,
+    onLoadMore: handleLoadMore,
+  });
 
   if (loading) {
     return <div className={styles.emptyState}>Loading…</div>;
@@ -158,14 +168,16 @@ export function HabitFeed({
           </section>
         ))
       )}
-      {hasMore && (
-        <button
-          className={styles.loadMoreBtn}
-          onClick={handleLoadMore}
-          disabled={loadingMore}
-        >
-          {loadingMore ? "Loading…" : "Load more"}
-        </button>
+      {loadingMore &&
+        Array.from({ length: LOAD_MORE_SKELETON_COUNT }).map((_, i) => (
+          <div
+            key={`sk-${i}`}
+            className={styles.itemSkeleton}
+            aria-hidden="true"
+          />
+        ))}
+      {hasMore && !loadingMore && (
+        <div ref={sentinelRef} className={styles.sentinel} aria-hidden="true" />
       )}
     </div>
   );
