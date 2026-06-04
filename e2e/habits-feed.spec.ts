@@ -116,7 +116,9 @@ test.describe("Habits — Feed", () => {
 
     // Click a scored day (button gridcell) in the graph
     const scoredDay = page
-      .locator("[role='grid'] button[role='gridcell']")
+      .locator(
+        "[role='img'][aria-label='Habit score graph'] button[role='gridcell']"
+      )
       .first();
     await expect(scoredDay).toBeVisible({ timeout: 10000 });
     await scoredDay.click();
