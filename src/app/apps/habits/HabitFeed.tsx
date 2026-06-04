@@ -177,7 +177,12 @@ export function HabitFeed({
           />
         ))}
       {hasMore && !loadingMore && (
-        <div ref={sentinelRef} className={styles.sentinel} aria-hidden="true" />
+        <div
+          ref={sentinelRef}
+          className={styles.sentinel}
+          data-testid="feed-sentinel"
+          aria-hidden="true"
+        />
       )}
     </div>
   );

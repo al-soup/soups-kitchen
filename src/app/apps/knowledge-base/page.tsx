@@ -396,7 +396,12 @@ function KnowledgeBasePageInner() {
       </ul>
 
       {hasMore && !loading && !loadingMore && !error && (
-        <div ref={sentinelRef} className={styles.sentinel} aria-hidden="true" />
+        <div
+          ref={sentinelRef}
+          className={styles.sentinel}
+          data-testid="kb-sentinel"
+          aria-hidden="true"
+        />
       )}
     </div>
   );
