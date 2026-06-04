@@ -66,11 +66,25 @@ function log(
 // Auth guard
 // ---------------------------------------------------------------------------
 
+// Constant-time string compare. `===` short-circuits on first mismatch, which
+// lets an attacker time responses to leak the cron secret byte by byte.
+function timingSafeEqual(a: string, b: string): boolean {
+  const enc = new TextEncoder();
+  const ba = enc.encode(a);
+  const bb = enc.encode(b);
+  if (ba.length !== bb.length) return false;
+  let diff = 0;
+  for (let i = 0; i < ba.length; i++) diff |= ba[i] ^ bb[i];
+  return diff === 0;
+}
+
 function authorize(req: Request): Response | null {
   const cronSecret = Deno.env.get("CRON_SECRET");
   if (!cronSecret) return errorResponse(500, "CRON_SECRET not configured");
-  const provided = req.headers.get("x-cron-secret");
-  if (provided !== cronSecret) return errorResponse(401, "Unauthorized");
+  const provided = req.headers.get("x-cron-secret") ?? "";
+  if (!timingSafeEqual(provided, cronSecret)) {
+    return errorResponse(401, "Unauthorized");
+  }
   return null;
 }
 
@@ -80,7 +94,8 @@ function authorize(req: Request): Response | null {
 
 async function ensureFreshToken(
   supabase: ReturnType<typeof createClient>,
-  token: TokenRow
+  token: TokenRow,
+  encKey: string
 ): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
 
@@ -111,16 +126,13 @@ async function ensureFreshToken(
 
   const data = await res.json();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
-    .from("strava_tokens")
-    .update({
-      access_token: data.access_token,
-      refresh_token: data.refresh_token,
-      expires_at: data.expires_at,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", token.id);
+  const { error } = await supabase.rpc("update_strava_access_token", {
+    p_id: token.id,
+    p_access_token: data.access_token,
+    p_refresh_token: data.refresh_token,
+    p_expires_at: data.expires_at,
+    p_key: encKey,
+  });
 
   if (error) throw new Error(`[token] persist failed: ${error.message}`);
 
@@ -210,18 +222,24 @@ Deno.serve(async (req) => {
 
   log("info", "run started");
 
+  const encKey = Deno.env.get("STRAVA_TOKEN_KEY");
+  if (!encKey) {
+    log("error", "STRAVA_TOKEN_KEY not configured");
+    return errorResponse(500, "Server misconfigured");
+  }
+
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data: token, error: tokenError } = await supabase
-      .from("strava_tokens")
-      .select("*")
-      .limit(1)
-      .single();
+    const { data: tokens, error: tokenError } = await supabase.rpc(
+      "get_strava_token",
+      { p_key: encKey }
+    );
 
+    const token = (tokens ?? [])[0] as TokenRow | undefined;
     if (tokenError || !token) {
       log("error", "no strava tokens found", { error: tokenError?.message });
       return errorResponse(
@@ -230,11 +248,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const accessToken = await ensureFreshToken(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      supabase as any,
-      token as TokenRow
-    );
+    const accessToken = await ensureFreshToken(supabase, token, encKey);
 
     const activities = await fetchActivities(accessToken);
     log("info", "activities fetched", { fetched: activities.length });
@@ -263,8 +277,10 @@ Deno.serve(async (req) => {
       { headers: { "Content-Type": "application/json" } }
     );
   } catch (err) {
+    // Log full error server-side, return generic message so internal details
+    // don't leak (token text, query shape, etc).
     const message = (err as Error).message;
     log("error", "run failed", { error: message });
-    return errorResponse(502, message);
+    return errorResponse(502, "Strava sync failed");
   }
 });

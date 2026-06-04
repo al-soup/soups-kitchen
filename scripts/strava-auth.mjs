@@ -8,7 +8,8 @@
  * Required env vars:
  *   STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET,
  *   NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL),
- *   SERVICE_ROLE_KEY_SUPABASE
+ *   SERVICE_ROLE_KEY_SUPABASE,
+ *   STRAVA_TOKEN_KEY (32+ char passphrase for at-rest token encryption)
  */
 
 import { createServer } from "node:http";
@@ -59,6 +60,7 @@ const CLIENT_ID = requireEnv("STRAVA_CLIENT_ID");
 const CLIENT_SECRET = requireEnv("STRAVA_CLIENT_SECRET");
 const SUPABASE_URL = requireEnv("NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL");
 const SERVICE_ROLE_KEY = requireEnv("SERVICE_ROLE_KEY_SUPABASE");
+const STRAVA_TOKEN_KEY = requireEnv("STRAVA_TOKEN_KEY");
 
 // ---------------------------------------------------------------------------
 // Strava token exchange
@@ -100,26 +102,23 @@ async function storeTokens({
     "Content-Type": "application/json",
   };
 
-  // Clear any existing row (single-row table)
-  await fetch(`${SUPABASE_URL}/rest/v1/strava_tokens?id=gt.0`, {
-    method: "DELETE",
-    headers,
-  });
-
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/strava_tokens`, {
+  // RPC encrypts plaintext columns with STRAVA_TOKEN_KEY before insert and
+  // wipes any prior row.
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/upsert_strava_tokens`, {
     method: "POST",
     headers,
     body: JSON.stringify({
-      athlete_id: athlete.id,
-      access_token,
-      refresh_token,
-      expires_at,
+      p_athlete_id: athlete.id,
+      p_access_token: access_token,
+      p_refresh_token: refresh_token,
+      p_expires_at: expires_at,
+      p_key: STRAVA_TOKEN_KEY,
     }),
   });
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Supabase insert failed (${res.status}): ${text}`);
+    throw new Error(`Supabase RPC failed (${res.status}): ${text}`);
   }
 }
 

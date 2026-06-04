@@ -220,7 +220,11 @@ scripts/
 ### Strava Integration
 
 - Edge function `strava-activity` fetches recent Strava activities via cron (daily)
-- Tokens stored in `strava_tokens` table, auto-refreshed on each run (Strava rotates refresh tokens)
-- Endpoint protected by `x-cron-secret` header (not JWT)
+- Tokens stored encrypted (pgcrypto) in `strava_tokens.access_token_enc` /
+  `refresh_token_enc`. Edge function + auth script access via SECURITY DEFINER
+  RPCs (`upsert_strava_tokens`, `get_strava_token`, `update_strava_access_token`)
+  passing `STRAVA_TOKEN_KEY` per call. Auto-refreshed on each run (Strava
+  rotates refresh tokens).
+- Endpoint protected by `x-cron-secret` header (timing-safe compare, not JWT)
 - Setup: run `pnpm strava:auth` once, then deploy edge function + set secrets
-- Secrets: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `CRON_SECRET`
+- Secrets: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `CRON_SECRET`, `STRAVA_TOKEN_KEY` (32+ chars)
