@@ -2,8 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { usePageContext } from "@/context/PageContext";
-import { MenuIcon } from "@/constants/icons";
+import {
+  MenuIcon,
+  HabitsAppIcon,
+  FahrplanAppIcon,
+  KnowledgeBaseAppIcon,
+} from "@/constants/icons";
 import styles from "./Navbar.module.css";
 import { ProfileDropdown } from "../ProfileDropdown";
 
@@ -13,6 +19,14 @@ interface NavbarProps {
 
 export function Navbar({ onMenuClick }: NavbarProps) {
   const { title, subtitle, hideBrand } = usePageContext();
+  const pathname = usePathname() ?? "";
+  const AppIcon = pathname.startsWith("/apps/habits")
+    ? HabitsAppIcon
+    : pathname.startsWith("/apps/fahrplan")
+      ? FahrplanAppIcon
+      : pathname.startsWith("/apps/knowledge-base")
+        ? KnowledgeBaseAppIcon
+        : null;
 
   return (
     <header className={styles.navbar}>
@@ -28,14 +42,20 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         href="/"
         className={`${styles.brand} ${hideBrand ? styles.brandHidden : ""}`}
       >
-        <Image
-          src="/soup.svg"
-          alt="Soup's Kitchen logo"
-          width={36}
-          height={36}
-          className={styles.logo}
-          loading="eager"
-        />
+        {AppIcon ? (
+          <span className={styles.logo} aria-hidden="true">
+            <AppIcon size={36} />
+          </span>
+        ) : (
+          <Image
+            src="/soup.svg"
+            alt="Soup's Kitchen logo"
+            width={36}
+            height={36}
+            className={styles.logo}
+            loading="eager"
+          />
+        )}
         {title && (
           <div className={styles.titles}>
             <span className={styles.title}>{title}</span>

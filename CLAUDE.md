@@ -61,7 +61,7 @@ Clicking a colored day in `HabitScoreGraph` sets `selectedDate` state, which fil
 
 ### Layout Components
 
-- **Navbar**: Fixed top, centered logo + dynamic title (via PageContext), hamburger (left), profile icon (right)
+- **Navbar**: Fixed top, centered brand (icon + dynamic title via PageContext) + hamburger (left) + profile (right). Brand icon is route-driven: `/apps/habits*` → `HabitsAppIcon`, `/apps/fahrplan*` → `FahrplanAppIcon`, `/apps/knowledge-base*` → `KnowledgeBaseAppIcon`. Logo (`/soup.svg`) is the fallback. Map lives inline in `Navbar.tsx`.
 - **Sidebar**: Slide-in from left, app navigation, transparent backdrop blurs main content
 - **Footer**: Minimal, centered
 

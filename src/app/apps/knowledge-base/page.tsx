@@ -376,7 +376,7 @@ function KnowledgeBasePageInner() {
                     </div>
                     <div className={styles.cardBack} aria-hidden="true">
                       <div className={styles.summary}>
-                        <MarkdownSummary source={item.summary} />
+                        <MarkdownSummary source={item.summary} disableLinks />
                       </div>
                     </div>
                   </div>
