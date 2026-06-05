@@ -59,7 +59,7 @@ test.describe("Habits — Feed", () => {
     ).toBeVisible({ timeout: 10000 });
   });
 
-  test("Bad Habits has fewer than 20 entries — no Load more button", async ({
+  test("Bad Habits has fewer than 20 entries — no infinite-scroll sentinel", async ({
     page,
   }) => {
     await login(page, ADMIN.email, ADMIN.password);
@@ -84,24 +84,24 @@ test.describe("Habits — Feed", () => {
     await expect(page.locator("[class*='item']").first()).toBeVisible({
       timeout: 10000,
     });
-    await expect(
-      page.getByRole("button", { name: "Load more" })
-    ).not.toBeVisible();
+    await expect(page.getByTestId("feed-sentinel")).toHaveCount(0);
   });
 
-  test("Type 1 has 20+ entries — Load more visible and loads additional items", async ({
+  test("Type 1 has 20+ entries — scrolling triggers load of additional items", async ({
     page,
   }) => {
     // Type 1 is selected by default
-    const loadMore = page.getByRole("button", { name: "Load more" });
-    await expect(loadMore).toBeVisible({ timeout: 10000 });
+    const sentinel = page.getByTestId("feed-sentinel");
+    await expect(sentinel).toBeAttached({ timeout: 10000 });
 
-    const countBefore = await page.locator("[class*='item']").count();
-    await loadMore.click();
+    const itemLocator = page.locator("[class*='item']");
+    const countBefore = await itemLocator.count();
 
-    // Button may disappear if second page exhausts results — poll item count directly
+    // Scroll the sentinel into view to trip the IntersectionObserver
+    await sentinel.scrollIntoViewIfNeeded();
+
     await expect(async () => {
-      const countAfter = await page.locator("[class*='item']").count();
+      const countAfter = await itemLocator.count();
       expect(countAfter).toBeGreaterThan(countBefore);
     }).toPass({ timeout: 10000 });
   });

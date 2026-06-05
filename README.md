@@ -56,13 +56,15 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - [ ] Create filter and sorting for overview page
 - [ ] Create an overview chart option where the different action types can be combined
 - [ ] Create other types of insight graphs for habits
+- [ ] Switching tabs causes a reload. Maybe we should cache the loaded items between tab switches
 
 #### Knowledge Base
 
-- [ ] Star / Favorite questions
+- [ ] Sort by date
 - [ ] Create a learning or revision mode
 - [ ] Instead (or in addition to) the Speech-Notes app, I could create an API to create new knowledge entries via Speech/LLM
 - [ ] Create an Interview-me feature
+- [ ] Star / Favorite questions
 
 #### Question Game
 

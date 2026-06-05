@@ -212,6 +212,139 @@ for (const key of adversarialKeys) {
 }
 ```$md$,
       now() - interval '1 day'
+    ),
+    (
+      'What does the CAP theorem actually constrain?',
+      'Under a network *partition*, a distributed system must choose between **C**onsistency and **A**vailability. No partition → no choice.',
+      $md$CAP is often misread as "pick 2 of 3". The real statement: when a partition happens, you trade C for A or vice versa.
+
+- **CP** (e.g. etcd, ZooKeeper): refuse writes on the minority side → stale-free but unavailable.
+- **AP** (e.g. Dynamo-style stores): accept writes everywhere → available but readers may see stale data until reconciliation.
+
+Healthy networks → both. The interesting question is what happens on the bad day.$md$,
+      now() - interval '6 days'
+    ),
+    (
+      'Hash index vs B-tree — when hash wins',
+      'Hash indexes give `O(1)` equality lookups but support **no range scans, no ordering, no prefix matching**.',
+      $md$Pick a hash index only when:
+
+- You only ever query `WHERE col = ?` (no `<`, `BETWEEN`, `ORDER BY`).
+- The column has high cardinality (low collision rate).
+- The workload is read-heavy and equality-only.
+
+Postgres' hash index is finally crash-safe (since 10) but still niche — a B-tree is usually fine and far more flexible.$md$,
+      now() - interval '7 days'
+    ),
+    (
+      'Why CSRF tokens with SameSite cookies?',
+      '`SameSite=Lax` blocks most cross-site requests, but **subdomain attacks** and older browsers leak. Defense in depth.',
+      $md$`SameSite=Lax` is good but not airtight:
+
+- **Subdomain takeover**: an attacker controlling `evil.example.com` can issue requests against `app.example.com` and the cookie tags along.
+- **Top-level GETs**: `Lax` still sends cookies on top-level navigations — fine for idempotent endpoints, dangerous if a `GET` mutates state.
+- **Old browsers / non-browser clients**: don't honor SameSite at all.
+
+CSRF tokens cost very little and close all of these.$md$,
+      now() - interval '8 days'
+    ),
+    (
+      'Idempotency keys — what problem do they solve?',
+      'They let the client safely **retry** a non-idempotent request without risking duplicate side effects (double charges, double sends).',
+      $md$Pattern:
+
+1. Client generates a UUID and sends it as `Idempotency-Key: <uuid>`.
+2. Server stores the key + result on first success.
+3. On retry with the same key, server returns the stored result without re-executing.
+
+Bake this into payments, email sends, and webhook handlers — anywhere a network blip mid-request would otherwise cause double-execution.
+
+```http
+POST /charges HTTP/1.1
+Idempotency-Key: 8e1b...
+Content-Type: application/json
+
+{"amount": 5000, "currency": "usd"}
+```$md$,
+      now() - interval '9 days'
+    ),
+    (
+      'Quicksort vs mergesort — when to pick which?',
+      'Quicksort: in-place, cache-friendly, average `O(n log n)`. Mergesort: stable, worst-case `O(n log n)`, needs `O(n)` extra memory.',
+      $md$- **Quicksort** dominates in-memory sorting of primitives — tight inner loop, locality wins. Risk: bad pivots → `O(n²)`. Mitigations: random pivot, median-of-three, introsort fallback.
+- **Mergesort** wins when stability matters (sorting objects by one key while preserving prior order) and for external sorts (data doesn't fit in memory — natural to merge sorted runs).
+
+Most stdlibs (Java, Python) use Timsort — a mergesort variant tuned for partially-sorted input.$md$,
+      now() - interval '10 days'
+    ),
+    (
+      'Blue/green vs canary — what is the trade-off?',
+      'Blue/green flips 100% of traffic at once. Canary ramps a small slice first. Canary catches bugs cheaper; blue/green rolls back faster.',
+      $md$**Blue/green**:
+- Two identical environments; flip the load balancer to switch.
+- Instant rollback (flip back).
+- Doubles infrastructure cost during the cutover.
+
+**Canary**:
+- Route 1% → 5% → 25% → 100% over minutes/hours, watching SLOs.
+- Catches regressions on a small blast radius.
+- Needs good metrics and automated rollback triggers.
+
+Many teams combine: canary inside a green environment, then flip.$md$,
+      now() - interval '11 days'
+    ),
+    (
+      'Read-through cache — how is it different from cache-aside?',
+      'In **read-through**, the cache itself loads from the source of truth on miss. The app only ever talks to the cache.',
+      $md$Cache-aside puts the lookup logic in the app:
+
+```
+app -> cache.get(k)
+  if miss: app -> db.get(k); app -> cache.set(k, v)
+```
+
+Read-through pushes it into the cache layer (or a thin wrapper):
+
+```
+app -> cache.get(k)  // cache fetches from db on miss internally
+```
+
+Pros: single code path, harder to forget the write-back. Cons: tighter coupling between cache and DB schema; harder to do custom miss logic.$md$,
+      now() - interval '12 days'
+    ),
+    (
+      'Why is `SELECT *` discouraged?',
+      'It over-fetches, breaks on schema changes, and disables index-only scans by forcing a heap visit.',
+      $md$Concrete problems:
+
+- **Bandwidth + memory**: pulls TOASTed blobs and columns you don't need.
+- **Schema coupling**: adding a column silently changes query results — risky for code that positions by index or maps to a struct.
+- **Index-only scans**: a covering index can't satisfy `SELECT *` because the index doesn't store every column → planner falls back to a heap fetch.
+- **`COUNT(*)` is fine** — it's special-cased and means "count rows", not "count every column".$md$,
+      now() - interval '13 days'
+    ),
+    (
+      'ETag vs Last-Modified — when to use each',
+      '`ETag` is a strong content hash; `Last-Modified` is a 1-second timestamp. Prefer `ETag` for correctness, `Last-Modified` for cheap.',
+      $md$Both enable conditional requests (`If-None-Match` / `If-Modified-Since`) → server returns `304 Not Modified` to save bandwidth.
+
+- **ETag**: opaque content fingerprint. Detects any change, even within the same second. Costs CPU to compute (often a hash of the body).
+- **Last-Modified**: cheap (mtime on the file or a `updated_at` column). 1-second resolution → can miss rapid edits.
+
+Use both: clients send whichever they have; servers compare both. ETags also gate optimistic concurrency on `PUT`/`DELETE` via `If-Match`.$md$,
+      now() - interval '14 days'
+    ),
+    (
+      'Two-phase commit — when is it worth the cost?',
+      'Rarely. 2PC blocks if the coordinator dies mid-commit. Most modern systems prefer **sagas** with compensating actions.',
+      $md$2PC = prepare phase (everyone votes yes/no) + commit phase (everyone applies). Atomic across participants — but:
+
+- **Blocking**: if the coordinator crashes after `PREPARE` but before `COMMIT`, participants hold locks until it comes back.
+- **Latency**: two round trips, slowest participant sets the floor.
+- **Availability**: any participant down = whole transaction down.
+
+Worth it for: tight, low-latency clusters with strong consistency needs (distributed SQL, XA transactions). Not worth it for: microservices spanning datacenters. Use a saga + idempotent compensations instead.$md$,
+      now() - interval '15 days'
     )
   RETURNING id, question
 )
@@ -230,5 +363,25 @@ JOIN public.tags t ON t.name = ANY(
       THEN ARRAY['Web Development', 'REST', 'Authentication']
     WHEN 'Hash-map lookup worst case — why O(n)?'
       THEN ARRAY['Algorithms']
+    WHEN 'What does the CAP theorem actually constrain?'
+      THEN ARRAY['System Design', 'Concurrency']
+    WHEN 'Hash index vs B-tree — when hash wins'
+      THEN ARRAY['Databases', 'DB Indexing']
+    WHEN 'Why CSRF tokens with SameSite cookies?'
+      THEN ARRAY['Web Development', 'Authentication']
+    WHEN 'Idempotency keys — what problem do they solve?'
+      THEN ARRAY['Web Development', 'REST']
+    WHEN 'Quicksort vs mergesort — when to pick which?'
+      THEN ARRAY['Algorithms']
+    WHEN 'Blue/green vs canary — what is the trade-off?'
+      THEN ARRAY['DevOps']
+    WHEN 'Read-through cache — how is it different from cache-aside?'
+      THEN ARRAY['System Design', 'Caching']
+    WHEN 'Why is `SELECT *` discouraged?'
+      THEN ARRAY['Databases']
+    WHEN 'ETag vs Last-Modified — when to use each'
+      THEN ARRAY['Web Development', 'REST']
+    WHEN 'Two-phase commit — when is it worth the cost?'
+      THEN ARRAY['Databases', 'Concurrency']
   END
 );

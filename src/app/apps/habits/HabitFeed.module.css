@@ -47,27 +47,32 @@
   color: var(--foreground);
 }
 
-.loadMoreBtn {
-  display: block;
+.sentinel {
+  height: 1px;
   width: 100%;
-  margin-top: 16px;
-  padding: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  background: var(--background);
-  color: var(--foreground);
+}
+
+.itemSkeleton {
+  height: 44px;
+  background: var(--background-alt);
   border: var(--border-width, 1px) solid var(--border-color);
   border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-  font-family: inherit;
+  margin-bottom: 8px;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
-.loadMoreBtn:hover:not(:disabled) {
-  background: var(--background-alt);
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
-.loadMoreBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+@media (prefers-reduced-motion: reduce) {
+  .itemSkeleton {
+    animation: none;
+  }
 }
