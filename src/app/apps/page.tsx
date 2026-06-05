@@ -1,5 +1,10 @@
 import Link from "next/link";
 import { PageTitle } from "@/components/ui/PageTitle";
+import {
+  HabitsAppIcon,
+  FahrplanAppIcon,
+  KnowledgeBaseAppIcon,
+} from "@/constants/icons";
 import styles from "./page.module.css";
 
 export default function AppsPage() {
@@ -9,18 +14,33 @@ export default function AppsPage() {
       <h1 className={styles.heading}>Apps</h1>
       <nav className={styles.list}>
         <Link href="/apps/habits" className={styles.appLink}>
-          <p className={styles.linkTitle}>Habit Tracker</p>
-          <p className={styles.linkDesc}>Track daily habits & streaks</p>
+          <span className={styles.icon} aria-hidden="true">
+            <HabitsAppIcon size={32} />
+          </span>
+          <span className={styles.text}>
+            <p className={styles.linkTitle}>Habit Tracker</p>
+            <p className={styles.linkDesc}>Track daily habits & streaks</p>
+          </span>
         </Link>
         <Link href="/apps/fahrplan" className={styles.appLink}>
-          <p className={styles.linkTitle}>Fahrplan</p>
-          <p className={styles.linkDesc}>Swiss public transport departures</p>
+          <span className={styles.icon} aria-hidden="true">
+            <FahrplanAppIcon size={32} />
+          </span>
+          <span className={styles.text}>
+            <p className={styles.linkTitle}>Fahrplan</p>
+            <p className={styles.linkDesc}>Swiss public transport departures</p>
+          </span>
         </Link>
         <Link href="/apps/knowledge-base" className={styles.appLink}>
-          <p className={styles.linkTitle}>Knowledge Base</p>
-          <p className={styles.linkDesc}>
-            Q&amp;A bits, tagged by topic & concept
-          </p>
+          <span className={styles.icon} aria-hidden="true">
+            <KnowledgeBaseAppIcon size={32} />
+          </span>
+          <span className={styles.text}>
+            <p className={styles.linkTitle}>Knowledge Base</p>
+            <p className={styles.linkDesc}>
+              Q&amp;A bits, tagged by topic & concept
+            </p>
+          </span>
         </Link>
       </nav>
     </div>
