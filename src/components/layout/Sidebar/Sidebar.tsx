@@ -36,6 +36,7 @@ const SECTIONS: NavSection[] = [
       { href: "/apps/habits", label: "Habit Tracker" },
       { href: "/apps/fahrplan", label: "Fahrplan" },
       { href: "/apps/knowledge-base", label: "Knowledge Base" },
+      { href: "/apps/fragespiel", label: "Fragespiel" },
     ],
   },
   {

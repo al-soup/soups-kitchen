@@ -53,7 +53,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit + tag filters + full-text search w/ typo tolerance), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit + tag filters + full-text search w/ typo tolerance), Fragespiel (/apps/fragespiel — swipe deck of philosophical discussion prompts, mobile-first; placeholder), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
 
 #### Habits: Graph→Feed interaction
 
@@ -61,7 +61,7 @@ Clicking a colored day in `HabitScoreGraph` sets `selectedDate` state, which fil
 
 ### Layout Components
 
-- **Navbar**: Fixed top, centered brand (icon + dynamic title via PageContext) + hamburger (left) + profile (right). Brand icon is route-driven: `/apps/habits*` → `HabitsAppIcon`, `/apps/fahrplan*` → `FahrplanAppIcon`, `/apps/knowledge-base*` → `KnowledgeBaseAppIcon`. Logo (`/soup.svg`) is the fallback. Map lives inline in `Navbar.tsx`.
+- **Navbar**: Fixed top, centered brand (icon + dynamic title via PageContext) + hamburger (left) + profile (right). Brand icon is route-driven: `/apps/habits*` → `HabitsAppIcon`, `/apps/fahrplan*` → `FahrplanAppIcon`, `/apps/knowledge-base*` → `KnowledgeBaseAppIcon`, `/apps/fragespiel*` → `FragespielAppIcon`. Logo (`/soup.svg`) is the fallback. Map lives inline in `Navbar.tsx`.
 - **Sidebar**: Slide-in from left, app navigation, transparent backdrop blurs main content
 - **Footer**: Minimal, centered
 
@@ -194,6 +194,8 @@ src/
                               # (regex extract/replace), types.ts (KnowledgeFormInitial,
                               # isDraftDirty), api.ts (listKnowledge via
                               # search_knowledge RPC, get/update/delete by number id)
+      fragespiel/     # Placeholder: swipe deck of philosophical questions
+                      # (mobile-first). Backed by public.questions table.
     resources/   # Standalone resources module (upload to Supabase Storage)
                  # UploadDropzone, ResourceGrid, ResourceCard; api.ts CRUD + signed URLs
                  # Placeholder token: {{resource:<uuid>}}
