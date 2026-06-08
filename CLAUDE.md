@@ -116,14 +116,30 @@ src/
       habits/         # HabitFeed (infinite-scroll feed, grouped by date,
                       # skeleton rows while next page loads), HabitTypeSelector
       habits/create/  # api.ts for action fetch + habit insert; ActionList/ActionRow components
-      knowledge-base/ # Overview grid: responsive cards (~280px target,
-                      # auto-fill, page caps at 1400px), fixed 160px height,
-                      # flip on hover/focus (desktop only) to reveal entry
-                      # summary on back face. Reverse-chrono, infinite scroll
-                      # via IntersectionObserver sentinel (useInfiniteScroll).
-                      # Skeleton cards during initial loading + appended while
-                      # next page loads + always-rendered filters/stats row to
-                      # prevent layout shift.
+      knowledge-base/ # Overview grid (Direction 1 "Refined Baseline" redesign):
+                      # responsive cards (auto-fill minmax(320px, 1fr),
+                      # page caps at 1400px), min 190px height, cream page
+                      # bg + paper cards in light mode (dark + neo fall back
+                      # to global tokens). Each card has: topic color spine
+                      # (4px, left edge), mono TOPIC / Concept breadcrumb
+                      # in top row, left-aligned Baloo 2 question,
+                      # summary slide-up reveal on hover/focus (replaces
+                      # the old flip; hover-debounced ~220ms to avoid
+                      # flash on quick mouse-overs, snappier collapse),
+                      # footer divider with mono date (bottom-left) +
+                      # topic-colored "Read →" CTA (bottom-right). Card
+                      # lifts 4px + shadow on hover.
+                      # Per-topic colors are derived from a deterministic
+                      # FNV-1a hash of the topic name → 8-swatch palette
+                      # in _form/topicColor.ts (no DB column). New fonts
+                      # Baloo 2 (display) + Hanken Grotesk (body) +
+                      # JetBrains Mono (mono) are KB-scoped — loaded
+                      # globally via next/font but only used inside
+                      # knowledge-base CSS modules; do not promote them
+                      # globally without explicit ask. Reverse-chrono,
+                      # infinite scroll via IntersectionObserver sentinel
+                      # (useInfiniteScroll). Skeleton cards during initial
+                      # loading + appended while next page loads.
                       # + top toolbar linking to /create, /tags, /resources.
                       # SearchBox above the toolbar: debounced 250ms, URL-driven
                       # (?q=…). Full-text search via search_vector tsvector +
@@ -133,17 +149,22 @@ src/
                       # Tag filter rows (Topics + Concepts) below the toolbar:
                       # multi-select pills, URL-driven by tag NAMES via repeated
                       # params (?topics=Databases&topics=Networking&concepts=…).
+                      # Topic pills use the per-topic palette color (TagPills
+                      # `colorFor` prop); concept pills stay on --tag-concept.
                       # Names → ids resolved client-side via tagsByName map; the
                       # knowledge fetch waits for the tag list when tag filters
                       # are in the URL (q-only fetches don't wait). OR within a
                       # category, AND across categories; q AND-composes with
-                      # both. Tags render as a mono-font breadcrumb path
-                      # ([topic1, topic2 > concept1 concept2]).
-                      # Right-aligned counter row above the list shows
-                      # "X of Y entries" (filtered) or "Y entries" (unfiltered).
-                      # Matching count comes from search_knowledge via a
-                      # count(*) over () window column (total_count); total
-                      # comes from a separate head:true count of knowledge.
+                      # both. Card breadcrumb is rendered inline (dot + mono
+                      # uppercase TOPIC + slash + concept), not via the shared
+                      # TagBreadcrumb component — that one is still used on
+                      # entry detail and elsewhere.
+                      # Counter shown in the page header (right of the title),
+                      # aria-live=polite: "X of Y entries" (filtered) or
+                      # "Y entries" (unfiltered). Matching count comes from
+                      # search_knowledge via a count(*) over () window column
+                      # (total_count); total comes from a separate head:true
+                      # count of knowledge.
       knowledge-base/tags/  # Tags admin (api.ts CRUD, TagSection, TagRow); topic & concept
       knowledge-base/create/  # New entry form page (uses KnowledgeForm)
       knowledge-base/[id]/   # Single route per entry: Preview ↔ Edit toggle.

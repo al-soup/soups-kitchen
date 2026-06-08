@@ -15,7 +15,8 @@
   border-radius: 999px;
   background: var(--background);
   cursor: pointer;
-  border: var(--border-width, 1px) solid var(--border-color);
+  border: var(--border-width, 1px) solid var(--pill-border, var(--border-color));
+  color: var(--pill-solid, inherit);
   transition:
     background var(--transition-fast),
     border-color var(--transition-fast),
@@ -24,27 +25,26 @@
 }
 
 .pill.topic {
-  color: var(--tag-topic);
-  border-color: var(--tag-topic);
+  --pill-solid: var(--tag-topic);
+  --pill-border: var(--tag-topic);
+  color: var(--pill-solid);
+  border-color: var(--pill-border);
 }
 
 .pill.concept {
-  color: var(--tag-concept);
-  border-color: var(--tag-concept);
+  --pill-solid: var(--tag-concept);
+  --pill-border: var(--tag-concept);
+  color: var(--pill-solid);
+  border-color: var(--pill-border);
 }
 
 .pill:hover {
   background: var(--background-alt);
 }
 
-.pill.topic.pillSelected {
-  background: var(--tag-topic);
-  color: var(--background);
-  border-color: var(--tag-topic);
-}
-
+.pill.topic.pillSelected,
 .pill.concept.pillSelected {
-  background: var(--tag-concept);
+  background: var(--pill-solid);
   color: var(--background);
-  border-color: var(--tag-concept);
+  border-color: var(--pill-solid);
 }

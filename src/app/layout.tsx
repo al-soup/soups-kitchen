@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import {
+  Baloo_2,
+  Hanken_Grotesk,
+  Inter,
+  JetBrains_Mono,
+  Space_Grotesk,
+} from "next/font/google";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { PageProvider } from "@/context/PageContext";
 import { AuthProvider } from "@/context/AuthContext";
@@ -14,6 +20,24 @@ const inter = Inter({
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
+  subsets: ["latin"],
+});
+
+// KB-scoped display + body + mono fonts (Direction 1 redesign).
+// Only used inside the Knowledge Base overview; do not promote globally.
+const baloo2 = Baloo_2({
+  variable: "--font-baloo2",
+  weight: ["500", "600", "700"],
+  subsets: ["latin"],
+});
+
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-hanken",
+  subsets: ["latin"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
   subsets: ["latin"],
 });
 
@@ -36,7 +60,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable}`}>
+      <body
+        className={`${inter.variable} ${spaceGrotesk.variable} ${baloo2.variable} ${hankenGrotesk.variable} ${jetbrainsMono.variable}`}
+      >
         <ThemeProvider>
           <AuthProvider>
             <PageProvider>
