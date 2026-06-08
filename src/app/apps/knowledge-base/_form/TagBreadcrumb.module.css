@@ -2,101 +2,67 @@
   display: inline-flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px 6px;
-  font-size: 0.75rem;
+  gap: 7px;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--kb-muted, var(--foreground-muted));
   line-height: 1.4;
-  color: var(--foreground-muted);
-  flex: 1 1 auto;
   min-width: 0;
 }
 
-.group {
+.topicItem {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  flex-wrap: wrap;
+  gap: 7px;
 }
 
-.topic,
-.concept {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 9px;
-  border-radius: 999px;
-  border: var(--border-width, 1px) solid;
-  white-space: nowrap;
-  letter-spacing: 0.02em;
-  background-color: var(--background);
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 9px;
+  flex: 0 0 auto;
 }
 
 .topic {
-  font-size: 0.625rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--tag-topic);
-  border-color: var(--tag-topic);
-  background-color: color-mix(in srgb, var(--tag-topic) 12%, transparent);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sep {
+  color: var(--kb-muted, var(--foreground-muted));
 }
 
 .concept {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--tag-concept);
-  border-color: var(--tag-concept);
-  background-color: color-mix(in srgb, var(--tag-concept) 12%, transparent);
-}
-
-.chevron {
-  display: inline-block;
-  padding: 0 2px;
-  color: var(--foreground-muted);
-  opacity: 0.6;
-  font-size: 0.8125rem;
-  line-height: 1;
+  color: var(--kb-muted, var(--foreground-muted));
+  white-space: nowrap;
 }
 
 .md {
-  gap: 8px;
-  font-size: 0.875rem;
+  font-size: 12.5px;
+  gap: 10px;
 }
 
-.md .topic {
-  font-size: 0.6875rem;
-  padding: 3px 11px;
-}
-
-.md .concept {
-  font-size: 0.8125rem;
-  padding: 3px 11px;
-}
-
-.md .chevron {
-  font-size: 0.9375rem;
-  padding: 0 4px;
+.md .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
 }
 
 .xs {
-  gap: 4px;
-  font-size: 0.625rem;
-}
-
-.xs .group {
-  gap: 3px;
-}
-
-.xs .topic {
-  font-size: 0.5rem;
-  padding: 1px 6px;
+  font-size: 9.5px;
+  gap: 5px;
   letter-spacing: 0.08em;
 }
 
-.xs .concept {
-  font-size: 0.625rem;
-  padding: 1px 6px;
+.xs .topicItem {
+  gap: 5px;
 }
 
-.xs .chevron {
-  font-size: 0.6875rem;
-  padding: 0 1px;
+.xs .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 7px;
 }

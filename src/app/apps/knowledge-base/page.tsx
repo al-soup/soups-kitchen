@@ -6,6 +6,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useCanManage } from "@/hooks/useCanManage";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+import { ArrowRightIcon } from "@/constants/icons";
 import type { KnowledgeListItem, Tag } from "@/lib/supabase/types";
 import { getKnowledgeTotal, listKnowledge } from "./_form/api";
 import { listTags } from "./tags/api";
@@ -15,6 +16,7 @@ import { SearchBox } from "./_form/SearchBox";
 import { MarkdownSummary } from "./_form/MarkdownSummary";
 import { MarkdownInline } from "./_form/MarkdownInline";
 import { formatDate } from "./_form/format";
+import { topicColorFor } from "./_form/topicColor";
 import {
   TOPICS_PARAM,
   CONCEPTS_PARAM,
@@ -22,7 +24,6 @@ import {
   buildKnowledgeQuery,
   toggleString,
 } from "./_form/filterParams";
-import sharedStyles from "../../shared-page.module.css";
 import styles from "./page.module.css";
 
 const PAGE_SIZE = 20;
@@ -180,6 +181,8 @@ function KnowledgeBasePageInner() {
     [tags]
   );
 
+  const topicColor = useMemo(() => (tag: Tag) => topicColorFor(tag.name), []);
+
   const updateFilters = (
     nextTopicNames: string[],
     nextConceptNames: string[],
@@ -248,9 +251,25 @@ function KnowledgeBasePageInner() {
     onLoadMore: handleLoadMore,
   });
 
+  const countLabel =
+    !loading && !error && totalCount !== null && filteredCount !== null
+      ? hasFilters
+        ? `${filteredCount} of ${totalCount} entries`
+        : `${totalCount} entries`
+      : " ";
+
   return (
     <div className={styles.pageWide}>
-      <h1 className={sharedStyles.title}>Knowledge Base</h1>
+      <div className={styles.headerRow}>
+        <h1 className={styles.title}>Knowledge Base</h1>
+        <span
+          className={styles.entries}
+          aria-live="polite"
+          aria-label="entry count"
+        >
+          {countLabel}
+        </span>
+      </div>
 
       <div className={styles.searchRow}>
         <SearchBox
@@ -287,18 +306,19 @@ function KnowledgeBasePageInner() {
       <div className={styles.filters}>
         {topics.length > 0 && (
           <div className={styles.filterRow}>
-            <span className={styles.filterLabel}>Topics</span>
+            <span className={styles.filterLabel}>TOPICS</span>
             <TagPills
               tags={topics}
               selectedIds={topicIds}
               onToggle={handleToggleTopic}
               variant="topic"
+              colorFor={topicColor}
             />
           </div>
         )}
         {concepts.length > 0 && (
           <div className={styles.filterRow}>
-            <span className={styles.filterLabel}>Concepts</span>
+            <span className={styles.filterLabel}>CONCEPTS</span>
             <TagPills
               tags={concepts}
               selectedIds={conceptIds}
@@ -319,17 +339,9 @@ function KnowledgeBasePageInner() {
         </div>
       </div>
 
-      <p className={styles.statsRow} aria-live="polite">
-        {!loading && !error && totalCount !== null && filteredCount !== null
-          ? hasFilters
-            ? `${filteredCount} of ${totalCount} entries`
-            : `${totalCount} entries`
-          : " "}
-      </p>
-
       <ul className={styles.list}>
         {loading ? (
-          Array.from({ length: 10 }).map((_, i) => (
+          Array.from({ length: 9 }).map((_, i) => (
             <li
               key={`sk-${i}`}
               className={styles.skeleton}
@@ -350,39 +362,51 @@ function KnowledgeBasePageInner() {
           </li>
         ) : (
           <>
-            {items.map((item) => (
-              <li key={item.id}>
-                <Link
-                  href={`/apps/knowledge-base/${item.id}`}
-                  className={styles.card}
-                >
-                  <div className={styles.cardInner}>
-                    <div className={styles.cardFront}>
-                      <div className={styles.cardTop}>
-                        <span className={styles.date}>
-                          {formatDate(item.created_at)}
-                        </span>
-                      </div>
-                      <h2 className={styles.question}>
-                        <MarkdownInline source={item.question} />
-                      </h2>
-                      <div className={styles.cardBottom}>
-                        <TagBreadcrumb
-                          tags={item.tags}
-                          size="xs"
-                          className={styles.cardTags}
-                        />
-                      </div>
+            {items.map((item) => {
+              const topicTag = item.tags.find((t) => t.type === "topic");
+              const conceptTag = item.tags.find((t) => t.type === "concept");
+              const swatch = topicColorFor(topicTag?.name);
+              const crumbTags = [topicTag, conceptTag].filter(
+                (t): t is Tag => !!t
+              );
+              return (
+                <li key={item.id}>
+                  <Link
+                    href={`/apps/knowledge-base/${item.id}`}
+                    className={styles.card}
+                  >
+                    <span
+                      className={styles.spine}
+                      style={{ background: swatch.solid }}
+                      aria-hidden="true"
+                    />
+                    <div className={styles.cardHeader}>
+                      <TagBreadcrumb tags={crumbTags} size="sm" />
                     </div>
-                    <div className={styles.cardBack} aria-hidden="true">
+                    <h2 className={styles.question}>
+                      <MarkdownInline source={item.question} />
+                    </h2>
+                    <div className={styles.reveal}>
                       <div className={styles.summary}>
                         <MarkdownSummary source={item.summary} disableLinks />
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </li>
-            ))}
+                    <div className={styles.cardFooter}>
+                      <span className={styles.date}>
+                        {formatDate(item.created_at)}
+                      </span>
+                      <span
+                        className={styles.readCta}
+                        style={{ color: swatch.solid }}
+                      >
+                        Read
+                        <ArrowRightIcon size={14} />
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
             {loadingMore &&
               Array.from({ length: LOAD_MORE_SKELETON_COUNT }).map((_, i) => (
                 <li
