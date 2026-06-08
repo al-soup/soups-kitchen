@@ -1,4 +1,5 @@
 import type { Tag } from "@/lib/supabase/types";
+import { topicColorFor } from "./topicColor";
 import styles from "./TagBreadcrumb.module.css";
 
 interface TagBreadcrumbProps {
@@ -22,29 +23,31 @@ export function TagBreadcrumb({
 
   return (
     <span className={classes}>
-      {topics.length > 0 && (
-        <span className={styles.group}>
-          {topics.map((t) => (
-            <span key={t.id} className={styles.topic}>
+      {topics.map((t) => {
+        const swatch = topicColorFor(t.name);
+        return (
+          <span key={t.id} className={styles.topicItem}>
+            <span
+              className={styles.dot}
+              style={{ background: swatch.solid }}
+              aria-hidden="true"
+            />
+            <span className={styles.topic} style={{ color: swatch.deep }}>
               {t.name}
             </span>
-          ))}
-        </span>
-      )}
+          </span>
+        );
+      })}
       {topics.length > 0 && concepts.length > 0 && (
-        <span className={styles.chevron} aria-hidden="true">
-          ❯
+        <span className={styles.sep} aria-hidden="true">
+          /
         </span>
       )}
-      {concepts.length > 0 && (
-        <span className={styles.group}>
-          {concepts.map((c) => (
-            <span key={c.id} className={styles.concept}>
-              {c.name}
-            </span>
-          ))}
+      {concepts.map((c) => (
+        <span key={c.id} className={styles.concept}>
+          {c.name}
         </span>
-      )}
+      ))}
     </span>
   );
 }

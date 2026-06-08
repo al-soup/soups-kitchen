@@ -23,7 +23,6 @@ import {
 import { isDraftDirty, type KnowledgeFormInitial } from "../_form/types";
 import { TagBreadcrumb } from "../_form/TagBreadcrumb";
 import { formatDate, formatDateTime } from "../_form/format";
-import sharedStyles from "../../../shared-page.module.css";
 import styles from "./page.module.css";
 
 const MarkdownDetail = dynamic(
@@ -261,7 +260,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
 
   if (state.kind === "loading" || !draft) {
     return (
-      <div className={sharedStyles.page}>
+      <div className={styles.pageContainer}>
         <p>Loading…</p>
       </div>
     );
@@ -269,7 +268,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
 
   if (state.kind === "notFound") {
     return (
-      <div className={sharedStyles.page}>
+      <div className={styles.pageContainer}>
         <div className={styles.header}>
           <button
             type="button"
@@ -279,9 +278,9 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
           >
             ←
           </button>
-          <h1 className={sharedStyles.title}>Entry not found</h1>
+          <h1 className={styles.question}>Entry not found</h1>
         </div>
-        <p className={sharedStyles.description}>
+        <p>
           No knowledge entry exists with id <code>{rawId}</code>.
         </p>
       </div>
@@ -290,7 +289,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
 
   if (state.kind === "error") {
     return (
-      <div className={sharedStyles.page}>
+      <div className={styles.pageContainer}>
         <p className={styles.error}>{state.message}</p>
       </div>
     );
@@ -310,7 +309,7 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   const showActions = canManage && (isDirty || mode === "edit");
 
   return (
-    <div className={sharedStyles.page}>
+    <div className={styles.pageContainer}>
       <div className={styles.header}>
         <button
           type="button"

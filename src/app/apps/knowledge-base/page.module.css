@@ -232,43 +232,6 @@
   min-width: 0;
 }
 
-.crumb {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 9px;
-  flex: 0 0 auto;
-}
-
-.crumbTopic {
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.crumbSep,
-.crumbConcept {
-  color: var(--kb-muted);
-}
-
-.crumbConcept {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .date {
   font-family: var(--font-jetbrains), ui-monospace, monospace;
   font-size: 11px;
@@ -322,7 +285,7 @@
   max-height: 200px;
   opacity: 1;
   transition:
-    max-height 0.55s cubic-bezier(0.32, 0.72, 0.24, 1) 0.6s,
+    max-height 0.55s cubic-bezier(0.32, 0.72, 0.24, 1) 0.8s,
     opacity 0.35s ease 0.45s;
 }
 

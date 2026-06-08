@@ -10,6 +10,7 @@ import { ArrowRightIcon } from "@/constants/icons";
 import type { KnowledgeListItem, Tag } from "@/lib/supabase/types";
 import { getKnowledgeTotal, listKnowledge } from "./_form/api";
 import { listTags } from "./tags/api";
+import { TagBreadcrumb } from "./_form/TagBreadcrumb";
 import { TagPills } from "./_form/TagPills";
 import { SearchBox } from "./_form/SearchBox";
 import { MarkdownSummary } from "./_form/MarkdownSummary";
@@ -365,6 +366,9 @@ function KnowledgeBasePageInner() {
               const topicTag = item.tags.find((t) => t.type === "topic");
               const conceptTag = item.tags.find((t) => t.type === "concept");
               const swatch = topicColorFor(topicTag?.name);
+              const crumbTags = [topicTag, conceptTag].filter(
+                (t): t is Tag => !!t
+              );
               return (
                 <li key={item.id}>
                   <Link
@@ -377,31 +381,7 @@ function KnowledgeBasePageInner() {
                       aria-hidden="true"
                     />
                     <div className={styles.cardHeader}>
-                      <span className={styles.crumb}>
-                        <span
-                          className={styles.dot}
-                          style={{ background: swatch.solid }}
-                          aria-hidden="true"
-                        />
-                        {topicTag && (
-                          <span
-                            className={styles.crumbTopic}
-                            style={{ color: swatch.deep }}
-                          >
-                            {topicTag.name}
-                          </span>
-                        )}
-                        {topicTag && conceptTag && (
-                          <span className={styles.crumbSep} aria-hidden="true">
-                            /
-                          </span>
-                        )}
-                        {conceptTag && (
-                          <span className={styles.crumbConcept}>
-                            {conceptTag.name}
-                          </span>
-                        )}
-                      </span>
+                      <TagBreadcrumb tags={crumbTags} size="sm" />
                     </div>
                     <h2 className={styles.question}>
                       <MarkdownInline source={item.question} />
