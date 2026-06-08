@@ -385,3 +385,65 @@ JOIN public.tags t ON t.name = ANY(
       THEN ARRAY['Databases', 'Concurrency']
   END
 );
+
+-- Fragespiel: philosophical discussion prompts.
+-- difficulty: 1=light, 2=medium, 3=deep. Mix of solo + couples, en + de.
+INSERT INTO public.questions (text, category, difficulty, is_for_couples, language) VALUES
+  -- Light / icebreakers (en)
+  ('If you could instantly master any skill, which one and why?', 'Hypothetical', 1, false, 'en'),
+  ('What is a small thing that brought you joy this week?', 'Self', 1, false, 'en'),
+  ('Which fictional world would you most want to live in?', 'Hypothetical', 1, false, 'en'),
+  ('What''s the most unusual food combination you genuinely enjoy?', 'Fun', 1, false, 'en'),
+  ('If your day had a soundtrack right now, what song would play?', 'Self', 1, false, 'en'),
+  ('What''s a hill you''re willing to die on — but only mildly?', 'Fun', 1, false, 'en'),
+  ('What''s the best advice you''ve received that you never followed?', 'Self', 1, false, 'en'),
+
+  -- Medium / values (en)
+  ('When was the last time you changed your mind about something important?', 'Values', 2, false, 'en'),
+  ('What does success mean to you that has nothing to do with money?', 'Values', 2, false, 'en'),
+  ('Which of your beliefs would your 15-year-old self find most surprising?', 'Self', 2, false, 'en'),
+  ('Is it better to be respected or to be liked?', 'Ethics', 2, false, 'en'),
+  ('What''s a tradition you grew up with that you no longer keep — and why?', 'Self', 2, false, 'en'),
+  ('Where do you feel most like yourself?', 'Self', 2, false, 'en'),
+  ('Which fear has shaped your life the most?', 'Self', 2, false, 'en'),
+  ('If you had to give up either reading or travel forever, which would it be?', 'Hypothetical', 2, false, 'en'),
+  ('When does loyalty become a flaw?', 'Ethics', 2, false, 'en'),
+
+  -- Deep / philosophical (en)
+  ('Do you believe people fundamentally change, or only their behaviors?', 'Philosophy', 3, false, 'en'),
+  ('Is a life well-lived the same as a life well-remembered?', 'Philosophy', 3, false, 'en'),
+  ('If you could know the exact date of your death, would you want to?', 'Mortality', 3, false, 'en'),
+  ('What do you owe the people who raised you?', 'Ethics', 3, false, 'en'),
+  ('Is forgiveness something you give for them, or for yourself?', 'Ethics', 3, false, 'en'),
+  ('Would you rather be a great person no one remembers, or a flawed one history never forgets?', 'Philosophy', 3, false, 'en'),
+  ('Is suffering necessary for meaning?', 'Philosophy', 3, false, 'en'),
+  ('Can you truly know another person — or only your version of them?', 'Philosophy', 3, false, 'en'),
+  ('What part of yourself are you still hiding from the world?', 'Self', 3, false, 'en'),
+  ('If your memories were wiped tomorrow, would you still be you?', 'Identity', 3, false, 'en'),
+
+  -- Couples (en)
+  ('What is something you''ve never told me but always wanted to?', 'Couples', 2, true, 'en'),
+  ('When did you first feel safe with me?', 'Couples', 2, true, 'en'),
+  ('What''s a habit of mine you''ve grown to love — or quietly tolerate?', 'Couples', 1, true, 'en'),
+  ('What does "home" mean to you when I''m not there?', 'Couples', 3, true, 'en'),
+  ('How do you want to be loved when you''re at your worst?', 'Couples', 3, true, 'en'),
+  ('What''s a version of us five years from now that you''d be excited about?', 'Couples', 2, true, 'en'),
+  ('What''s something we''ve never done together that you''d like to try?', 'Couples', 1, true, 'en'),
+  ('When was the last time you felt truly seen by me?', 'Couples', 3, true, 'en'),
+  ('What''s one thing you wish I''d ask you more often?', 'Couples', 2, true, 'en'),
+
+  -- German prompts
+  ('Wann hast du das letzte Mal etwas zum ersten Mal gemacht?', 'Selbst', 1, false, 'de'),
+  ('Was würdest du tun, wenn Geld keine Rolle spielen würde?', 'Hypothetisch', 2, false, 'de'),
+  ('Welche Lüge erzählst du dir selbst am häufigsten?', 'Selbst', 3, false, 'de'),
+  ('Was bedeutet Heimat für dich — ein Ort, ein Gefühl, ein Mensch?', 'Philosophie', 3, false, 'de'),
+  ('Worauf bist du heimlich richtig stolz?', 'Selbst', 2, false, 'de'),
+  ('Welcher Mensch hat dich am meisten geprägt — und weiß es nicht?', 'Werte', 3, false, 'de'),
+  ('Was würdest du deinem 18-jährigen Ich sagen?', 'Selbst', 2, false, 'de'),
+  ('Glaubst du an Schicksal oder an Zufall?', 'Philosophie', 3, false, 'de'),
+
+  -- German couples
+  ('Was hast du an mir gemocht, bevor wir uns kannten?', 'Paare', 2, true, 'de'),
+  ('Wann fühlst du dich mir am nächsten?', 'Paare', 2, true, 'de'),
+  ('Was sollten wir öfter zusammen tun?', 'Paare', 1, true, 'de'),
+  ('Wovor habe ich Angst, das du längst weißt?', 'Paare', 3, true, 'de');
