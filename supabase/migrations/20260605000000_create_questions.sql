@@ -1,12 +1,12 @@
 create table public.questions (
   id bigserial primary key,
-  text text not null,
+  text_de text not null,
+  text_en text not null,
   category text,
   difficulty smallint not null
     check (difficulty between 1 and 3),
   is_ai_generated boolean not null default false,
   is_for_couples boolean not null default false,
-  language text not null default 'en',
   source text,
   created_by uuid references auth.users(id) on delete set null,
   is_active boolean not null default true,

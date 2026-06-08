@@ -163,9 +163,9 @@ export type Database = {
           is_active: boolean;
           is_ai_generated: boolean;
           is_for_couples: boolean;
-          language: string;
           source: string | null;
-          text: string;
+          text_de: string;
+          text_en: string;
           updated_at: string;
         };
         Insert: {
@@ -177,9 +177,9 @@ export type Database = {
           is_active?: boolean;
           is_ai_generated?: boolean;
           is_for_couples?: boolean;
-          language?: string;
           source?: string | null;
-          text: string;
+          text_de: string;
+          text_en: string;
           updated_at?: string;
         };
         Update: {
@@ -191,9 +191,9 @@ export type Database = {
           is_active?: boolean;
           is_ai_generated?: boolean;
           is_for_couples?: boolean;
-          language?: string;
           source?: string | null;
-          text?: string;
+          text_de?: string;
+          text_en?: string;
           updated_at?: string;
         };
         Relationships: [];

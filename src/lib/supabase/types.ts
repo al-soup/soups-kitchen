@@ -7,6 +7,8 @@ export type TagType = Database["public"]["Enums"]["tag_type"];
 
 export type Resource = Tables<"resources">;
 
+export type Question = Tables<"questions">;
+
 export type Knowledge = Tables<"knowledge">;
 export type KnowledgeTag = Tables<"knowledge_tags">;
 
