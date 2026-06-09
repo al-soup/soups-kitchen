@@ -7,10 +7,9 @@ import styles from "./styles.module.css";
 type Props = {
   q: Question;
   lang: Lang;
-  index: number;
 };
 
-export function CardFace({ q, lang, index }: Props) {
+export function CardFace({ q, lang }: Props) {
   const text = lang === "de" ? q.text_de : q.text_en;
   const intensity = Math.max(1, Math.min(3, q.difficulty));
   return (
@@ -34,14 +33,10 @@ export function CardFace({ q, lang, index }: Props) {
           <span className={styles.spark}>✦</span>AI
         </span>
       )}
-      <div className={styles.question} data-text={text}>
-        {text}
-      </div>
+      <div className={styles.question}>{text}</div>
       <div className={styles.actions}>
         <span className={styles.meta} />
-        <span className={styles.meta}>
-          No.{String(index + 1).padStart(2, "0")}
-        </span>
+        <span className={styles.meta}>No.{String(q.id).padStart(3, "0")}</span>
       </div>
     </div>
   );

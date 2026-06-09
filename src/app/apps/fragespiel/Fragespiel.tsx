@@ -63,8 +63,8 @@ export function Fragespiel() {
   const counts = useMemo<Record<Group, number>>(() => {
     const rows = questions ?? [];
     return {
-      friends: rows.length,
-      couple: rows.filter((q) => q.is_for_couples).length,
+      friends: rows.filter((q) => !q.is_for_couples).length,
+      couple: rows.length,
     };
   }, [questions]);
 
@@ -75,7 +75,7 @@ export function Fragespiel() {
   const pickGroup = (g: Group) => {
     if (!questions) return;
     const filtered =
-      g === "couple" ? questions.filter((q) => q.is_for_couples) : questions;
+      g === "couple" ? questions : questions.filter((q) => !q.is_for_couples);
     setDeck(shuffle(filtered));
     setGroup(g);
     setDeckVersion((v) => v + 1);
@@ -85,8 +85,8 @@ export function Fragespiel() {
     if (!group || !questions) return;
     const filtered =
       group === "couple"
-        ? questions.filter((q) => q.is_for_couples)
-        : questions;
+        ? questions
+        : questions.filter((q) => !q.is_for_couples);
     setDeck(shuffle(filtered));
     setDeckVersion((v) => v + 1);
   };
