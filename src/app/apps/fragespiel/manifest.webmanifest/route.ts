@@ -8,8 +8,9 @@ export function GET() {
       start_url: "/apps/fragespiel",
       scope: "/apps/fragespiel",
       display: "standalone",
-      background_color: "#ffffff",
-      theme_color: "#171717",
+      orientation: "portrait",
+      background_color: "#efe9da",
+      theme_color: "#1b2a6b",
       icons: [
         {
           src: "/icons/fragespiel-192.png",
