@@ -74,6 +74,8 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 - Filter by category
 - Redesign AI label - put it on the bottom left
 - Add a mode where you can choose how many AI cards to mix in
+- Add option for which difficulty level to start in
+- Save which userID created a new question
 
 #### Live-Poll
 
