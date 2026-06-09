@@ -42,8 +42,18 @@ export function Fragespiel() {
   );
   const [group, setGroup] = useState<Group | null>(null);
   const [deck, setDeck] = useState<Question[]>([]);
-  // Bumped on pickGroup/reshuffle so PlayScreen remounts with fresh deck state.
+  const [sortByIntensity, setSortByIntensity] = useState(false);
+  // Bumped on pickGroup/reshuffle/sort-toggle so PlayScreen remounts with fresh deck state.
   const [deckVersion, setDeckVersion] = useState(0);
+
+  // Stable sort: within a difficulty bucket, original (shuffled) order is preserved.
+  const displayDeck = useMemo(
+    () =>
+      sortByIntensity
+        ? deck.slice().sort((a, b) => a.difficulty - b.difficulty)
+        : deck,
+    [deck, sortByIntensity]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -96,6 +106,11 @@ export function Fragespiel() {
     setDeck([]);
   };
 
+  const toggleSort = () => {
+    setSortByIntensity((s) => !s);
+    setDeckVersion((v) => v + 1);
+  };
+
   return (
     <div className={styles.rz} style={PALETTE}>
       {error ? (
@@ -112,11 +127,13 @@ export function Fragespiel() {
       ) : (
         <PlayScreen
           key={deckVersion}
-          deck={deck}
+          deck={displayDeck}
           lang={lang}
           onLangChange={handleLang}
           onReshuffle={reshuffle}
           onChangeGroup={changeGroup}
+          sortByIntensity={sortByIntensity}
+          onToggleSort={toggleSort}
         />
       )}
       <div className={styles.grain} />
