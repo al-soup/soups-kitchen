@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import { Navbar } from "../Navbar";
 import { Sidebar } from "../Sidebar";
 import { Footer } from "../Footer";
@@ -17,6 +18,8 @@ export function Shell({ children }: ShellProps) {
     []
   );
   const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
+  const pathname = usePathname();
+  const hideFooter = pathname?.startsWith("/apps/fragespiel") ?? false;
 
   return (
     <>
@@ -24,7 +27,7 @@ export function Shell({ children }: ShellProps) {
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
       <div className={styles.shell}>
         <main className={styles.main}>{children}</main>
-        <Footer />
+        {!hideFooter && <Footer />}
       </div>
     </>
   );

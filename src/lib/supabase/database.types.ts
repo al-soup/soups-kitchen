@@ -153,6 +153,51 @@ export type Database = {
           },
         ];
       };
+      questions: {
+        Row: {
+          category: string | null;
+          created_at: string;
+          created_by: string | null;
+          difficulty: number;
+          id: number;
+          is_active: boolean;
+          is_ai_generated: boolean;
+          is_for_couples: boolean;
+          source: string | null;
+          text_de: string;
+          text_en: string;
+          updated_at: string;
+        };
+        Insert: {
+          category?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          difficulty: number;
+          id?: number;
+          is_active?: boolean;
+          is_ai_generated?: boolean;
+          is_for_couples?: boolean;
+          source?: string | null;
+          text_de: string;
+          text_en: string;
+          updated_at?: string;
+        };
+        Update: {
+          category?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          difficulty?: number;
+          id?: number;
+          is_active?: boolean;
+          is_ai_generated?: boolean;
+          is_for_couples?: boolean;
+          source?: string | null;
+          text_de?: string;
+          text_en?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       resources: {
         Row: {
           bucket: string;
@@ -221,30 +266,30 @@ export type Database = {
       };
       strava_tokens: {
         Row: {
-          access_token: string;
+          access_token_enc: string;
           athlete_id: number;
           created_at: string | null;
           expires_at: number;
           id: number;
-          refresh_token: string;
+          refresh_token_enc: string;
           updated_at: string | null;
         };
         Insert: {
-          access_token: string;
+          access_token_enc: string;
           athlete_id: number;
           created_at?: string | null;
           expires_at: number;
           id?: never;
-          refresh_token: string;
+          refresh_token_enc: string;
           updated_at?: string | null;
         };
         Update: {
-          access_token?: string;
+          access_token_enc?: string;
           athlete_id?: number;
           created_at?: string | null;
           expires_at?: number;
           id?: never;
-          refresh_token?: string;
+          refresh_token_enc?: string;
           updated_at?: string | null;
         };
         Relationships: [];
@@ -305,6 +350,16 @@ export type Database = {
           total_score: number;
         }[];
       };
+      get_strava_token: {
+        Args: { p_key: string };
+        Returns: {
+          access_token: string;
+          athlete_id: number;
+          expires_at: number;
+          id: number;
+          refresh_token: string;
+        }[];
+      };
       get_user_role: {
         Args: { target_table: string };
         Returns: Database["public"]["Enums"]["user_role"];
@@ -333,6 +388,26 @@ export type Database = {
       };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { "": string }; Returns: string[] };
+      update_strava_access_token: {
+        Args: {
+          p_access_token: string;
+          p_expires_at: number;
+          p_id: number;
+          p_key: string;
+          p_refresh_token: string;
+        };
+        Returns: undefined;
+      };
+      upsert_strava_tokens: {
+        Args: {
+          p_access_token: string;
+          p_athlete_id: number;
+          p_expires_at: number;
+          p_key: string;
+          p_refresh_token: string;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       tag_type: "topic" | "concept";

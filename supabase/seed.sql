@@ -385,3 +385,31 @@ JOIN public.tags t ON t.name = ANY(
       THEN ARRAY['Databases', 'Concurrency']
   END
 );
+
+-- Fragespiel: philosophical discussion prompts. Multi-language (text_de + text_en).
+-- difficulty: 1=light, 2=medium, 3=deep. category drives the card kicker.
+INSERT INTO public.questions (text_de, text_en, category, difficulty, is_for_couples, is_ai_generated) VALUES
+  ('Würdest du dein Leben noch einmal genau gleich leben?',                'Would you live your life exactly the same way again?',         'Philosophy',    2, true,  false),
+  ('Was ist das Peinlichste, das du je gegoogelt hast?',                   'What''s the most embarrassing thing you''ve ever googled?',    'Embarrassing',  2, false, false),
+  ('Würdest du eine kleine Lüge erzählen, um einen Freund zu schützen?',   'Would you tell a small lie to protect a friend?',              'Ethics',        1, false, false),
+  ('Wann hast du das letzte Mal richtig geweint und warum?',               'When did you last really cry, and why?',                       'Personal',      3, true,  false),
+  ('Welche Superkraft würdest du sofort wieder abgeben?',                  'Which superpower would you give back immediately?',            'Fun',           1, false, false),
+  ('Glaubst du, dass Menschen sich grundlegend ändern können?',            'Do you believe people can fundamentally change?',              'Philosophy',    2, true,  false),
+  ('Worauf bist du heimlich richtig stolz?',                               'What are you secretly really proud of?',                       'Personal',      2, true,  false),
+  ('Welchen Spitznamen würdest du am liebsten vergessen?',                 'Which nickname do you wish everyone would forget?',            'Embarrassing',  1, false, false),
+  ('Ist es okay, reich zu sein, während andere hungern?',                  'Is it okay to be rich while others go hungry?',                'Ethics',        2, false, false),
+  ('Welches Lied beschreibt dein Leben gerade am besten?',                 'Which song best describes your life right now?',               'Fun',           1, false, false),
+  ('Was würdest du tun, wenn niemand je erfahren würde, was du tust?',     'What would you do if no one would ever find out?',             'Philosophy',    3, true,  true),
+  ('Wen in diesem Raum würdest du gerne besser kennen?',                   'Who in this room would you like to know better?',              'Personal',      2, true,  false),
+  ('Was war dein peinlichster Verliebtheits-Moment?',                      'What was your most embarrassing crush moment?',                'Embarrassing',  2, true,  false),
+  ('Würdest du die Wahrheit sagen, wenn sie alles zerstört?',              'Would you tell the truth if it destroyed everything?',         'Ethics',        3, true,  false),
+  ('Wenn dein Leben ein Film wäre — welches Genre?',                       'If your life were a movie, what genre would it be?',           'Fun',           1, false, false),
+  ('Lebst du das Leben, das du wirklich willst?',                          'Are you living the life you actually want?',                   'Philosophy',    3, true,  true),
+  ('Was würdest du deinem 16-jährigen Ich sagen?',                         'What would you tell your 16-year-old self?',                   'Personal',      2, true,  false),
+  ('Wovor hast du Angst, dass es jemand herausfindet?',                    'What are you afraid someone might find out?',                  'Embarrassing',  3, true,  false),
+  ('Hat jeder eine zweite Chance verdient?',                               'Does everyone deserve a second chance?',                       'Ethics',        2, true,  false),
+  ('Mit welcher fiktiven Figur würdest du tauschen?',                      'Which fictional character would you swap lives with?',         'Fun',           1, false, false),
+  ('Ist Glück eine Entscheidung oder ein Zufall?',                         'Is happiness a choice or a matter of luck?',                   'Philosophy',    2, true,  true),
+  ('Was vermisst du an einer Version von dir, die es nicht mehr gibt?',    'What do you miss about a version of you that no longer exists?','Personal',     3, true,  false),
+  ('Was tust du, wenn du sicher bist, dass niemand zusieht?',              'What do you do when you''re sure no one is watching?',         'Embarrassing',  3, true,  true),
+  ('Was wäre dein absolut nutzloses Talent?',                              'What''s your most useless talent?',                            'Fun',           1, false, false);

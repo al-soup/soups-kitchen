@@ -53,7 +53,7 @@
 
 Multi-app platform ("Soup's Kitchen") hosting small tools as well as my portfolio.
 
-Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit + tag filters + full-text search w/ typo tolerance), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
+Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge Base (/apps/knowledge-base — overview + detail + tags admin + create/edit + tag filters + full-text search w/ typo tolerance), Fragespiel (/apps/fragespiel — swipe deck of philosophical discussion prompts; risograph design, mobile-first), Resources (/resources — standalone file uploads, reusable across apps), Login (/login), Experience (/about/experience), Me (/about/me), Settings (/settings), Icon Gallery (/dev/icons, dev-only).
 
 #### Habits: Graph→Feed interaction
 
@@ -61,7 +61,7 @@ Clicking a colored day in `HabitScoreGraph` sets `selectedDate` state, which fil
 
 ### Layout Components
 
-- **Navbar**: Fixed top, centered brand (icon + dynamic title via PageContext) + hamburger (left) + profile (right). Brand icon is route-driven: `/apps/habits*` → `HabitsAppIcon`, `/apps/fahrplan*` → `FahrplanAppIcon`, `/apps/knowledge-base*` → `KnowledgeBaseAppIcon`. Logo (`/soup.svg`) is the fallback. Map lives inline in `Navbar.tsx`.
+- **Navbar**: Fixed top, centered brand (icon + dynamic title via PageContext) + hamburger (left) + profile (right). Brand icon is route-driven: `/apps/habits*` → `HabitsAppIcon`, `/apps/fahrplan*` → `FahrplanAppIcon`, `/apps/knowledge-base*` → `KnowledgeBaseAppIcon`, `/apps/fragespiel*` → `FragespielAppIcon`. Logo (`/soup.svg`) is the fallback. Map lives inline in `Navbar.tsx`.
 - **Sidebar**: Slide-in from left, app navigation, transparent backdrop blurs main content
 - **Footer**: Minimal, centered
 
@@ -194,6 +194,18 @@ src/
                               # (regex extract/replace), types.ts (KnowledgeFormInitial,
                               # isDraftDirty), api.ts (listKnowledge via
                               # search_knowledge RPC, get/update/delete by number id)
+      fragespiel/     # Risograph swipe deck of philosophical questions
+                      # (mobile-first; Federal Blue × Fluo Pink palette via CSS
+                      # vars). Backed by public.questions (text_de + text_en,
+                      # category as kicker, difficulty=intensity 1-3,
+                      # is_for_couples filter, is_ai_generated → ✦ pill).
+                      # Start screen: 2 group picker (Friends/Couple) +
+                      # DE/EN toggle. Play screen: ≡ menu (Reshuffle /
+                      # Language / Change round), animated card stack
+                      # (5-deep DEPTH poses, fly+cover back-step), swipe via
+                      # PointerEvents (useSwipe.ts). Lang persisted in
+                      # localStorage via useSyncExternalStore. Footer is
+                      # hidden on this route (Shell.tsx route gate).
     resources/   # Standalone resources module (upload to Supabase Storage)
                  # UploadDropzone, ResourceGrid, ResourceCard; api.ts CRUD + signed URLs
                  # Placeholder token: {{resource:<uuid>}}

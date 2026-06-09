@@ -9,6 +9,7 @@ import {
   HabitsAppIcon,
   FahrplanAppIcon,
   KnowledgeBaseAppIcon,
+  FragespielAppIcon,
 } from "@/constants/icons";
 import styles from "./Navbar.module.css";
 import { ProfileDropdown } from "../ProfileDropdown";
@@ -26,7 +27,9 @@ export function Navbar({ onMenuClick }: NavbarProps) {
       ? FahrplanAppIcon
       : pathname.startsWith("/apps/knowledge-base")
         ? KnowledgeBaseAppIcon
-        : null;
+        : pathname.startsWith("/apps/fragespiel")
+          ? FragespielAppIcon
+          : null;
 
   return (
     <header className={styles.navbar}>

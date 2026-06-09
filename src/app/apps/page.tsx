@@ -4,6 +4,7 @@ import {
   HabitsAppIcon,
   FahrplanAppIcon,
   KnowledgeBaseAppIcon,
+  FragespielAppIcon,
 } from "@/constants/icons";
 import styles from "./page.module.css";
 
@@ -39,6 +40,17 @@ export default function AppsPage() {
             <p className={styles.linkTitle}>Knowledge Base</p>
             <p className={styles.linkDesc}>
               Q&amp;A bits, tagged by topic & concept
+            </p>
+          </span>
+        </Link>
+        <Link href="/apps/fragespiel" className={styles.appLink}>
+          <span className={styles.icon} aria-hidden="true">
+            <FragespielAppIcon size={32} />
+          </span>
+          <span className={styles.text}>
+            <p className={styles.linkTitle}>Fragespiel</p>
+            <p className={styles.linkDesc}>
+              Philosophical questions for discussions
             </p>
           </span>
         </Link>

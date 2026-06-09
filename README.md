@@ -68,11 +68,18 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 
 #### Question Game
 
-tbd
+- Questions should show if they are generated. Admins should have the option to promote a question so it is saved in the DB. I might have to run the generation locally if API access turns our to be difficult/expensive
+- Animations and glitter. It would be nice to have a design that really stands out.
+- Show the actual number of cards left
+- Filter by category
+- Redesign AI label - put it on the bottom left
+- Add a mode where you can choose how many AI cards to mix in
+- Add option for which difficulty level to start in
+- Save which userID created a new question
 
 #### Live-Poll
 
-Use websockets, gRCP.
+Use websockets
 
 #### Speech-to-Text Notes Interface
 
