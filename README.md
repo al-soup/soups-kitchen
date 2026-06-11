@@ -29,9 +29,9 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 | `pnpm dev:remote`     | Dev server (remote Supabase via `.env.remote`) |
 | `pnpm build`          | Production build                               |
 | `pnpm lint`           | ESLint fix                                     |
-| `pnpm lint:check`     | ESLint check                                   |
+| `pnpm lint:check`     | ESLint check (for CI)                          |
 | `pnpm format`         | Prettier fix                                   |
-| `pnpm format:check`   | Prettier check                                 |
+| `pnpm format:check`   | Prettier check (for CI)                        |
 | `pnpm test`           | Run unit tests                                 |
 | `pnpm test:e2e`       | Run Playwright tests (auto-starts Supabase)    |
 | `pnpm test:e2e:ui`    | Playwright UI mode                             |
@@ -41,15 +41,16 @@ Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `
 | `pnpm supabase:types` | Regenerate `database.types.ts`                 |
 | `pnpm generate-icons` | Regenerate per-app PWA icons                   |
 
-## PWA
+## PWA Support
 
-Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Screen", iOS home screen icon). Each app has its own web app manifest and icons. Run `pnpm generate-icons` to regenerate icons from `public/soup.svg`.
+All apps under _/apps_ are installable as PWAs (Android "Add to Home Screen", iOS home screen icon). Each app has its own web app manifest and icons. Run `pnpm generate-icons` to regenerate icons from `public/soup.svg`.
 
 ## TODO
 
 - [ ] Solve GH issues automatically via agents
 - [ ] Let Claude go over the README and make some improvements
-- [ ] Create an "UNFINISHED" label
+- [ ] Create a post about how you save your Strava entries automatically as habits. Include encryption at rest. It does not matter that this is not mind-blowing, it is just about to build a portfolio.
+- [ ] Write a blog entry about the question game and the other apps
 
 ### Apps
 
@@ -77,55 +78,6 @@ TODO: go over this and the plan created with Claude. Start the implementation.
 - Redesign AI label - put it on the bottom left
 - Add a mode where you can choose how many AI cards to mix in
 - Save which userID created a new question
-
-#### Live-Poll
-
-Use websockets connection for instant feedback to clients.
-
-#### Speech-to-Text Notes Interface
-
-Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. tbd: sync process.
-
-### About
-
-#### Elevator Pitch
-
-- [ ] Create a animated elevator pitch that shows in 1 minute why I'm a good hire. Use a nice background e.g. from Great Budapest Hotel opening scene, and present yourself in the elevator.
-
-**Idea:**
-
-- Background that adapts to the time of day. Mountain scene.
-- Grand Budapest Hotel style, you zoom into the Elevator once you click start
-- The elevator can move up or down. Create it as a scrolly-tool
-- In the elevator I show my pitch on the wall of the elevator
-- Out of the window you see only small movement plus you see an oldschool pointer of the current floor
-
-**Pitch:**
-
-- USP
-- Worked in different industries with project examples
-- soft skills
-- Can teach myself anything. Eager learner and motivated to build, improve, solve and optimize
-- Pays attention to detail, is reliable
-- Add a testimonial from Lino & Danijel
-
-#### Me
-
-- [ ] Extend the job summaries. What have you done exactly and how has it benefitted the company?
-- [ ] Add a description about my work position (New Elements, EdTech, etc.)
-- [ ] Link tags to blog entries
-
-#### Experience
-
-- [ ] Finish the blog parser/renderer in Go
-- [ ] Save post to DB or rsync to serve as static files from VPS or Supabase object storage
-- [ ] Load posts as blog. Add filter option for tags. Also link tags to CV
-- [ ] Include ELK stack to include search
-
-### CI
-
-- [ ] Setup a logging lib (LogTape) and integrate it with a centralized logging platform (Grafana Cloud)
-- [ ] Add CI user that can create a habit entry when working on the app
 
 ### API
 
