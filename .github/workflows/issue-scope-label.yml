@@ -1,0 +1,32 @@
+name: Issue scope label
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || ''
+            const match = body.match(/###\s+Scope\s*\n+\s*(\S+)/)
+            if (!match) return
+            const scope = match[1].trim()
+            const allowed = new Set([
+              'new', 'api', 'database', 'ci',
+              'app:fragespiel', 'app:fahrplan', 'app:habits', 'app:knowledge-base',
+              'about:experience', 'about:me',
+            ])
+            if (!allowed.has(scope)) return
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [scope],
+            })

@@ -236,17 +236,7 @@
   line-height: 1.08;
   color: var(--ink);
   margin-top: auto;
-  position: relative;
-}
-.question::after {
-  content: attr(data-text);
-  position: absolute;
-  left: 1.4px;
-  top: 1.4px;
-  color: var(--accent);
-  opacity: 0.45;
-  mix-blend-mode: multiply;
-  z-index: -1;
+  text-shadow: 1.4px 1.4px 0 color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
 .actions {

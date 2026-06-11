@@ -1,0 +1,38 @@
+name: Enhancement
+description: Suggest a new feature or improvement
+title: "[enhancement]: "
+labels: ["type:enhancement"]
+body:
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: Pick the app or area this belongs to.
+      options:
+        - new
+        - api
+        - database
+        - ci
+        - app:fragespiel
+        - app:fahrplan
+        - app:habits
+        - app:knowledge-base
+        - about:experience
+        - about:me
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+  - type: textarea
+    id: hints
+    attributes:
+      label: Hints
+      description: Pointers for the implementer — files, patterns, gotchas.

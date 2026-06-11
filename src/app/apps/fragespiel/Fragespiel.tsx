@@ -42,8 +42,18 @@ export function Fragespiel() {
   );
   const [group, setGroup] = useState<Group | null>(null);
   const [deck, setDeck] = useState<Question[]>([]);
-  // Bumped on pickGroup/reshuffle so PlayScreen remounts with fresh deck state.
+  const [sortByIntensity, setSortByIntensity] = useState(false);
+  // Bumped on pickGroup/reshuffle/sort-toggle so PlayScreen remounts with fresh deck state.
   const [deckVersion, setDeckVersion] = useState(0);
+
+  // Stable sort: within a difficulty bucket, original (shuffled) order is preserved.
+  const displayDeck = useMemo(
+    () =>
+      sortByIntensity
+        ? deck.slice().sort((a, b) => a.difficulty - b.difficulty)
+        : deck,
+    [deck, sortByIntensity]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -63,8 +73,8 @@ export function Fragespiel() {
   const counts = useMemo<Record<Group, number>>(() => {
     const rows = questions ?? [];
     return {
-      friends: rows.length,
-      couple: rows.filter((q) => q.is_for_couples).length,
+      friends: rows.filter((q) => !q.is_for_couples).length,
+      couple: rows.length,
     };
   }, [questions]);
 
@@ -75,7 +85,7 @@ export function Fragespiel() {
   const pickGroup = (g: Group) => {
     if (!questions) return;
     const filtered =
-      g === "couple" ? questions.filter((q) => q.is_for_couples) : questions;
+      g === "couple" ? questions : questions.filter((q) => !q.is_for_couples);
     setDeck(shuffle(filtered));
     setGroup(g);
     setDeckVersion((v) => v + 1);
@@ -85,8 +95,8 @@ export function Fragespiel() {
     if (!group || !questions) return;
     const filtered =
       group === "couple"
-        ? questions.filter((q) => q.is_for_couples)
-        : questions;
+        ? questions
+        : questions.filter((q) => !q.is_for_couples);
     setDeck(shuffle(filtered));
     setDeckVersion((v) => v + 1);
   };
@@ -94,6 +104,11 @@ export function Fragespiel() {
   const changeGroup = () => {
     setGroup(null);
     setDeck([]);
+  };
+
+  const toggleSort = () => {
+    setSortByIntensity((s) => !s);
+    setDeckVersion((v) => v + 1);
   };
 
   return (
@@ -112,11 +127,13 @@ export function Fragespiel() {
       ) : (
         <PlayScreen
           key={deckVersion}
-          deck={deck}
+          deck={displayDeck}
           lang={lang}
           onLangChange={handleLang}
           onReshuffle={reshuffle}
           onChangeGroup={changeGroup}
+          sortByIntensity={sortByIntensity}
+          onToggleSort={toggleSort}
         />
       )}
       <div className={styles.grain} />

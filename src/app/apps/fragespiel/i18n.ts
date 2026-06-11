@@ -9,6 +9,7 @@ export const L10N = {
     restart: "Neu mischen",
     changeGroup: "Runde wechseln",
     language: "Sprache",
+    sortByIntensity: "Nach Intensität",
     next: "Weiter",
   },
   en: {
@@ -17,6 +18,7 @@ export const L10N = {
     restart: "Reshuffle",
     changeGroup: "Change round",
     language: "Language",
+    sortByIntensity: "Sort by intensity",
     next: "Next",
   },
 } as const;

@@ -18,7 +18,7 @@ const DEPTH: DepthPose[] = [
 ];
 const HIDDEN: DepthPose = { y: 42, x: -2, r: -3.6, s: 0.88, o: 0 };
 const TOP = `translate(${DEPTH[0].x}px,${DEPTH[0].y}px) rotate(${DEPTH[0].r}deg) scale(${DEPTH[0].s})`;
-const FLY = "translate(440px,-280px) rotate(13deg) scale(.92)";
+const FLY = "translate(-440px,-280px) rotate(-13deg) scale(.92)";
 const ANIM_MS = 440;
 const FLY_TRANSITION =
   "transform .44s cubic-bezier(.36,.66,.3,1), opacity .44s ease";
@@ -26,7 +26,6 @@ const FLY_TRANSITION =
 type FlyState = {
   card: Question;
   dir: 1 | -1;
-  idx: number;
   on: boolean;
 } | null;
 
@@ -36,6 +35,8 @@ type Props = {
   onLangChange: (l: Lang) => void;
   onReshuffle: () => void;
   onChangeGroup: () => void;
+  sortByIntensity: boolean;
+  onToggleSort: () => void;
 };
 
 export function PlayScreen({
@@ -44,6 +45,8 @@ export function PlayScreen({
   onLangChange,
   onReshuffle,
   onChangeGroup,
+  sortByIntensity,
+  onToggleSort,
 }: Props) {
   const t = L10N[lang];
   const L = deck.length;
@@ -63,9 +66,8 @@ export function PlayScreen({
     setDragging(false);
     let movingId: number;
     if (dir > 0) {
-      const idx = index;
-      movingId = deck[idx].id;
-      setFly({ card: deck[idx], dir: 1, idx, on: false });
+      movingId = deck[index].id;
+      setFly({ card: deck[index], dir: 1, on: false });
       setIndex((i) => (i + 1) % L);
     } else {
       // back-step: pin current top with cover so it stays visible until covered.
@@ -73,7 +75,7 @@ export function PlayScreen({
       movingId = deck[idx].id;
       setCover(deck[index].id);
       setIndex(idx);
-      setFly({ card: deck[idx], dir: -1, idx, on: false });
+      setFly({ card: deck[idx], dir: -1, on: false });
     }
     requestAnimationFrame(() =>
       requestAnimationFrame(() => setFly((f) => (f ? { ...f, on: true } : f)))
@@ -148,6 +150,10 @@ export function PlayScreen({
                   </span>
                 </span>
               </button>
+              <button onClick={onToggleSort}>
+                {t.sortByIntensity}
+                <span>{sortByIntensity ? "✓" : ""}</span>
+              </button>
               <button
                 onClick={() => {
                   onChangeGroup();
@@ -198,7 +204,7 @@ export function PlayScreen({
               }}
             >
               {showFace ? (
-                <CardFace q={q} lang={lang} index={p} />
+                <CardFace q={q} lang={lang} />
               ) : (
                 <div className={styles.back}>
                   <div className={styles.mark} />
@@ -219,7 +225,7 @@ export function PlayScreen({
               transition: FLY_TRANSITION,
             }}
           >
-            <CardFace q={fly.card} lang={lang} index={fly.idx} />
+            <CardFace q={fly.card} lang={lang} />
           </div>
         )}
       </div>

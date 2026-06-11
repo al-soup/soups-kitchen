@@ -1,0 +1,52 @@
+name: Bug
+description: Report a bug
+title: "[bug]: "
+labels: ["type:bug"]
+body:
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: Pick the app or area this belongs to.
+      options:
+        - new
+        - api
+        - database
+        - ci
+        - app:fragespiel
+        - app:fahrplan
+        - app:habits
+        - app:knowledge-base
+        - about:experience
+        - about:me
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: Browser / OS / device
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / logs

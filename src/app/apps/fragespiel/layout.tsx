@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   other: {
@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   icons: {
     apple: "/icons/fragespiel-192.png",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1b2a6b",
 };
 
 export default function FragespielLayout({
