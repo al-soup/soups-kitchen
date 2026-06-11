@@ -1,0 +1,34 @@
+name: Documentation
+description: Suggest a doc change
+title: "[docs]: "
+labels: ["type:documentation"]
+body:
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: Pick the app or area this belongs to.
+      options:
+        - new
+        - api
+        - database
+        - ci
+        - app:fragespiel
+        - app:fahrplan
+        - app:habits
+        - app:knowledge-base
+        - about:experience
+        - about:me
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs documenting?
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where should it live?
+      description: README, CLAUDE.md, inline, etc.
