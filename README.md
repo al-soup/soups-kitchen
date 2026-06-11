@@ -48,6 +48,8 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 ## TODO
 
 - [ ] Solve GH issues automatically via agents
+- [ ] Let Claude go over the README and make some improvements
+- [ ] Create an "UNFINISHED" label
 
 ### Apps
 
@@ -61,29 +63,28 @@ Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Scr
 #### Knowledge Base
 
 - [ ] Sort by date
-- [ ] Create a learning or revision mode
-- [ ] Instead (or in addition to) the Speech-Notes app, I could create an API to create new knowledge entries via Speech/LLM
-- [ ] Create an Interview-me feature
+- [ ] Create a learning / revision mode. Showing questions one-by-one and via an inverview-me feature where you get quizzed for answers. Build this upon the AI API from _Fragespiel_. Part of this should be a review mode where you can add a selection of questions like a learning path of what you want to study.
 - [ ] Star / Favorite questions
+- [ ] The search needs more feedback to see what has changed. I might have to limit it to only look at question+summary and highlight what was searched for.
 
 #### Question Game
 
+TODO: go over this and the plan created with Claude. Start the implementation.
+
 - Questions should show if they are generated. Admins should have the option to promote a question so it is saved in the DB. I might have to run the generation locally if API access turns our to be difficult/expensive
 - Animations and glitter. It would be nice to have a design that really stands out.
-- Show the actual number of cards left
 - Filter by category
 - Redesign AI label - put it on the bottom left
 - Add a mode where you can choose how many AI cards to mix in
-- Add option for which difficulty level to start in
 - Save which userID created a new question
 
 #### Live-Poll
 
-Use websockets
+Use websockets connection for instant feedback to clients.
 
 #### Speech-to-Text Notes Interface
 
-Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. Not yet sure about the exact sync process.
+Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. tbd: sync process.
 
 ### About
 
