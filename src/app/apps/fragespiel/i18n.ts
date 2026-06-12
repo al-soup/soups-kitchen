@@ -14,9 +14,10 @@ export const L10N = {
     changeGroup: "Runde wechseln",
     language: "Sprache",
     next: "Weiter",
+    playAgain: "Neue Runde spielen",
   },
   en: {
-    tagline: "Ask me another question.",
+    tagline: "Ask me one more question.",
     rounds: "Round length",
     sortCards: "Sort cards",
     sortIntensity: "By intensity",
@@ -26,6 +27,7 @@ export const L10N = {
     changeGroup: "Change round",
     language: "Language",
     next: "Next",
+    playAgain: "Play another round",
   },
 } as const;
 
@@ -36,7 +38,7 @@ export const GROUPS: {
 }[] = [
   {
     id: "friends",
-    de: { n: "Freunde", d: "Alles ist dabei" },
+    de: { n: "Freunde", d: "Locker & lebhaft, in der Gruppe" },
     en: { n: "Friends", d: "Light & lively, for the group" },
   },
   {

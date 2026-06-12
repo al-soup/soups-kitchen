@@ -62,7 +62,7 @@ export function Fragespiel() {
   const [group, setGroup] = useState<Group | null>(null);
   const [deck, setDeck] = useState<Question[]>([]);
   const [duration, setDuration] = useState(32);
-  const [sortByIntensity, setSortByIntensity] = useState(false);
+  const [sortByIntensity, setSortByIntensity] = useState(true);
   // Bumped on pickGroup/reshuffle/sort-toggle so PlayScreen remounts with fresh deck state.
   const [deckVersion, setDeckVersion] = useState(0);
 

@@ -163,6 +163,30 @@
 .cardTop:active {
   cursor: grabbing;
 }
+/* Round-over CTA, centered behind the cards (revealed as the last one flies). */
+.again {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  border: 1.5px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 15px 22px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--accent);
+}
+.again:active {
+  transform: translate(-50%, calc(-50% + 3px));
+  box-shadow: 0 0 0 var(--accent);
+}
 .face {
   position: absolute;
   inset: 0;

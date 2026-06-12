@@ -123,7 +123,7 @@ export function PlayScreen({
   // Next: top card continues along the drag path and flies out left, revealing
   // the next card's face beneath.
   const goNext = (dx: number) => {
-    if (busy.current || index >= L - 1) return;
+    if (busy.current || index >= L) return;
     settle({
       card: deck[index],
       from: pathTransform(nextProgress(dx)),
@@ -141,7 +141,8 @@ export function PlayScreen({
       card: deck[index - 1],
       from: pathTransform(prevProgress(dx)),
       to: TOP,
-      cover: deck[index].id,
+      // From the finished state there's no current card to pin behind.
+      cover: index < L ? deck[index].id : undefined,
       commitIndex: index - 1,
     });
   };
@@ -155,7 +156,7 @@ export function PlayScreen({
     },
     onEnd: (dx) => {
       if (busy.current) return;
-      if (dx <= -THRESHOLD && index < L - 1) goNext(dx);
+      if (dx <= -THRESHOLD && index < L) goNext(dx);
       else if (dx >= THRESHOLD && index > 0) goPrev(dx);
       else if (dx > 0 && index > 0) {
         // Released a previous-pull below threshold: slide the half-shown
@@ -179,7 +180,7 @@ export function PlayScreen({
   // card); rightward drag pulls the previous card in (blocked on the first).
   // `dragging` is only ever true while idle (settle clears it), so it doubles as
   // the "not animating" guard.
-  const nextDragging = dragging && drag < 0 && index < L - 1;
+  const nextDragging = dragging && drag < 0 && index < L;
   const prevDragging = dragging && drag > 0 && index > 0;
 
   return (
@@ -239,7 +240,7 @@ export function PlayScreen({
           )}
         </div>
         <div className={styles.count}>
-          <b>{String(index + 1).padStart(2, "0")}</b> /{" "}
+          <b>{String(Math.min(index + 1, L)).padStart(2, "0")}</b> /{" "}
           {String(L).padStart(2, "0")}
         </div>
       </div>
@@ -247,8 +248,18 @@ export function PlayScreen({
       {menu && <div className={styles.scrim} onClick={closeMenu} />}
 
       <div className={styles.stage}>
+        {/* Behind the cards; uncovered as the final card flies away. Mounts
+            once the deck is exhausted (index === L holds during that fly-out). */}
+        {index >= L && (
+          <button className={styles.again} onClick={onChangeGroup}>
+            {t.playAgain}
+          </button>
+        )}
         {deck.map((q, p) => {
-          const depth = (p - index + L) % L;
+          // No wrap-around: already-seen cards (depth < 0) are gone, so the
+          // stack shrinks to exactly the cards still ahead.
+          const depth = p - index;
+          if (depth < 0) return null;
           const isTop = depth === 0;
           const masked = fly !== null && q.id === fly.card.id;
           const snapping = snap === q.id;
@@ -329,7 +340,7 @@ export function PlayScreen({
         <button
           className={styles.next}
           onClick={() => goNext(0)}
-          disabled={index === L - 1}
+          disabled={index >= L}
         >
           {t.next}
           <span>→</span>
