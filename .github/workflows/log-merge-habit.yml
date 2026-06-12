@@ -15,11 +15,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
           MSG=$(gh api "/repos/$REPO/commits/$SHA" --jq .commit.message)
           {
             echo "NOTE<<__EOF__"
-            printf "Soup's Kitchen:\n\n%s" "$MSG"
+            printf "Soup's Kitchen: %s\n\n%s\n\n%s" "$PR_TITLE" "$PR_URL" "$MSG"
             echo
             echo "__EOF__"
           } >> "$GITHUB_ENV"
