@@ -9,7 +9,6 @@ body:
       label: Scope
       description: Pick the app or area this belongs to.
       options:
-        - new
         - api
         - database
         - ci
