@@ -273,3 +273,10 @@ scripts/
 - Endpoint protected by `x-cron-secret` header (timing-safe compare, not JWT)
 - Setup: run `pnpm strava:auth` once, then deploy edge function + set secrets
 - Secrets: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `CRON_SECRET`, `STRAVA_TOKEN_KEY` (32+ chars)
+
+### CI Post-merge Automation
+
+- Workflow `.github/workflows/log-merge-habit.yml` fires on `pull_request: closed` (filtered to `merged == true`) against `main`. Inserts one habit row using action `Working on apps` (lookup by name). Note = `"Soup's Kitchen:\n\n<merge commit message>"` (fetched via `gh api` from `pull_request.merge_commit_sha`).
+- Dedicated Postgres role `ci_inserter` (migration `20260612000001_ci_inserter_role.sql`): `NOLOGIN NOINHERIT`, granted `INSERT` on `public.habit` + `USAGE,SELECT` on `habit_id_seq` + column-level `SELECT (id, name)` on `public.action`. RLS policy `"CI inserts on habit"` (`FOR INSERT TO ci_inserter WITH CHECK (true)`). Nothing else — blast radius = one INSERT on one table.
+- Per-env setup (manual, not committed): `ALTER ROLE ci_inserter LOGIN PASSWORD '<long-random>'` via Supabase SQL editor.
+- Secret: `CI_INSERTER_DB_URL` = session-pooler URL (`postgres://ci_inserter.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres`). Port 5432 = session pooler (not 6543 transaction). GitHub runners are IPv4-only; pooler required.

@@ -1,0 +1,34 @@
+name: Log merge as habit
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  log-habit:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build note from merge commit message
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          MSG=$(gh api "/repos/$REPO/commits/$SHA" --jq .commit.message)
+          {
+            echo "NOTE<<__EOF__"
+            printf "Soup's Kitchen:\n\n%s" "$MSG"
+            echo
+            echo "__EOF__"
+          } >> "$GITHUB_ENV"
+
+      - name: Insert habit row
+        env:
+          PGURL: ${{ secrets.CI_INSERTER_DB_URL }}
+        run: |
+          psql "$PGURL" -v ON_ERROR_STOP=1 --set=note="$NOTE" -c \
+            "INSERT INTO public.habit (action_id, note) \
+             SELECT id, :'note' FROM public.action \
+             WHERE name = 'Working on apps' LIMIT 1;"
