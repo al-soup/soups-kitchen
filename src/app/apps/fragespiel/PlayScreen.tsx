@@ -17,11 +17,16 @@ const DEPTH: DepthPose[] = [
   { y: 34, x: 6, r: 2.2, s: 0.906, o: 1 },
 ];
 const HIDDEN: DepthPose = { y: 42, x: -2, r: -3.6, s: 0.88, o: 0 };
-const TOP = `translate(${DEPTH[0].x}px,${DEPTH[0].y}px) rotate(${DEPTH[0].r}deg) scale(${DEPTH[0].s})`;
+const tf = (x: number, y: number, r: number, s: number) =>
+  `translate(${x}px,${y}px) rotate(${r}deg) scale(${s})`;
+const TOP = tf(DEPTH[0].x, DEPTH[0].y, DEPTH[0].r, DEPTH[0].s);
+// Cards leave (and return) on the left — next exits here, previous flies in from
+// the same direction it was sent away.
 const FLY = "translate(-440px,-280px) rotate(-13deg) scale(.92)";
-// Back-step mirror: previous card enters from the opposite (right) side so
-// going back reads distinctly from going next.
-const FLY_BACK = "translate(440px,-280px) rotate(13deg) scale(.92)";
+// Top-card transform while dragging it left; used as the fly-out start so the
+// release continues along the same path instead of snapping back to center.
+const dragTransform = (dx: number) =>
+  tf(DEPTH[0].x + dx, DEPTH[0].y, DEPTH[0].r + dx * 0.022, DEPTH[0].s);
 const ANIM_MS = 600;
 const FLY_TRANSITION =
   "transform .6s cubic-bezier(.36,.66,.3,1), opacity .6s ease";
@@ -30,6 +35,7 @@ type FlyState = {
   card: Question;
   dir: 1 | -1;
   on: boolean;
+  from: string;
 } | null;
 
 type Props = {
@@ -62,7 +68,7 @@ export function PlayScreen({
   const [menu, setMenu] = useState(false);
   const busy = useRef(false);
 
-  const step = (dir: 1 | -1) => {
+  const step = (dir: 1 | -1, from?: string) => {
     if (busy.current || !L) return;
     // No wrap-around: ignore advancing past the last / before the first card.
     if (dir > 0 && index >= L - 1) return;
@@ -72,16 +78,19 @@ export function PlayScreen({
     setDragging(false);
     let movingId: number;
     if (dir > 0) {
+      // Next: the top card flies out to the left, continuing from where the
+      // drag left it (from), revealing the next card's face beneath.
       movingId = deck[index].id;
-      setFly({ card: deck[index], dir: 1, on: false });
+      setFly({ card: deck[index], dir: 1, on: false, from: from ?? TOP });
       setIndex(index + 1);
     } else {
-      // back-step: pin current top with cover so it stays visible until covered.
+      // Previous: the current card stays put (pinned via cover); the previous
+      // card flies back in from the left onto the top of the stack.
       const idx = index - 1;
       movingId = deck[idx].id;
       setCover(deck[index].id);
       setIndex(idx);
-      setFly({ card: deck[idx], dir: -1, on: false });
+      setFly({ card: deck[idx], dir: -1, on: false, from: FLY });
     }
     requestAnimationFrame(() =>
       requestAnimationFrame(() => setFly((f) => (f ? { ...f, on: true } : f)))
@@ -100,12 +109,14 @@ export function PlayScreen({
   };
 
   const swipe = useSwipe({
-    onNext: () => step(1),
+    onNext: (dx) => step(1, dragTransform(dx)),
     onPrev: () => step(-1),
     onDrag: (dx) => {
       if (!busy.current) {
+        // Only the leftward (next) drag moves the current card; a rightward
+        // (previous) drag leaves it in place — the previous card animates in.
         setDragging(dx !== 0);
-        setDrag(dx);
+        setDrag(dx < 0 ? dx : 0);
       }
     },
   });
@@ -187,7 +198,10 @@ export function PlayScreen({
           const masked = fly !== null && q.id === fly.card.id;
           const snapping = snap === q.id;
           const covering = cover === q.id;
-          const showFace = isTop || covering;
+          // Reveal the next card's face (not its blank back) as the top card is
+          // dragged away — matching what the buttons already show.
+          const revealNext = depth === 1 && dragging && drag < 0;
+          const showFace = isTop || covering || revealNext;
           const pose = depth < DEPTH.length ? DEPTH[depth] : HIDDEN;
           const tx = isTop && drag ? pose.x + drag : pose.x;
           const rot = isTop && drag ? pose.r + drag * 0.022 : pose.r;
@@ -223,8 +237,7 @@ export function PlayScreen({
           <div
             className={`${styles.card} ${styles.cardTop}`}
             style={{
-              transform:
-                fly.dir === 1 ? (fly.on ? FLY : TOP) : fly.on ? TOP : FLY_BACK,
+              transform: fly.on ? (fly.dir === 1 ? FLY : TOP) : fly.from,
               opacity: fly.dir === 1 ? (fly.on ? 0 : 1) : 1,
               zIndex: 999,
               pointerEvents: "none",

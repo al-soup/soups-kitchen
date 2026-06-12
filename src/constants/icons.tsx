@@ -376,7 +376,7 @@ export function FragespielAppIcon({ size = 24 }: IconProps) {
     <svg
       width={size}
       height={size}
-      viewBox="125 55 575 575"
+      viewBox="107 33 625 625"
       fill="currentColor"
       aria-hidden="true"
     >

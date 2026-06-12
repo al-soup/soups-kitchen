@@ -3,8 +3,8 @@
 import { useRef, type PointerEvent as ReactPointerEvent } from "react";
 
 type SwipeOptions = {
-  onNext: () => void;
-  onPrev: () => void;
+  onNext: (dx: number) => void;
+  onPrev: (dx: number) => void;
   onDrag: (dx: number) => void;
   threshold?: number;
 };
@@ -33,16 +33,16 @@ export function useSwipe({
       const dx = e.clientX - state.current.x0;
       state.current.active = false;
       onDrag(0);
-      if (dx <= -threshold) onNext();
-      else if (dx >= threshold) onPrev();
+      if (dx <= -threshold) onNext(dx);
+      else if (dx >= threshold) onPrev(dx);
     },
     onPointerCancel: (e: ReactPointerEvent<HTMLDivElement>) => {
       if (!state.current.active) return;
       const dx = e.clientX - state.current.x0;
       state.current.active = false;
       onDrag(0);
-      if (dx <= -threshold) onNext();
-      else if (dx >= threshold) onPrev();
+      if (dx <= -threshold) onNext(dx);
+      else if (dx >= threshold) onPrev(dx);
     },
     style: { touchAction: "pan-y" as const },
   };
