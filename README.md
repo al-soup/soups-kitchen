@@ -2,6 +2,24 @@
 
 Multi-app platform hosting small tools and my portfolio.
 
+## What's inside
+
+- **Habits** — habit tracker, infinite-scroll feed, score graph, daily Strava sync
+- **Fahrplan** — Swiss departure board (search.ch)
+- **Knowledge Base** — markdown notes, tag filters, full-text search (typo-tolerant)
+- **Fragespiel** — risograph swipe deck of philosophical questions (DE/EN, mobile-first)
+- **Resources** — file uploads on Supabase Storage, reusable across apps
+- **About** — portfolio (experience + me)
+
+## Tech stack
+
+- Next.js 16 (app router, `proxy.ts` not `middleware.ts`)
+- React 19 + TypeScript 5
+- Supabase (auth, Postgres w/ RLS, Storage, Edge Functions)
+- CSS Modules + theme CSS vars (light / dark / neo-brutalist)
+- pnpm 11.5 (pinned via `packageManager`)
+- Jest (unit) + Playwright (e2e, chromium)
+
 ## Development
 
 ```bash
@@ -21,35 +39,72 @@ pnpm supabase:reset   # wipe + rerun migrations & seed
 
 Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `password123`).
 
+## Environment variables
+
+See `.env.example`.
+
+Required for dev:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+Optional (Strava sync, prod only):
+
+- `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_TOKEN_KEY`, `CRON_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`
+
+`.env.test` is wired to local Supabase and used by Playwright auto-launch.
+
 ## Scripts
 
-| Command               | Description                                    |
-| --------------------- | ---------------------------------------------- |
-| `pnpm dev`            | Dev server (local Supabase)                    |
-| `pnpm dev:remote`     | Dev server (remote Supabase via `.env.remote`) |
-| `pnpm build`          | Production build                               |
-| `pnpm lint`           | ESLint fix                                     |
-| `pnpm lint:check`     | ESLint check                                   |
-| `pnpm format`         | Prettier fix                                   |
-| `pnpm format:check`   | Prettier check                                 |
-| `pnpm test`           | Run unit tests                                 |
-| `pnpm test:e2e`       | Run Playwright tests (auto-starts Supabase)    |
-| `pnpm test:e2e:ui`    | Playwright UI mode                             |
-| `pnpm supabase:start` | Start local Supabase                           |
-| `pnpm supabase:stop`  | Stop local Supabase                            |
-| `pnpm supabase:reset` | Reset DB + rerun migrations & seed             |
-| `pnpm supabase:types` | Regenerate `database.types.ts`                 |
-| `pnpm generate-icons` | Regenerate per-app PWA icons                   |
+| Command                    | Description                                       |
+| -------------------------- | ------------------------------------------------- |
+| `pnpm dev`                 | Dev server (local Supabase)                       |
+| `pnpm dev:remote`          | Dev server (remote Supabase via `.env.remote`)    |
+| `pnpm build`               | Production build                                  |
+| `pnpm start`               | Run production build                              |
+| `pnpm lint`                | ESLint fix                                        |
+| `pnpm lint:check`          | ESLint check (for CI)                             |
+| `pnpm format`              | Prettier fix                                      |
+| `pnpm format:check`        | Prettier check (for CI)                           |
+| `pnpm test`                | Run unit tests                                    |
+| `pnpm test:e2e`            | Run Playwright tests (auto-starts Supabase)       |
+| `pnpm test:e2e:ui`         | Playwright UI mode                                |
+| `pnpm supabase:start`      | Start local Supabase                              |
+| `pnpm supabase:stop`       | Stop local Supabase                               |
+| `pnpm supabase:reset`      | Reset DB + rerun migrations & seed + dev uploads  |
+| `pnpm supabase:types`      | Regenerate `database.types.ts`                    |
+| `pnpm seed:resources`      | Upload `supabase/seed-files/*` to Storage         |
+| `pnpm generate-icons`      | Regenerate per-app PWA icons                      |
+| `pnpm generate-tech-logos` | Regenerate tech-stack tag PNGs in `public/tech/`  |
+| `pnpm strava:auth`         | One-time Strava OAuth setup (stores tokens in DB) |
 
-## PWA
+## Auth model
 
-Habits and Fahrplan are installable as standalone PWAs (Android "Add to Home Screen", iOS home screen icon). Each app has its own web app manifest and icons. Run `pnpm generate-icons` to regenerate icons from `public/soup.svg`.
+- Public reads: Knowledge Base (list, detail, resource signed URLs)
+- Auth required: `/resources` page (any role)
+- Manager / admin: writes on KB, tags, resources — gated by RLS via `is_manager_of(table)`
+
+## Testing
+
+- `pnpm test` — Jest, jsdom, colocated `*.test.ts(x)`
+- `pnpm test:e2e` — Playwright, chromium, auto-boots local Supabase from `config.ci.toml`
+- CI: unit + format + lint on push; PR adds e2e
+
+## PWA Support
+
+All apps under _/apps_ are installable as PWAs (Android "Add to Home Screen", iOS home screen icon). Each app has its own web app manifest and icons. Run `pnpm generate-icons` to regenerate icons from `public/soup.svg`.
+
+## TODO
+
+Tracked in [GitHub Issues](https://github.com/al-soup/soups-kitchen/issues).
 
 ## TODO
 
 - [ ] Solve GH issues automatically via agents
 - [ ] Let Claude go over the README and make some improvements
-- [ ] Create an "UNFINISHED" label
+- [ ] Create a post about how you save your Strava entries automatically as habits. Include encryption at rest. It does not matter that this is not mind-blowing, it is just about to build a portfolio.
+- [ ] Write a blog entry about the question game and the other apps
+- [ ] Write tag-lines to your GH projects
 
 ### Apps
 
@@ -77,55 +132,6 @@ TODO: go over this and the plan created with Claude. Start the implementation.
 - Redesign AI label - put it on the bottom left
 - Add a mode where you can choose how many AI cards to mix in
 - Save which userID created a new question
-
-#### Live-Poll
-
-Use websockets connection for instant feedback to clients.
-
-#### Speech-to-Text Notes Interface
-
-Use Wispr or AssemblyAI to create unstructured note entries to Obsidian. tbd: sync process.
-
-### About
-
-#### Elevator Pitch
-
-- [ ] Create a animated elevator pitch that shows in 1 minute why I'm a good hire. Use a nice background e.g. from Great Budapest Hotel opening scene, and present yourself in the elevator.
-
-**Idea:**
-
-- Background that adapts to the time of day. Mountain scene.
-- Grand Budapest Hotel style, you zoom into the Elevator once you click start
-- The elevator can move up or down. Create it as a scrolly-tool
-- In the elevator I show my pitch on the wall of the elevator
-- Out of the window you see only small movement plus you see an oldschool pointer of the current floor
-
-**Pitch:**
-
-- USP
-- Worked in different industries with project examples
-- soft skills
-- Can teach myself anything. Eager learner and motivated to build, improve, solve and optimize
-- Pays attention to detail, is reliable
-- Add a testimonial from Lino & Danijel
-
-#### Me
-
-- [ ] Extend the job summaries. What have you done exactly and how has it benefitted the company?
-- [ ] Add a description about my work position (New Elements, EdTech, etc.)
-- [ ] Link tags to blog entries
-
-#### Experience
-
-- [ ] Finish the blog parser/renderer in Go
-- [ ] Save post to DB or rsync to serve as static files from VPS or Supabase object storage
-- [ ] Load posts as blog. Add filter option for tags. Also link tags to CV
-- [ ] Include ELK stack to include search
-
-### CI
-
-- [ ] Setup a logging lib (LogTape) and integrate it with a centralized logging platform (Grafana Cloud)
-- [ ] Add CI user that can create a habit entry when working on the app
 
 ### API
 
