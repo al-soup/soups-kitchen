@@ -17,25 +17,43 @@ const DEPTH: DepthPose[] = [
   { y: 34, x: 6, r: 2.2, s: 0.906, o: 1 },
 ];
 const HIDDEN: DepthPose = { y: 42, x: -2, r: -3.6, s: 0.88, o: 0 };
-const tf = (x: number, y: number, r: number, s: number) =>
-  `translate(${x}px,${y}px) rotate(${r}deg) scale(${s})`;
-const TOP = tf(DEPTH[0].x, DEPTH[0].y, DEPTH[0].r, DEPTH[0].s);
-// Cards leave (and return) on the left — next exits here, previous flies in from
-// the same direction it was sent away.
-const FLY = "translate(-440px,-280px) rotate(-13deg) scale(.92)";
-// Top-card transform while dragging it left; used as the fly-out start so the
-// release continues along the same path instead of snapping back to center.
-const dragTransform = (dx: number) =>
-  tf(DEPTH[0].x + dx, DEPTH[0].y, DEPTH[0].r + dx * 0.022, DEPTH[0].s);
+const TOP_POSE = DEPTH[0];
+// Off-screen pose a card flies out to (left) — and the same spot a previous
+// card is pulled back in from.
+const FLY_POSE = { x: -440, y: -280, r: -13, s: 0.92 };
+const PATH_LEN = -FLY_POSE.x; // drag distance that maps to a full fly (440px)
+const THRESHOLD = 100;
 const ANIM_MS = 600;
 const FLY_TRANSITION =
   "transform .6s cubic-bezier(.36,.66,.3,1), opacity .6s ease";
 
+const tf = (x: number, y: number, r: number, s: number) =>
+  `translate(${x}px,${y}px) rotate(${r}deg) scale(${s})`;
+const lerp = (a: number, b: number, p: number) => a + (b - a) * p;
+// Single trajectory shared by drag + fly: p=0 sits at TOP, p=1 at FLY. Dragging
+// moves the card along it (so the release continues the exact same path), and a
+// previous card is just the reverse (FLY -> TOP).
+const pathTransform = (p: number) =>
+  tf(
+    lerp(TOP_POSE.x, FLY_POSE.x, p),
+    lerp(TOP_POSE.y, FLY_POSE.y, p),
+    lerp(TOP_POSE.r, FLY_POSE.r, p),
+    lerp(TOP_POSE.s, FLY_POSE.s, p)
+  );
+const TOP = pathTransform(0);
+const FLY = pathTransform(1);
+// Drag progress along the path. Next: leftward drag (dx<0) -> 0..1. Previous:
+// rightward drag (dx>0) pulls the card from FLY (p=1) toward TOP (p=0).
+const nextProgress = (dx: number) => Math.min(Math.max(-dx, 0) / PATH_LEN, 1);
+const prevProgress = (dx: number) =>
+  1 - Math.min(Math.max(dx, 0) / PATH_LEN, 1);
+
 type FlyState = {
   card: Question;
-  dir: 1 | -1;
-  on: boolean;
   from: string;
+  to: string;
+  fade: boolean; // opacity 1->0 (next fly-out); previous/cancel stay opaque
+  on: boolean;
 } | null;
 
 type Props = {
@@ -68,33 +86,31 @@ export function PlayScreen({
   const [menu, setMenu] = useState(false);
   const busy = useRef(false);
 
-  const step = (dir: 1 | -1, from?: string) => {
-    if (busy.current || !L) return;
-    // No wrap-around: ignore advancing past the last / before the first card.
-    if (dir > 0 && index >= L - 1) return;
-    if (dir < 0 && index <= 0) return;
+  // Drive a card overlay from `from` to `to`, then hand it back to the stack.
+  const settle = (opts: {
+    card: Question;
+    from: string;
+    to: string;
+    fade?: boolean;
+    cover?: number; // card pinned at TOP while the overlay animates over it
+    commitIndex?: number; // index applied immediately (revealed beneath)
+  }) => {
     busy.current = true;
     setDrag(0);
     setDragging(false);
-    let movingId: number;
-    if (dir > 0) {
-      // Next: the top card flies out to the left, continuing from where the
-      // drag left it (from), revealing the next card's face beneath.
-      movingId = deck[index].id;
-      setFly({ card: deck[index], dir: 1, on: false, from: from ?? TOP });
-      setIndex(index + 1);
-    } else {
-      // Previous: the current card stays put (pinned via cover); the previous
-      // card flies back in from the left onto the top of the stack.
-      const idx = index - 1;
-      movingId = deck[idx].id;
-      setCover(deck[index].id);
-      setIndex(idx);
-      setFly({ card: deck[idx], dir: -1, on: false, from: FLY });
-    }
+    if (opts.cover !== undefined) setCover(opts.cover);
+    if (opts.commitIndex !== undefined) setIndex(opts.commitIndex);
+    setFly({
+      card: opts.card,
+      from: opts.from,
+      to: opts.to,
+      fade: !!opts.fade,
+      on: false,
+    });
     requestAnimationFrame(() =>
       requestAnimationFrame(() => setFly((f) => (f ? { ...f, on: true } : f)))
     );
+    const movingId = opts.card.id;
     window.setTimeout(() => {
       // Hand the moving card back to the real stack with NO transition for one
       // frame so the overlay→stack handoff is invisible.
@@ -108,20 +124,67 @@ export function PlayScreen({
     }, ANIM_MS);
   };
 
+  // Next: top card continues along the drag path and flies out left, revealing
+  // the next card's face beneath.
+  const goNext = (dx: number) => {
+    if (busy.current || index >= L - 1) return;
+    settle({
+      card: deck[index],
+      from: pathTransform(nextProgress(dx)),
+      to: FLY,
+      fade: true,
+      commitIndex: index + 1,
+    });
+  };
+
+  // Previous: current card stays put (pinned); the previous card flies in from
+  // the left, continuing from wherever the drag pulled it to.
+  const goPrev = (dx: number) => {
+    if (busy.current || index <= 0) return;
+    settle({
+      card: deck[index - 1],
+      from: pathTransform(prevProgress(dx)),
+      to: TOP,
+      cover: deck[index].id,
+      commitIndex: index - 1,
+    });
+  };
+
   const swipe = useSwipe({
-    onNext: (dx) => step(1, dragTransform(dx)),
-    onPrev: () => step(-1),
     onDrag: (dx) => {
       if (!busy.current) {
-        // Only the leftward (next) drag moves the current card; a rightward
-        // (previous) drag leaves it in place — the previous card animates in.
         setDragging(dx !== 0);
-        setDrag(dx < 0 ? dx : 0);
+        setDrag(dx);
+      }
+    },
+    onEnd: (dx) => {
+      if (busy.current) return;
+      if (dx <= -THRESHOLD && index < L - 1) goNext(dx);
+      else if (dx >= THRESHOLD && index > 0) goPrev(dx);
+      else if (dx > 0 && index > 0) {
+        // Released a previous-pull below threshold: slide the half-shown
+        // previous card back off to the left.
+        settle({
+          card: deck[index - 1],
+          from: pathTransform(prevProgress(dx)),
+          to: FLY,
+        });
+      } else {
+        // Sub-threshold next-drag (or last card): let the top card spring back.
+        setDrag(0);
+        setDragging(false);
       }
     },
   });
 
   const closeMenu = () => setMenu(false);
+
+  // Leftward drag moves the current card toward the next (blocked on the last
+  // card); rightward drag pulls the previous card in (blocked on the first).
+  // `dragging` is only ever true while idle (settle clears it), so it doubles as
+  // the "not animating" guard.
+  const nextDragging = dragging && drag < 0 && index < L - 1;
+  const prevDragging = dragging && drag > 0 && index > 0;
 
   return (
     <>
@@ -200,15 +263,15 @@ export function PlayScreen({
           const covering = cover === q.id;
           // Reveal the next card's face (not its blank back) as the top card is
           // dragged away — matching what the buttons already show.
-          const revealNext = depth === 1 && dragging && drag < 0;
+          const revealNext = depth === 1 && nextDragging;
           const showFace = isTop || covering || revealNext;
           const pose = depth < DEPTH.length ? DEPTH[depth] : HIDDEN;
-          const tx = isTop && drag ? pose.x + drag : pose.x;
-          const rot = isTop && drag ? pose.r + drag * 0.022 : pose.r;
           const transform = covering
             ? TOP
-            : `translate(${tx}px, ${pose.y}px) rotate(${rot}deg) scale(${pose.s})`;
-          const noTransition = (isTop && dragging) || snapping || covering;
+            : isTop && nextDragging
+              ? pathTransform(nextProgress(drag))
+              : tf(pose.x, pose.y, pose.r, pose.s);
+          const noTransition = (isTop && nextDragging) || snapping || covering;
           const interactive = isTop && !masked && !covering;
           return (
             <div
@@ -233,12 +296,25 @@ export function PlayScreen({
             </div>
           );
         })}
+        {prevDragging && (
+          <div
+            className={`${styles.card} ${styles.cardTop}`}
+            style={{
+              transform: pathTransform(prevProgress(drag)),
+              zIndex: 997,
+              pointerEvents: "none",
+              transition: "none",
+            }}
+          >
+            <CardFace q={deck[index - 1]} lang={lang} />
+          </div>
+        )}
         {fly && (
           <div
             className={`${styles.card} ${styles.cardTop}`}
             style={{
-              transform: fly.on ? (fly.dir === 1 ? FLY : TOP) : fly.from,
-              opacity: fly.dir === 1 ? (fly.on ? 0 : 1) : 1,
+              transform: fly.on ? fly.to : fly.from,
+              opacity: fly.fade ? (fly.on ? 0 : 1) : 1,
               zIndex: 999,
               pointerEvents: "none",
               transition: FLY_TRANSITION,
@@ -252,7 +328,7 @@ export function PlayScreen({
       <div className={styles.foot}>
         <button
           className={styles.prev}
-          onClick={() => step(-1)}
+          onClick={() => goPrev(0)}
           aria-label="Previous"
           disabled={index === 0}
         >
@@ -260,7 +336,7 @@ export function PlayScreen({
         </button>
         <button
           className={styles.next}
-          onClick={() => step(1)}
+          onClick={() => goNext(0)}
           disabled={index === L - 1}
         >
           {t.next}
