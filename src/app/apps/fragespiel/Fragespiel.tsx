@@ -32,6 +32,25 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+// Build a round of up to `n` questions with a balanced mix across the three
+// intensity levels (difficulty 1-3). Round-robin draw self-balances uneven
+// splits (16 -> 6/5/5) and gracefully handles short buckets; categories random.
+function buildRound(pool: Question[], n: number): Question[] {
+  const buckets = [1, 2, 3].map((d) =>
+    shuffle(pool.filter((q) => q.difficulty === d))
+  );
+  const target = Math.min(n, pool.length);
+  const picked: Question[] = [];
+  let i = 0;
+  while (picked.length < target && buckets.some((b) => b.length)) {
+    const b = buckets[i % 3];
+    const card = b.pop();
+    if (card) picked.push(card);
+    i++;
+  }
+  return shuffle(picked);
+}
+
 export function Fragespiel() {
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +61,8 @@ export function Fragespiel() {
   );
   const [group, setGroup] = useState<Group | null>(null);
   const [deck, setDeck] = useState<Question[]>([]);
-  const [sortByIntensity, setSortByIntensity] = useState(false);
+  const [duration, setDuration] = useState(32);
+  const [sortByIntensity, setSortByIntensity] = useState(true);
   // Bumped on pickGroup/reshuffle/sort-toggle so PlayScreen remounts with fresh deck state.
   const [deckVersion, setDeckVersion] = useState(0);
 
@@ -86,7 +106,7 @@ export function Fragespiel() {
     if (!questions) return;
     const filtered =
       g === "couple" ? questions : questions.filter((q) => !q.is_for_couples);
-    setDeck(shuffle(filtered));
+    setDeck(buildRound(filtered, duration));
     setGroup(g);
     setDeckVersion((v) => v + 1);
   };
@@ -97,18 +117,13 @@ export function Fragespiel() {
       group === "couple"
         ? questions
         : questions.filter((q) => !q.is_for_couples);
-    setDeck(shuffle(filtered));
+    setDeck(buildRound(filtered, duration));
     setDeckVersion((v) => v + 1);
   };
 
   const changeGroup = () => {
     setGroup(null);
     setDeck([]);
-  };
-
-  const toggleSort = () => {
-    setSortByIntensity((s) => !s);
-    setDeckVersion((v) => v + 1);
   };
 
   return (
@@ -122,6 +137,10 @@ export function Fragespiel() {
           lang={lang}
           onLangChange={handleLang}
           counts={counts}
+          duration={duration}
+          onDurationChange={setDuration}
+          sortByIntensity={sortByIntensity}
+          onSortChange={setSortByIntensity}
           onPick={pickGroup}
         />
       ) : (
@@ -132,8 +151,6 @@ export function Fragespiel() {
           onLangChange={handleLang}
           onReshuffle={reshuffle}
           onChangeGroup={changeGroup}
-          sortByIntensity={sortByIntensity}
-          onToggleSort={toggleSort}
         />
       )}
       <div className={styles.grain} />

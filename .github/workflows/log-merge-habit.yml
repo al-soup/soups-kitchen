@@ -30,7 +30,8 @@ jobs:
         env:
           PGURL: ${{ secrets.CI_INSERTER_DB_URL }}
         run: |
-          psql "$PGURL" -v ON_ERROR_STOP=1 --set=note="$NOTE" -c \
-            "INSERT INTO public.habit (action_id, note) \
-             SELECT id, :'note' FROM public.action \
-             WHERE name = 'Working on apps' LIMIT 1;"
+          psql "$PGURL" -v ON_ERROR_STOP=1 --set=note="$NOTE" <<'SQL'
+          INSERT INTO public.habit (action_id, note)
+          SELECT id, :'note' FROM public.action
+          WHERE name = 'Working on apps' LIMIT 1;
+          SQL

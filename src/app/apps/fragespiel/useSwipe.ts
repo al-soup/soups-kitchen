@@ -3,19 +3,19 @@
 import { useRef, type PointerEvent as ReactPointerEvent } from "react";
 
 type SwipeOptions = {
-  onNext: () => void;
-  onPrev: () => void;
   onDrag: (dx: number) => void;
-  threshold?: number;
+  onEnd: (dx: number) => void;
 };
 
-export function useSwipe({
-  onNext,
-  onPrev,
-  onDrag,
-  threshold = 60,
-}: SwipeOptions) {
+export function useSwipe({ onDrag, onEnd }: SwipeOptions) {
   const state = useRef({ active: false, x0: 0, y0: 0 });
+
+  const end = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!state.current.active) return;
+    const dx = e.clientX - state.current.x0;
+    state.current.active = false;
+    onEnd(dx);
+  };
 
   return {
     onPointerDown: (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -28,22 +28,8 @@ export function useSwipe({
       const dy = e.clientY - state.current.y0;
       if (Math.abs(dx) > Math.abs(dy)) onDrag(dx);
     },
-    onPointerUp: (e: ReactPointerEvent<HTMLDivElement>) => {
-      if (!state.current.active) return;
-      const dx = e.clientX - state.current.x0;
-      state.current.active = false;
-      onDrag(0);
-      if (dx <= -threshold) onNext();
-      else if (dx >= threshold) onPrev();
-    },
-    onPointerCancel: (e: ReactPointerEvent<HTMLDivElement>) => {
-      if (!state.current.active) return;
-      const dx = e.clientX - state.current.x0;
-      state.current.active = false;
-      onDrag(0);
-      if (dx <= -threshold) onNext();
-      else if (dx >= threshold) onPrev();
-    },
+    onPointerUp: end,
+    onPointerCancel: end,
     style: { touchAction: "pan-y" as const },
   };
 }

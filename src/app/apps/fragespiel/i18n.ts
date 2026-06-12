@@ -4,22 +4,30 @@ export type Group = "friends" | "couple";
 
 export const L10N = {
   de: {
-    tagline: "Eine Frage. Viele Antworten.",
+    tagline: "Stell mir noch eine Frage.",
+    rounds: "Rundenlänge",
+    sortCards: "Karten sortieren",
+    sortIntensity: "Nach Intensität",
+    sortRandom: "Zufällig",
     choose: "Wählt eure Runde",
     restart: "Neu mischen",
     changeGroup: "Runde wechseln",
     language: "Sprache",
-    sortByIntensity: "Nach Intensität",
     next: "Weiter",
+    playAgain: "Neue Runde spielen",
   },
   en: {
-    tagline: "One question. Many answers.",
+    tagline: "Ask me one more question.",
+    rounds: "Round length",
+    sortCards: "Sort cards",
+    sortIntensity: "By intensity",
+    sortRandom: "Random",
     choose: "Choose your round",
     restart: "Reshuffle",
     changeGroup: "Change round",
     language: "Language",
-    sortByIntensity: "Sort by intensity",
     next: "Next",
+    playAgain: "Play another round",
   },
 } as const;
 
@@ -30,8 +38,8 @@ export const GROUPS: {
 }[] = [
   {
     id: "friends",
-    de: { n: "Freunde", d: "Alles ist dabei" },
-    en: { n: "Friends", d: "Anything goes" },
+    de: { n: "Freunde", d: "Locker & lebhaft, in der Gruppe" },
+    en: { n: "Friends", d: "Light & lively, for the group" },
   },
   {
     id: "couple",

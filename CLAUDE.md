@@ -72,7 +72,7 @@ Apps: Habit Tracker (`/apps/habits`), Fahrplan (`/apps/fahrplan`), Knowledge Bas
 - **KB-scoped fonts**: Baloo 2 / Hanken Grotesk / JetBrains Mono load globally via `next/font` but are used **only** in `knowledge-base/` CSS modules. Do not promote globally without explicit ask.
 - **KB topic palette**: 8-swatch palette derived from deterministic FNV-1a hash of topic name in `_form/topicColor.ts`. No DB column.
 - **KB search**: RPC `search_knowledge` combines `search_vector` tsvector + pg_trgm `word_similarity` for typo tolerance (threshold 0.2). Tag filters URL-driven by tag NAMES via repeated params.
-- **Fragespiel**: Footer is hidden via route gate in `Shell.tsx`.
+- **Fragespiel**: Start screen picks group (Friends/Couple), language (DE/EN), round length (16/32/64, default 32), and sort (By intensity / Random, By intensity default). `buildRound()` balances the deck across intensity buckets 1-3 (round-robin draw), random category order; `displayDeck` re-sorts by difficulty when "By intensity" is chosen. Non-wrapping play deck: depth = `p - index`, so the stack shrinks toward the end; final cards swipe away one by one, then a centered "Play another round" CTA returns to the start screen. Swipe via `useSwipe.ts` (PointerEvents, 100px threshold); cards exit + re-enter on the left along one shared trajectory (`pathTransform`, p=0 TOP → p=1 FLY) so release continues the drag. prev disabled at index 0, next at index L. Footer hidden via route gate in `Shell.tsx`.
 
 ### Layout Components
 
