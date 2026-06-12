@@ -349,6 +349,14 @@
   transform: translateY(3px);
   box-shadow: 0 0 0 var(--accent);
 }
+.prev:disabled,
+.next:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
 
 /* ===== Start screen ===== */
 .start {
@@ -405,13 +413,42 @@
   opacity: 0.7;
   margin-top: 10px;
 }
+.rounds {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 30px 0 12px;
+}
+.dur {
+  display: flex;
+  border: 1.5px solid var(--ink);
+}
+.dur span {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  border-right: 1.5px solid var(--ink);
+}
+.dur span:last-child {
+  border-right: none;
+}
+.dur span.on {
+  background: var(--ink);
+  color: var(--card);
+}
 .choose {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--ink);
-  margin: 34px 0 14px;
+  margin: 26px 0 14px;
 }
 .gList {
   display: flex;

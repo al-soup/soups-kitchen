@@ -13,7 +13,7 @@ export function useSwipe({
   onNext,
   onPrev,
   onDrag,
-  threshold = 60,
+  threshold = 100,
 }: SwipeOptions) {
   const state = useRef({ active: false, x0: 0, y0: 0 });
 

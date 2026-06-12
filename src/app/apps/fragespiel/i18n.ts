@@ -5,6 +5,7 @@ export type Group = "friends" | "couple";
 export const L10N = {
   de: {
     tagline: "Eine Frage. Viele Antworten.",
+    rounds: "Rundenlänge",
     choose: "Wählt eure Runde",
     restart: "Neu mischen",
     changeGroup: "Runde wechseln",
@@ -14,6 +15,7 @@ export const L10N = {
   },
   en: {
     tagline: "One question. Many answers.",
+    rounds: "Round length",
     choose: "Choose your round",
     restart: "Reshuffle",
     changeGroup: "Change round",

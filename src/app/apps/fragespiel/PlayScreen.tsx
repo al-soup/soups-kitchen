@@ -19,9 +19,12 @@ const DEPTH: DepthPose[] = [
 const HIDDEN: DepthPose = { y: 42, x: -2, r: -3.6, s: 0.88, o: 0 };
 const TOP = `translate(${DEPTH[0].x}px,${DEPTH[0].y}px) rotate(${DEPTH[0].r}deg) scale(${DEPTH[0].s})`;
 const FLY = "translate(-440px,-280px) rotate(-13deg) scale(.92)";
-const ANIM_MS = 440;
+// Back-step mirror: previous card enters from the opposite (right) side so
+// going back reads distinctly from going next.
+const FLY_BACK = "translate(440px,-280px) rotate(13deg) scale(.92)";
+const ANIM_MS = 600;
 const FLY_TRANSITION =
-  "transform .44s cubic-bezier(.36,.66,.3,1), opacity .44s ease";
+  "transform .6s cubic-bezier(.36,.66,.3,1), opacity .6s ease";
 
 type FlyState = {
   card: Question;
@@ -61,6 +64,9 @@ export function PlayScreen({
 
   const step = (dir: 1 | -1) => {
     if (busy.current || !L) return;
+    // No wrap-around: ignore advancing past the last / before the first card.
+    if (dir > 0 && index >= L - 1) return;
+    if (dir < 0 && index <= 0) return;
     busy.current = true;
     setDrag(0);
     setDragging(false);
@@ -68,10 +74,10 @@ export function PlayScreen({
     if (dir > 0) {
       movingId = deck[index].id;
       setFly({ card: deck[index], dir: 1, on: false });
-      setIndex((i) => (i + 1) % L);
+      setIndex(index + 1);
     } else {
       // back-step: pin current top with cover so it stays visible until covered.
-      const idx = (index - 1 + L) % L;
+      const idx = index - 1;
       movingId = deck[idx].id;
       setCover(deck[index].id);
       setIndex(idx);
@@ -218,7 +224,7 @@ export function PlayScreen({
             className={`${styles.card} ${styles.cardTop}`}
             style={{
               transform:
-                fly.dir === 1 ? (fly.on ? FLY : TOP) : fly.on ? TOP : FLY,
+                fly.dir === 1 ? (fly.on ? FLY : TOP) : fly.on ? TOP : FLY_BACK,
               opacity: fly.dir === 1 ? (fly.on ? 0 : 1) : 1,
               zIndex: 999,
               pointerEvents: "none",
@@ -235,10 +241,15 @@ export function PlayScreen({
           className={styles.prev}
           onClick={() => step(-1)}
           aria-label="Previous"
+          disabled={index === 0}
         >
           ←
         </button>
-        <button className={styles.next} onClick={() => step(1)}>
+        <button
+          className={styles.next}
+          onClick={() => step(1)}
+          disabled={index === L - 1}
+        >
           {t.next}
           <span>→</span>
         </button>

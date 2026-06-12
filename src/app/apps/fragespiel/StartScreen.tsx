@@ -3,14 +3,25 @@
 import { GROUPS, L10N, type Group, type Lang } from "./i18n";
 import styles from "./styles.module.css";
 
+const DURATIONS = [16, 32, 64] as const;
+
 type Props = {
   lang: Lang;
   onLangChange: (l: Lang) => void;
   counts: Record<Group, number>;
+  duration: number;
+  onDurationChange: (n: number) => void;
   onPick: (g: Group) => void;
 };
 
-export function StartScreen({ lang, onLangChange, counts, onPick }: Props) {
+export function StartScreen({
+  lang,
+  onLangChange,
+  counts,
+  duration,
+  onDurationChange,
+  onPick,
+}: Props) {
   const t = L10N[lang];
   return (
     <div className={styles.start}>
@@ -34,6 +45,18 @@ export function StartScreen({ lang, onLangChange, counts, onPick }: Props) {
         Fragespiel
       </div>
       <div className={styles.tag}>{t.tagline}</div>
+      <div className={styles.rounds}>{t.rounds}</div>
+      <div className={styles.dur}>
+        {DURATIONS.map((n) => (
+          <span
+            key={n}
+            className={duration === n ? styles.on : ""}
+            onClick={() => onDurationChange(n)}
+          >
+            {n}
+          </span>
+        ))}
+      </div>
       <div className={styles.choose}>{t.choose}</div>
       <div className={styles.gList}>
         {GROUPS.map((g) => (
