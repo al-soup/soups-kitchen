@@ -59,6 +59,10 @@ Current apps: Habit Tracker (/apps/habits), Fahrplan (/apps/fahrplan), Knowledge
 
 Clicking a colored day in `HabitScoreGraph` sets `selectedDate` state, which filters `HabitFeed` to that date. Clicking again clears. Switching action type also resets `selectedDate`. Feed shows a filter chip with clear button when filtered.
 
+#### KB→Habit auto-link
+
+AFTER INSERT trigger `trg_knowledge_to_habit` on `public.knowledge` (migration `20260612000000_habit_from_knowledge.sql`) auto-creates a habit row using action `Learning Session` (lookup by name; soft-fail w/ warning if missing). Note = `<question>\n\n<url>`. Mirrors Strava `habit_from_strava_ride` pattern.
+
 ### Layout Components
 
 - **Navbar**: Fixed top, centered brand (icon + dynamic title via PageContext) + hamburger (left) + profile (right). Brand icon is route-driven: `/apps/habits*` → `HabitsAppIcon`, `/apps/fahrplan*` → `FahrplanAppIcon`, `/apps/knowledge-base*` → `KnowledgeBaseAppIcon`, `/apps/fragespiel*` → `FragespielAppIcon`. Logo (`/soup.svg`) is the fallback. Map lives inline in `Navbar.tsx`.

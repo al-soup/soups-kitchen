@@ -51,10 +51,11 @@ VALUES
   ('20min Jump Rope', NULL, 1, 2, NOW()),
   ('Programming Gymnastics', 'Solve 1-2 LeetCode problems, watch a D&A lecture', 3, 1, NOW()),
   ('Certification Prep', NULL, 3, 2, NOW()),
-  ('Continue Your App', NULL, 3, 3, NOW())
+  ('Continue Your App', NULL, 3, 3, NOW()),
+  ('Learning Session', NULL, 3, 2, NOW())
 ON CONFLICT DO NOTHING;
 
-SELECT setval('public.action_id_seq', 20);
+SELECT setval('public.action_id_seq', 21);
 
 -- ~50 habit entries spread over last 60 days
 INSERT INTO public.habit (action_id, completed_at, note) VALUES
