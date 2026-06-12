@@ -11,6 +11,8 @@ type Props = {
   counts: Record<Group, number>;
   duration: number;
   onDurationChange: (n: number) => void;
+  sortByIntensity: boolean;
+  onSortChange: (v: boolean) => void;
   onPick: (g: Group) => void;
 };
 
@@ -20,6 +22,8 @@ export function StartScreen({
   counts,
   duration,
   onDurationChange,
+  sortByIntensity,
+  onSortChange,
   onPick,
 }: Props) {
   const t = L10N[lang];
@@ -56,6 +60,21 @@ export function StartScreen({
             {n}
           </span>
         ))}
+      </div>
+      <div className={styles.rounds}>{t.sortCards}</div>
+      <div className={styles.dur}>
+        <span
+          className={sortByIntensity ? styles.on : ""}
+          onClick={() => onSortChange(true)}
+        >
+          {t.sortIntensity}
+        </span>
+        <span
+          className={!sortByIntensity ? styles.on : ""}
+          onClick={() => onSortChange(false)}
+        >
+          {t.sortRandom}
+        </span>
       </div>
       <div className={styles.choose}>{t.choose}</div>
       <div className={styles.gList}>

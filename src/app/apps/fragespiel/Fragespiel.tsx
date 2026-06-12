@@ -126,11 +126,6 @@ export function Fragespiel() {
     setDeck([]);
   };
 
-  const toggleSort = () => {
-    setSortByIntensity((s) => !s);
-    setDeckVersion((v) => v + 1);
-  };
-
   return (
     <div className={styles.rz} style={PALETTE}>
       {error ? (
@@ -144,6 +139,8 @@ export function Fragespiel() {
           counts={counts}
           duration={duration}
           onDurationChange={setDuration}
+          sortByIntensity={sortByIntensity}
+          onSortChange={setSortByIntensity}
           onPick={pickGroup}
         />
       ) : (
@@ -154,8 +151,6 @@ export function Fragespiel() {
           onLangChange={handleLang}
           onReshuffle={reshuffle}
           onChangeGroup={changeGroup}
-          sortByIntensity={sortByIntensity}
-          onToggleSort={toggleSort}
         />
       )}
       <div className={styles.grain} />

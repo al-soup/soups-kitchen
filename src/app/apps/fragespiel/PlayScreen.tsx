@@ -62,8 +62,6 @@ type Props = {
   onLangChange: (l: Lang) => void;
   onReshuffle: () => void;
   onChangeGroup: () => void;
-  sortByIntensity: boolean;
-  onToggleSort: () => void;
 };
 
 export function PlayScreen({
@@ -72,8 +70,6 @@ export function PlayScreen({
   onLangChange,
   onReshuffle,
   onChangeGroup,
-  sortByIntensity,
-  onToggleSort,
 }: Props) {
   const t = L10N[lang];
   const L = deck.length;
@@ -229,10 +225,6 @@ export function PlayScreen({
                     EN
                   </span>
                 </span>
-              </button>
-              <button onClick={onToggleSort}>
-                {t.sortByIntensity}
-                <span>{sortByIntensity ? "✓" : ""}</span>
               </button>
               <button
                 onClick={() => {
