@@ -10,6 +10,8 @@
   --kb-muted: #928d7e;
   --kb-line: #e7e3d4;
   --kb-line2: #d8d3c2;
+  /* Height of the revealed summary area. The summary scrolls inside it. */
+  --kb-reveal-height: 200px;
   --kb-card-shadow: 0 1px 2px rgba(50, 35, 15, 0.04);
   --kb-card-hover-shadow:
     0 14px 34px rgba(50, 35, 15, 0.13), 0 2px 6px rgba(50, 35, 15, 0.07);
@@ -208,11 +210,98 @@
   overflow: hidden;
 }
 
-.card:hover,
-.card:focus-visible {
-  transform: translateY(-4px);
+.card:focus-within,
+.card[data-expanded="true"] {
   box-shadow: var(--kb-card-hover-shadow);
-  outline: none;
+}
+
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--kb-card-hover-shadow);
+  }
+}
+
+/* Whole-card click target on pointers that can hover. Decorative duplicate of
+   the Read link (aria-hidden + not focusable), so the card still exposes a
+   single link to assistive tech. Swapped for .tapToggle on touch. */
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 14px;
+}
+
+/* Touch: tapping the card body toggles the summary instead of navigating. */
+.tapToggle {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 14px;
+}
+
+@media (hover: none) {
+  .cardOverlay {
+    display: none;
+  }
+
+  .tapToggle {
+    display: block;
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Topic group headers ---------- */
+.groupHeader {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 10px 0 -4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--kb-line);
+}
+
+.groupHeader:first-child {
+  margin-top: 0;
+}
+
+.groupDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.groupName {
+  font-family: var(--font-baloo2), var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.005em;
+  color: var(--kb-ink);
+}
+
+.groupCount {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--kb-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .spine {
@@ -272,6 +361,10 @@
 /* Reveal — closes snappily (no delay), opens smoothly after a hover
    debounce so brief mouse-overs don't trigger a flash. */
 .reveal {
+  position: relative;
+  /* Above the whole-card overlay, the tap toggle and the Read link, so the
+     summary can be scrolled and selected once revealed. */
+  z-index: 3;
   max-height: 0;
   opacity: 0;
   overflow: hidden;
@@ -280,29 +373,53 @@
     opacity 0.22s ease;
 }
 
-.card:hover .reveal,
-.card:focus-visible .reveal {
-  max-height: 200px;
+@media (hover: hover) {
+  .card:hover .reveal {
+    max-height: var(--kb-reveal-height);
+    opacity: 1;
+    transition:
+      max-height 0.55s cubic-bezier(0.32, 0.72, 0.24, 1) 0.8s,
+      opacity 0.35s ease 0.45s;
+  }
+}
+
+/* Keyboard focus and the touch tap-toggle open immediately — no hover debounce
+   to justify the delay. */
+.card:focus-within .reveal,
+.card[data-expanded="true"] .reveal {
+  max-height: var(--kb-reveal-height);
   opacity: 1;
   transition:
-    max-height 0.55s cubic-bezier(0.32, 0.72, 0.24, 1) 0.8s,
-    opacity 0.35s ease 0.45s;
+    max-height 0.32s cubic-bezier(0.32, 0.72, 0.24, 1),
+    opacity 0.22s ease;
 }
 
 .summary {
   margin: 13px 0 0;
   padding-top: 13px;
+  padding-right: 6px;
   border-top: 1px solid var(--kb-line);
   font-family: var(--font-hanken), var(--font-sans);
   font-size: 10px;
   line-height: 1.5;
   color: var(--kb-ink2);
   text-align: left;
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  line-clamp: 6;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  /* Long summaries scroll inside the card instead of being clipped. The 26px
+     accounts for this element's own top margin + padding inside .reveal. */
+  max-height: calc(var(--kb-reveal-height) - 26px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--kb-line2) transparent;
+}
+
+.summary::-webkit-scrollbar {
+  width: 6px;
+}
+
+.summary::-webkit-scrollbar-thumb {
+  background: var(--kb-line2);
+  border-radius: 3px;
 }
 
 .summary p {
@@ -324,24 +441,34 @@
 }
 
 .readCta {
+  position: relative;
+  /* Above both card-wide overlays so it stays the real navigation target. */
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-family: var(--font-hanken), var(--font-sans);
   font-size: 12.5px;
   font-weight: 600;
+  text-decoration: none;
   transition: gap 0.2s ease;
 }
 
-.card:hover .readCta,
-.card:focus-visible .readCta {
+@media (hover: hover) {
+  .card:hover .readCta {
+    gap: 10px;
+  }
+}
+
+.card:focus-within .readCta {
   gap: 10px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .card,
   .reveal,
-  .readCta {
+  .readCta,
+  .tapToggle {
     transition: none;
   }
 }

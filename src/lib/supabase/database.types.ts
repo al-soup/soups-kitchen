@@ -371,17 +371,20 @@ export type Database = {
           concept_ids?: string[];
           p_limit?: number;
           p_offset?: number;
+          p_sort?: string;
           q?: string;
           topic_ids?: string[];
         };
         Returns: {
           created_at: string;
           detail: string;
+          group_count: number;
           id: number;
           question: string;
           search_vector: unknown;
           summary: string;
           tags: Json;
+          topic_name: string;
           total_count: number;
           updated_at: string;
         }[];

@@ -1,0 +1,43 @@
+/* Segmented sort control. Inherits the --kb-* tokens from the KB page wrapper,
+   with global-theme fallbacks so it also renders standalone (e.g. in tests). */
+.group {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--kb-line2, var(--border-color));
+  border-radius: 999px;
+  background: var(--kb-paper, var(--background));
+}
+
+.option {
+  font: inherit;
+  font-family: var(--font-hanken), var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 13px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--kb-muted, var(--foreground-muted));
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.option:hover {
+  color: var(--kb-ink, var(--foreground));
+}
+
+.optionActive,
+.optionActive:hover {
+  background: var(--kb-ink, var(--foreground));
+  color: var(--kb-paper, var(--background));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option {
+    transition: none;
+  }
+}

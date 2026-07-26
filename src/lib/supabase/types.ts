@@ -12,7 +12,13 @@ export type Question = Tables<"questions">;
 export type Knowledge = Tables<"knowledge">;
 export type KnowledgeTag = Tables<"knowledge_tags">;
 
-export type KnowledgeListItem = Knowledge & { tags: Tag[] };
+export type KnowledgeListItem = Knowledge & {
+  tags: Tag[];
+  // Grouping metadata from search_knowledge. Optional so entries built outside
+  // the list RPC (e.g. after a create) still satisfy the type.
+  topicName?: string | null;
+  groupCount?: number;
+};
 
 export type KnowledgeListPage = {
   items: KnowledgeListItem[];

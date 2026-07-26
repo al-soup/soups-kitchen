@@ -1,9 +1,11 @@
 import {
   buildKnowledgeQuery,
+  parseSort,
   toggleString,
   TOPICS_PARAM,
   CONCEPTS_PARAM,
   Q_PARAM,
+  SORT_PARAM,
 } from "./filterParams";
 
 describe("buildKnowledgeQuery", () => {
@@ -48,6 +50,47 @@ describe("buildKnowledgeQuery", () => {
     const url = buildKnowledgeQuery(["A&B", "C D"], [], "");
     const parsed = new URLSearchParams(url.slice(1));
     expect(parsed.getAll(TOPICS_PARAM)).toEqual(["A&B", "C D"]);
+  });
+
+  it("omits the default sort", () => {
+    expect(buildKnowledgeQuery([], [], "", "newest")).toBe("");
+  });
+
+  it("includes non-default sorts", () => {
+    expect(buildKnowledgeQuery([], [], "", "topic")).toBe(
+      `?${SORT_PARAM}=topic`
+    );
+    expect(buildKnowledgeQuery([], [], "", "oldest")).toBe(
+      `?${SORT_PARAM}=oldest`
+    );
+  });
+
+  it("combines sort with filters", () => {
+    const url = buildKnowledgeQuery(["Databases"], [], "btree", "oldest");
+    expect(url).toContain(`${TOPICS_PARAM}=Databases`);
+    expect(url).toContain(`${Q_PARAM}=btree`);
+    expect(url).toContain(`${SORT_PARAM}=oldest`);
+  });
+});
+
+describe("parseSort", () => {
+  it("accepts the known sort modes", () => {
+    expect(parseSort("newest")).toBe("newest");
+    expect(parseSort("oldest")).toBe("oldest");
+    expect(parseSort("topic")).toBe("topic");
+  });
+
+  it("falls back to the default for unknown, empty or missing values", () => {
+    expect(parseSort("bogus")).toBe("newest");
+    expect(parseSort("")).toBe("newest");
+    expect(parseSort(null)).toBe("newest");
+    expect(parseSort(undefined)).toBe("newest");
+  });
+
+  it("round-trips through buildKnowledgeQuery", () => {
+    const url = buildKnowledgeQuery([], [], "", "topic");
+    const parsed = new URLSearchParams(url.slice(1));
+    expect(parseSort(parsed.get(SORT_PARAM))).toBe("topic");
   });
 });
 
