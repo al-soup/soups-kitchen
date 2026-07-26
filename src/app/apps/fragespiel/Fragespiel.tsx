@@ -11,6 +11,7 @@ import {
   type Group,
   type Lang,
 } from "./i18n";
+import { categoryCounts, listCategories, poolFor } from "./categories";
 import { StartScreen } from "./StartScreen";
 import { PlayScreen } from "./PlayScreen";
 import styles from "./styles.module.css";
@@ -63,6 +64,11 @@ export function Fragespiel() {
   const [deck, setDeck] = useState<Question[]>([]);
   const [duration, setDuration] = useState(32);
   const [sortByIntensity, setSortByIntensity] = useState(true);
+  // Deselected (not selected) categories: empty = all on, so no init pass is
+  // needed once questions load and unseen categories default to on.
+  const [deselected, setDeselected] = useState<ReadonlySet<string>>(
+    () => new Set()
+  );
   // Bumped on pickGroup/reshuffle/sort-toggle so PlayScreen remounts with fresh deck state.
   const [deckVersion, setDeckVersion] = useState(0);
 
@@ -90,34 +96,51 @@ export function Fragespiel() {
     };
   }, []);
 
+  // Chip counts span the whole active pool — no group is picked yet at this point.
+  const categories = useMemo(
+    () => listCategories(questions ?? [], lang),
+    [questions, lang]
+  );
+  const catCounts = useMemo(() => categoryCounts(questions ?? []), [questions]);
+
+  // Group badges track the category selection, so they double as a live preview
+  // of how many cards the round would hold.
   const counts = useMemo<Record<Group, number>>(() => {
     const rows = questions ?? [];
     return {
-      friends: rows.filter((q) => !q.is_for_couples).length,
-      couple: rows.length,
+      friends: poolFor(rows, "friends", deselected).length,
+      couple: poolFor(rows, "couple", deselected).length,
     };
-  }, [questions]);
+  }, [questions, deselected]);
 
   const handleLang = (l: Lang) => {
     saveLang(l);
   };
 
+  const toggleCategory = (key: string) => {
+    setDeselected((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(key)) next.add(key);
+      return next;
+    });
+  };
+
+  const selectAllCategories = () => {
+    setDeselected(new Set());
+  };
+
   const pickGroup = (g: Group) => {
     if (!questions) return;
-    const filtered =
-      g === "couple" ? questions : questions.filter((q) => !q.is_for_couples);
-    setDeck(buildRound(filtered, duration));
+    const pool = poolFor(questions, g, deselected);
+    if (pool.length === 0) return;
+    setDeck(buildRound(pool, duration));
     setGroup(g);
     setDeckVersion((v) => v + 1);
   };
 
   const reshuffle = () => {
     if (!group || !questions) return;
-    const filtered =
-      group === "couple"
-        ? questions
-        : questions.filter((q) => !q.is_for_couples);
-    setDeck(buildRound(filtered, duration));
+    setDeck(buildRound(poolFor(questions, group, deselected), duration));
     setDeckVersion((v) => v + 1);
   };
 
@@ -141,6 +164,11 @@ export function Fragespiel() {
           onDurationChange={setDuration}
           sortByIntensity={sortByIntensity}
           onSortChange={setSortByIntensity}
+          categories={categories}
+          categoryCounts={catCounts}
+          deselected={deselected}
+          onToggleCategory={toggleCategory}
+          onSelectAllCategories={selectAllCategories}
           onPick={pickGroup}
         />
       ) : (

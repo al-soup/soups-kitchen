@@ -1,7 +1,7 @@
 "use client";
 
 import type { Question } from "@/lib/supabase/types";
-import type { Lang } from "./i18n";
+import { categoryLabel, type Lang } from "./i18n";
 import styles from "./styles.module.css";
 
 type Props = {
@@ -16,7 +16,7 @@ export function CardFace({ q, lang }: Props) {
     <div className={styles.face}>
       <div className={styles.kRow}>
         {q.category ? (
-          <span className={styles.kick}>{q.category}</span>
+          <span className={styles.kick}>{categoryLabel(q.category, lang)}</span>
         ) : (
           <span />
         )}

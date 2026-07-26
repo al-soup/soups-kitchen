@@ -9,6 +9,8 @@ export const L10N = {
     sortCards: "Karten sortieren",
     sortIntensity: "Nach Intensität",
     sortRandom: "Zufällig",
+    categories: "Kategorien",
+    allCategories: "Alle",
     choose: "Wählt eure Runde",
     restart: "Neu mischen",
     changeGroup: "Runde wechseln",
@@ -22,6 +24,8 @@ export const L10N = {
     sortCards: "Sort cards",
     sortIntensity: "By intensity",
     sortRandom: "Random",
+    categories: "Categories",
+    allCategories: "All",
     choose: "Choose your round",
     restart: "Reshuffle",
     changeGroup: "Change round",
@@ -47,6 +51,26 @@ export const GROUPS: {
     en: { n: "Couple", d: "Deep & intimate, for two" },
   },
 ];
+
+// `questions.category` is nullable free text; this sentinel buckets the rows
+// without one so they stay filterable instead of silently vanishing.
+export const UNCATEGORIZED = "__uncategorized__";
+
+// `questions.category` holds English free text; these translate the known values
+// for the filter chips and the card kicker. Unknown values fall back to the raw
+// string, so a new DB category still renders (untranslated) without a code change.
+export const CATEGORY_LABELS: Record<string, { de: string; en: string }> = {
+  Philosophy: { de: "Philosophie", en: "Philosophy" },
+  Embarrassing: { de: "Peinlich", en: "Embarrassing" },
+  Ethics: { de: "Ethik", en: "Ethics" },
+  Personal: { de: "Persönlich", en: "Personal" },
+  Fun: { de: "Spaß", en: "Fun" },
+  [UNCATEGORIZED]: { de: "Sonstige", en: "Other" },
+};
+
+export function categoryLabel(key: string, lang: Lang): string {
+  return CATEGORY_LABELS[key]?.[lang] ?? key;
+}
 
 const LANG_KEY = "fs-lang";
 

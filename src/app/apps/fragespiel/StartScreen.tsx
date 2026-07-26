@@ -1,6 +1,6 @@
 "use client";
 
-import { GROUPS, L10N, type Group, type Lang } from "./i18n";
+import { categoryLabel, GROUPS, L10N, type Group, type Lang } from "./i18n";
 import styles from "./styles.module.css";
 
 const DURATIONS = [16, 32, 64] as const;
@@ -13,6 +13,11 @@ type Props = {
   onDurationChange: (n: number) => void;
   sortByIntensity: boolean;
   onSortChange: (v: boolean) => void;
+  categories: string[];
+  categoryCounts: Record<string, number>;
+  deselected: ReadonlySet<string>;
+  onToggleCategory: (key: string) => void;
+  onSelectAllCategories: () => void;
   onPick: (g: Group) => void;
 };
 
@@ -24,9 +29,15 @@ export function StartScreen({
   onDurationChange,
   sortByIntensity,
   onSortChange,
+  categories,
+  categoryCounts,
+  deselected,
+  onToggleCategory,
+  onSelectAllCategories,
   onPick,
 }: Props) {
   const t = L10N[lang];
+  const allOn = deselected.size === 0;
   return (
     <div className={styles.start}>
       <div className={styles.startTop}>
@@ -76,12 +87,41 @@ export function StartScreen({
           {t.sortRandom}
         </span>
       </div>
+      {categories.length > 0 && (
+        <>
+          <div className={styles.rounds}>{t.categories}</div>
+          <div className={styles.cats}>
+            <button
+              type="button"
+              className={allOn ? styles.on : ""}
+              onClick={onSelectAllCategories}
+            >
+              {t.allCategories}
+            </button>
+            {categories.map((c) => (
+              <button
+                key={c}
+                type="button"
+                className={deselected.has(c) ? "" : styles.on}
+                aria-pressed={!deselected.has(c)}
+                onClick={() => onToggleCategory(c)}
+              >
+                {categoryLabel(c, lang)}
+                <span className={styles.catCount}>
+                  {categoryCounts[c] ?? 0}
+                </span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
       <div className={styles.choose}>{t.choose}</div>
       <div className={styles.gList}>
         {GROUPS.map((g) => (
           <button
             key={g.id}
             className={styles.grp}
+            disabled={counts[g.id] === 0}
             onClick={() => onPick(g.id)}
           >
             <div>
