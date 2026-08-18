@@ -232,6 +232,12 @@ test.describe("Knowledge Base", () => {
 test.describe("Knowledge Base on touch devices", () => {
   test.use({ ...devices["Pixel 5"] });
 
+  // The tap toggle spans the whole card, but the revealed summary sits above it
+  // so it can scroll — which puts the summary under the toggle's centre point
+  // once expanded. Pin taps to the breadcrumb row (card padding-top is 18px),
+  // where the toggle is the hit target whether the card is open or closed.
+  const TAP_CARD_TOP = { position: { x: 40, y: 24 } };
+
   test("tapping a card toggles its summary instead of navigating", async ({
     page,
   }) => {
@@ -246,15 +252,34 @@ test.describe("Knowledge Base on touch devices", () => {
     await expect(toggle).toBeVisible();
     await expect(reveal).toHaveCSS("max-height", "0px");
 
-    await toggle.tap();
+    await toggle.tap(TAP_CARD_TOP);
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
     await expect(reveal).not.toHaveCSS("max-height", "0px");
     await expect(card.getByTestId("kb-card-summary")).toBeVisible();
     await expect(page).toHaveURL("/apps/knowledge-base");
 
-    await toggle.tap();
+    await toggle.tap(TAP_CARD_TOP);
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await expect(reveal).toHaveCSS("max-height", "0px");
+    await expect(page).toHaveURL("/apps/knowledge-base");
+  });
+
+  test("tapping the summary scrolls it rather than collapsing the card", async ({
+    page,
+  }) => {
+    await page.goto("/apps/knowledge-base");
+
+    const card = page.getByTestId("kb-card").first();
+    const toggle = card.getByTestId("kb-card-toggle");
+
+    await toggle.tap(TAP_CARD_TOP);
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+
+    // The summary sits above the toggle so it stays scrollable and selectable;
+    // tapping it must neither collapse the card nor navigate.
+    await card.getByTestId("kb-card-summary").tap();
+
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
     await expect(page).toHaveURL("/apps/knowledge-base");
   });
 

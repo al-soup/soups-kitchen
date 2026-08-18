@@ -210,14 +210,21 @@
   overflow: hidden;
 }
 
-.card:focus-within,
 .card[data-expanded="true"] {
   box-shadow: var(--kb-card-hover-shadow);
 }
 
+/* The :focus-within rules are hover-scoped on purpose — do not merge them back
+   into the [data-expanded] rules. On touch, .tapToggle keeps focus after a tap,
+   so a focus-driven reveal would pin the card open and the collapse tap would
+   appear to do nothing. There, data-expanded is the single source of truth. */
 @media (hover: hover) {
   .card:hover {
     transform: translateY(-4px);
+    box-shadow: var(--kb-card-hover-shadow);
+  }
+
+  .card:focus-within {
     box-shadow: var(--kb-card-hover-shadow);
   }
 }
@@ -381,11 +388,19 @@
       max-height 0.55s cubic-bezier(0.32, 0.72, 0.24, 1) 0.8s,
       opacity 0.35s ease 0.45s;
   }
+
+  /* Keyboard focus opens immediately — no hover debounce to justify the delay.
+     Hover-scoped: see the note above the .card:focus-within box-shadow rule. */
+  .card:focus-within .reveal {
+    max-height: var(--kb-reveal-height);
+    opacity: 1;
+    transition:
+      max-height 0.32s cubic-bezier(0.32, 0.72, 0.24, 1),
+      opacity 0.22s ease;
+  }
 }
 
-/* Keyboard focus and the touch tap-toggle open immediately — no hover debounce
-   to justify the delay. */
-.card:focus-within .reveal,
+/* Touch tap-toggle. Sole driver of the reveal on coarse pointers. */
 .card[data-expanded="true"] .reveal {
   max-height: var(--kb-reveal-height);
   opacity: 1;
@@ -455,13 +470,10 @@
 }
 
 @media (hover: hover) {
-  .card:hover .readCta {
+  .card:hover .readCta,
+  .card:focus-within .readCta {
     gap: 10px;
   }
-}
-
-.card:focus-within .readCta {
-  gap: 10px;
 }
 
 @media (prefers-reduced-motion: reduce) {
