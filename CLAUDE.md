@@ -90,10 +90,10 @@ Apps: Habit Tracker (`/apps/habits`), Fahrplan (`/apps/fahrplan`), Knowledge Bas
 - **AuthContext**: `AuthProvider` wraps app, exposes `useAuth()` → `{ user, accessToken, loading }`. Client-side Supabase auth via `@supabase/ssr`.
 - **useUserRole(table)**: Decodes JWT to extract role for a given table. Returns `{ role, loading }`.
 - **useCanManage(table)**: Sugar over `useUserRole`. Returns `{ canManage, loading }` (true for `manager` or `admin`, incl. `_global=admin`). Use for gating write UI.
-- **Proxy** (`src/proxy.ts`): Refreshes Supabase auth cookies on every request. Uses `createProxyClient` from `src/lib/supabase/proxy.ts`.
+- **Proxy** (`src/proxy.ts`): Refreshes Supabase auth cookies on every request and redirects anon to `/login?redirectTo=<path>` for paths in `src/lib/protectedRoutes.ts` (`/resources`, `/apps/habits/*` sub-paths; `/apps/habits` root + `/settings` public). Uses `createProxyClient` from `src/lib/supabase/proxy.ts`.
 - **Icons**: Shared in `src/constants/icons.tsx` — check there first. Domain-specific icons (e.g. transport types) live in feature's `icons.tsx`. Display new icons at `/dev/icons`.
 - **CSS Modules**: All component styles use `.module.css` files. Theme colors via `--foreground`, `--background`, `--border-color`, etc. in `globals.css`.
-- **Auth redirects**: Protected pages redirect to `/login?redirectTo=<path>`. Login reads param and navigates there on success. Validate `redirectTo` starts with `/` and not `//` (open redirect prevention).
+- **Auth redirects**: Proxy redirects anon server-side (no content flash); protected pages keep a client-side `useEffect` redirect as fallback. Add new protected paths to `protectedRoutes.ts`. Login reads `redirectTo` and navigates there on success via `safeRedirect()` (rejects non-`/`, `//`, `/\` — open redirect prevention).
 - **Avatar**: `getAvatarUrl(userId, size)` from `src/lib/avatar.ts` returns a DiceBear identicon URL. Hashes user ID with FNV-1a before sending to DiceBear (no raw UUIDs to external service).
 - **Action cache**: `src/lib/actionsCache.ts` — localStorage cache for action rows (24h TTL).
 - **State reset on prop change**: use `key={prop}` at mount site to remount the child fresh. Avoids synchronous `setState` in effects (triggers `react-compiler` lint error).
@@ -105,6 +105,7 @@ Apps: Habit Tracker (`/apps/habits`), Fahrplan (`/apps/fahrplan`), Knowledge Bas
 - `pnpm supabase:start` to boot, `pnpm supabase:reset` to wipe + reseed (+ uploads dev resources).
 - Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `password123`).
 - `.env.test` points to local instance; e2e tests use it automatically.
+- Signup disabled (`enable_signup = false` in `config.toml` + `config.ci.toml`), min password 8 w/ letters+digits. Users are created via seed / admin API only. Prod dashboard must match manually (config.toml is local/CI only).
 
 ### Auth
 
@@ -117,7 +118,7 @@ Three Supabase clients:
 Access model:
 
 - Public (anon allowed): KB list (`/apps/knowledge-base`) and KB detail (`/apps/knowledge-base/[id]`). RLS opens SELECT on `knowledge`, `knowledge_tags`, `tags`, `resources`, and `storage.objects` for the `resources` bucket to `anon, authenticated` — anon SELECT on `resources` is required so KB detail pages can resolve `{{resource:<id>}}` tokens to signed URLs for public viewers.
-- Authenticated-only (any role): `/resources` page is client-gated via `useAuth` and redirects anon to `/login`. Underlying RLS is still public-read; the gate is purely UX so the management surface isn't publicly browsable.
+- Authenticated-only (any role): `/resources`, `/apps/habits/create`, `/apps/habits/[id]` — proxy-gated (+ client fallback). Underlying RLS on `resources` / `habit` is still public-read; the gate is UX so management surfaces aren't publicly browsable.
 - Manager-only writes: create/update/delete on KB entries + tags requires `manager` (or `admin`) role on table_name `knowledge`. Same for `resources` writes (table + storage) on table_name `resources`. Global admins (`_global=admin`) override.
 - Enforced two ways: SQL helper `public.is_manager_of(target_table text)` checks the JWT and gates RLS writes; client uses `useCanManage(table)` to hide write UI.
 
@@ -140,6 +141,10 @@ Access model:
 ### Strava Integration
 
 Daily cron edge function `strava-activity` fetches recent Strava activities into `strava_rides`; a DB trigger then auto-creates a `Cycling` habit row. Tokens encrypted at rest via pgcrypto. Architecture, auth flow, secrets, setup, local testing, and prod-promotion steps live in [`supabase/functions/README.md`](supabase/functions/README.md).
+
+### Knowledge Base MCP
+
+Edge function `kb-mcp` (`supabase/functions/kb-mcp/`) is a remote MCP server (Streamable HTTP, stateless, `@modelcontextprotocol/sdk` via npm specifier) exposing `kb_list_tags`, `kb_search`, `kb_create_entry`. Auth = static bearer token `KB_MCP_TOKEN` (Supabase secret), timing-safe compare; `verify_jwt = false`. Writes use service role (bypass RLS); KB→habit trigger still fires. Clients register via `claude mcp add --transport http --scope user`. Details in [`supabase/functions/README.md`](supabase/functions/README.md).
 
 ### CI Post-merge Automation
 

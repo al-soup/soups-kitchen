@@ -78,10 +78,28 @@ Optional (Strava sync, prod only):
 | `pnpm generate-tech-logos` | Regenerate tech-stack tag PNGs in `public/tech/`  |
 | `pnpm strava:auth`         | One-time Strava OAuth setup (stores tokens in DB) |
 
+## Knowledge Base MCP
+
+Remote [MCP](https://modelcontextprotocol.io) server hosted as Supabase edge
+function `kb-mcp` (Streamable HTTP, stateless). Lets an agentic coding tool
+create KB entries from any machine, nothing runs locally. Gated by a static
+bearer token; DB access via service role. Tools: `kb_list_tags`, `kb_search`,
+`kb_create_entry`. Setup, secrets and local testing in
+[`supabase/functions/README.md`](supabase/functions/README.md#kb-mcp).
+
+Register once per machine (user scope):
+
+```sh
+claude mcp add --transport http --scope user soups-kitchen-kb \
+  https://<project-ref>.supabase.co/functions/v1/kb-mcp \
+  --header "Authorization: Bearer <KB_MCP_TOKEN>"
+```
+
 ## Auth model
 
 - Public reads: Knowledge Base (list, detail, resource signed URLs)
-- Auth required: `/resources` page (any role)
+- Auth required (proxy redirect to `/login`): `/resources`, `/apps/habits/create`, `/apps/habits/[id]`
+- Signup disabled; accounts created by an admin only
 - Manager / admin: writes on KB, tags, resources — gated by RLS via `is_manager_of(table)`
 
 ## Testing
@@ -97,43 +115,3 @@ All apps under _/apps_ are installable as PWAs (Android "Add to Home Screen", iO
 ## TODO
 
 Tracked in [GitHub Issues](https://github.com/al-soup/soups-kitchen/issues).
-
-## TODO
-
-- [ ] Solve GH issues automatically via agents
-- [ ] Let Claude go over the README and make some improvements
-- [ ] Create a post about how you save your Strava entries automatically as habits. Include encryption at rest. It does not matter that this is not mind-blowing, it is just about to build a portfolio.
-- [ ] Write a blog entry about the question game and the other apps
-- [ ] Write tag-lines to your GH projects
-
-### Apps
-
-#### Habits
-
-- [ ] Create filter and sorting for overview page
-- [ ] Create an overview chart option where the different action types can be combined
-- [ ] Create other types of insight graphs for habits
-- [ ] Switching tabs causes a reload. Maybe we should cache the loaded items between tab switches
-
-#### Knowledge Base
-
-- [ ] Sort by date
-- [ ] Create a learning / revision mode. Showing questions one-by-one and via an inverview-me feature where you get quizzed for answers. Build this upon the AI API from _Fragespiel_. Part of this should be a review mode where you can add a selection of questions like a learning path of what you want to study.
-- [ ] Star / Favorite questions
-- [ ] The search needs more feedback to see what has changed. I might have to limit it to only look at question+summary and highlight what was searched for.
-
-#### Question Game
-
-TODO: go over this and the plan created with Claude. Start the implementation.
-
-- Questions should show if they are generated. Admins should have the option to promote a question so it is saved in the DB. I might have to run the generation locally if API access turns our to be difficult/expensive
-- Animations and glitter. It would be nice to have a design that really stands out.
-- Filter by category
-- Redesign AI label - put it on the bottom left
-- Add a mode where you can choose how many AI cards to mix in
-- Save which userID created a new question
-
-### API
-
-- [ ] Add authenticated API routes that use Supabase issued JWTs
-- [ ] Improve SMTP setup to avoid Spam emails.
