@@ -54,7 +54,7 @@
     "jest-environment-jsdom": "^30.2.0",
     "prettier": "^3.8.1",
     "sharp": "^0.34.5",
-    "supabase": "^2.76.14",
+    "supabase": "^2.117.0",
     "ts-jest": "^29.4.6",
     "typescript": "^5"
   }
