@@ -77,31 +77,23 @@ Optional (Strava sync, prod only):
 | `pnpm generate-icons`      | Regenerate per-app PWA icons                      |
 | `pnpm generate-tech-logos` | Regenerate tech-stack tag PNGs in `public/tech/`  |
 | `pnpm strava:auth`         | One-time Strava OAuth setup (stores tokens in DB) |
-| `pnpm mcp:kb`              | Run the Knowledge Base MCP server (stdio)         |
 
 ## Knowledge Base MCP
 
-`mcp/kb/server.mjs` is a stdio [MCP](https://modelcontextprotocol.io) server
-so an agentic coding tool can write KB entries straight from the CLI. It
-signs in to Supabase as a `manager` user for `knowledge`, so RLS and the
-KB→habit trigger behave exactly as in the web form. No app changes involved.
+Remote [MCP](https://modelcontextprotocol.io) server hosted as Supabase edge
+function `kb-mcp` (Streamable HTTP, stateless). Lets an agentic coding tool
+create KB entries from any machine, nothing runs locally. Gated by a static
+bearer token; DB access via service role. Tools: `kb_list_tags`, `kb_search`,
+`kb_create_entry`. Setup, secrets and local testing in
+[`supabase/functions/README.md`](supabase/functions/README.md#kb-mcp).
 
-Tools: `kb_list_tags`, `kb_search`, `kb_create_entry`.
+Register once per machine (user scope):
 
-Setup:
-
-1. `cp mcp/kb/.env.example mcp/kb/.env`, fill in Supabase URL, publishable
-   key and manager credentials (prod or local).
-2. Register once at user scope so it's available in every project:
-
-   ```sh
-   claude mcp add --scope user soups-kitchen-kb -- node /abs/path/to/soups-kitchen/mcp/kb/server.mjs
-   ```
-
-3. Verify with `claude mcp list`. The `/kb-entry` skill (in `ai-config`)
-   calls these tools at the end of drafting an entry.
-
-Smoke test without Claude: `npx @modelcontextprotocol/inspector node mcp/kb/server.mjs`.
+```sh
+claude mcp add --transport http --scope user soups-kitchen-kb \
+  https://<project-ref>.supabase.co/functions/v1/kb-mcp \
+  --header "Authorization: Bearer <KB_MCP_TOKEN>"
+```
 
 ## Auth model
 

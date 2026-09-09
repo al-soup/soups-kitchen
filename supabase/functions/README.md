@@ -203,3 +203,79 @@ curl -i -X POST https://<project>.supabase.co/functions/v1/strava-activity \
   -H "x-cron-secret: $CRON_SECRET" \
   -d '{}'
 ```
+
+## kb-mcp
+
+Remote [MCP](https://modelcontextprotocol.io) server (Streamable HTTP,
+stateless) so an agentic coding tool can write Knowledge Base entries from
+any machine without running anything locally. Uses
+`@modelcontextprotocol/sdk` via `npm:` specifier (see `deno.json`).
+
+### Tools
+
+| Tool              | What it does                                                                                          |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `kb_list_tags`    | Existing tags grouped by `topic` / `concept`.                                                         |
+| `kb_search`       | `search_knowledge` RPC (full-text + trigram). Dedup check before creating.                            |
+| `kb_create_entry` | Insert `knowledge` + link tags by name (case-insensitive). `create_missing_tags` opt-in. Returns URL. |
+
+### Auth + data access
+
+- Request must carry `Authorization: Bearer <KB_MCP_TOKEN>`. Compared
+  timing-safe; anything else → 401. `verify_jwt = false` in `config.toml`
+  so no Supabase apikey is needed on the client.
+- DB access uses `SUPABASE_SERVICE_ROLE_KEY` (auto-available in edge
+  functions). RLS is bypassed; the token is the sole gate. Blast radius on
+  leak = create entries/tags + search. Rotate by re-running
+  `supabase secrets set KB_MCP_TOKEN=...` and re-registering clients.
+- `trg_knowledge_to_habit` fires on insert like any other write.
+
+### Secrets
+
+| Secret         | Where                                | Notes                                             |
+| -------------- | ------------------------------------ | ------------------------------------------------- |
+| `KB_MCP_TOKEN` | Supabase secrets (prod), env (local) | `openssl rand -hex 32`. Same value on all clients |
+| `KB_SITE_URL`  | optional                             | Base for URLs in tool results, default soup.one   |
+
+### Setup (production)
+
+```sh
+supabase secrets set KB_MCP_TOKEN=$(openssl rand -hex 32)
+supabase functions deploy kb-mcp
+```
+
+Then on each machine (user scope, works in every project):
+
+```sh
+claude mcp add --transport http --scope user soups-kitchen-kb \
+  https://<project-ref>.supabase.co/functions/v1/kb-mcp \
+  --header "Authorization: Bearer <KB_MCP_TOKEN>"
+claude mcp list   # should show soups-kitchen-kb ✓
+```
+
+The `/kb-entry` skill (ai-config) calls these tools at the end of drafting.
+
+### Local testing
+
+```sh
+pnpm supabase:start
+printf 'KB_MCP_TOKEN=dev-token\nKB_SITE_URL=http://localhost:3000\n' > /tmp/kb-mcp.env
+supabase functions serve kb-mcp --env-file /tmp/kb-mcp.env --no-verify-jwt
+
+# Type-check
+deno check --config supabase/functions/kb-mcp/deno.json supabase/functions/kb-mcp/index.ts
+
+# Point Claude Code at it (project scope, throwaway)
+claude mcp add --transport http soups-kitchen-kb-local \
+  http://127.0.0.1:54221/functions/v1/kb-mcp \
+  --header "Authorization: Bearer dev-token"
+```
+
+Or raw JSON-RPC via curl:
+
+```sh
+curl -s -X POST http://127.0.0.1:54221/functions/v1/kb-mcp \
+  -H "Authorization: Bearer dev-token" -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```

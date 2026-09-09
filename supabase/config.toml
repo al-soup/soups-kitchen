@@ -389,6 +389,15 @@ s3_access_key = "env(S3_ACCESS_KEY)"
 # Configures AWS_SECRET_ACCESS_KEY for S3 bucket
 s3_secret_key = "env(S3_SECRET_KEY)"
 
+[functions.kb-mcp]
+enabled = true
+# Gated by static bearer token (KB_MCP_TOKEN) inside the function, so no
+# Supabase JWT/apikey needed. Lets `claude mcp add --transport http` work
+# with a single Authorization header.
+verify_jwt = false
+import_map = "./functions/kb-mcp/deno.json"
+entrypoint = "./functions/kb-mcp/index.ts"
+
 [functions.strava-activity]
 enabled = true
 # If verify_jwt is set to `true` every request must include either:

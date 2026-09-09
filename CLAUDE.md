@@ -63,7 +63,6 @@ Apps: Habit Tracker (`/apps/habits`), Fahrplan (`/apps/fahrplan`), Knowledge Bas
 - Hooks: `src/hooks/` (`usePageTitle`, `useUserRole`, `useCanManage`, `useInfiniteScroll`).
 - Supabase clients + generated `database.types.ts`: `src/lib/supabase/`. Migrations: `supabase/migrations/`. Seed: `supabase/seed.sql`.
 - Proxy (formerly middleware): `src/proxy.ts`. Edge functions: `supabase/functions/`.
-- KB MCP server (stdio, `@modelcontextprotocol/sdk`): `mcp/kb/server.mjs`. Config `mcp/kb/.env` (gitignored). Registered user-scope via `claude mcp add`; see README "Knowledge Base MCP".
 - Build helpers: `scripts/` (`ensure-supabase.sh`, `seed-resources.mjs` chains after `supabase:reset`, `strava-auth.mjs`, tech-logo generator).
 
 ### App-specific behaviors (not derivable from code)
@@ -135,11 +134,14 @@ Access model:
 - `pnpm generate-icons` — regenerate per-app PWA icons in `public/icons/`.
 - `pnpm generate-tech-logos` — regenerate tech stack tag PNGs in `public/tech/`.
 - `pnpm strava:auth` — one-time Strava OAuth setup.
-- `pnpm mcp:kb` — run KB MCP server on stdio (tools: `kb_list_tags`, `kb_search`, `kb_create_entry`). Signs in as manager user via password; writes go through normal RLS.
 
 ### Strava Integration
 
 Daily cron edge function `strava-activity` fetches recent Strava activities into `strava_rides`; a DB trigger then auto-creates a `Cycling` habit row. Tokens encrypted at rest via pgcrypto. Architecture, auth flow, secrets, setup, local testing, and prod-promotion steps live in [`supabase/functions/README.md`](supabase/functions/README.md).
+
+### Knowledge Base MCP
+
+Edge function `kb-mcp` (`supabase/functions/kb-mcp/`) is a remote MCP server (Streamable HTTP, stateless, `@modelcontextprotocol/sdk` via npm specifier) exposing `kb_list_tags`, `kb_search`, `kb_create_entry`. Auth = static bearer token `KB_MCP_TOKEN` (Supabase secret), timing-safe compare; `verify_jwt = false`. Writes use service role (bypass RLS); KB→habit trigger still fires. Clients register via `claude mcp add --transport http --scope user`. Details in [`supabase/functions/README.md`](supabase/functions/README.md).
 
 ### CI Post-merge Automation
 

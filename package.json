@@ -22,8 +22,7 @@
     "supabase:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
     "generate-icons": "node scripts/generate-icons.mjs",
     "generate-tech-logos": "node scripts/generate-tech-logos.mjs",
-    "strava:auth": "node scripts/strava-auth.mjs",
-    "mcp:kb": "node mcp/kb/server.mjs"
+    "strava:auth": "node scripts/strava-auth.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
@@ -39,7 +38,6 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
-    "@modelcontextprotocol/sdk": "^1.30.0",
     "@playwright/test": "^1.58.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -58,7 +56,6 @@
     "sharp": "^0.34.5",
     "supabase": "^2.76.14",
     "ts-jest": "^29.4.6",
-    "typescript": "^5",
-    "zod": "^4.5.4"
+    "typescript": "^5"
   }
 }
