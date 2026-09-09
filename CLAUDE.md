@@ -1,152 +1,102 @@
 # CLAUDE.md
 
-## General
+Multi-app platform ("Soup's Kitchen"). What the apps are, how to run them,
+scripts, env vars, auth model: [README.md](./README.md). Domain vocabulary:
+[CONTEXT.md](./CONTEXT.md). Why things are the way they are:
+[docs/adr/](./docs/adr/README.md).
 
-### Main Rules
+## Rules
 
 - In all interactions and commit messages, be extremely concise and sacrifice
   grammar for the sake of concision.
-
-### CI
-
 - Run `pnpm run format` at the end of every task.
-- CI runs on push: build, format:check, lint:check, unit tests.
-- PR workflow: CI + e2e (Playwright, chromium only, local Supabase via `config.ci.toml`).
-
-### Grammar & Style
-
-- When writing markdown text follow the CommonMark lint syntax.
-
-### Next.js
-
-- Next.js 16+ renamed `middleware.ts` → `proxy.ts`. File lives at
-  `src/proxy.ts`. See
-  <https://nextjs.org/docs/messages/middleware-to-proxy#why-the-change>
-
-## Git
-
-### Commit Messages
-
-- Each commit title should start with one of the following:
-  - feat:
-  - fix:
-  - refactor:
-  - chore:
-  - docs:
-  - build:
-  - ci:
-  - style:
-  - perf:
-  - test:
-- Do not add references to Claude in the commit messages.
-- Don't prompt for committing to Git unless you are asked to.
+- Markdown follows CommonMark lint syntax.
+- Commit titles start with one of `feat: fix: refactor: chore: docs: build: ci: style: perf: test:`.
+- No references to Claude in commit messages. Don't prompt for committing
+  unless asked.
+- CI on push: build, format:check, lint:check, unit tests. PRs add e2e.
 
 ## Planning
 
-- At the end of each plan, give me a list of unresolved questions to answer,
-  if any. Make the questions extremely concise. Sacrifice grammar for the sake
-  of concision.
-- Every plan must include CLAUDE.md/README.md update steps if the changes
-  affect project structure, patterns, or TODOs.
+- End every plan with a list of unresolved questions, if any. Extremely
+  concise, sacrifice grammar.
+- Every plan includes CLAUDE.md / README.md / ADR / CONTEXT.md update steps
+  when the change affects structure, patterns, vocabulary or decisions.
 
-## Project Overview
+## Code Comments
 
-Multi-app platform ("Soup's Kitchen") hosting small tools and my portfolio.
+**The rule: a comment survives only if it states a fact not derivable from the
+code and types.** That means business rules, external-system quirks (with a
+link to the ticket/spec where one exists), deliberate deviations from the
+obvious path, and invariants the compiler cannot see. Everything else is noise
+— do not write it, delete it on sight:
 
-Apps: Habit Tracker (`/apps/habits`), Fahrplan (`/apps/fahrplan`), Knowledge Base (`/apps/knowledge-base`), Fragespiel (`/apps/fragespiel`), Resources (`/resources`), Login (`/login`), About (`/about/experience`, `/about/me`), Settings (`/settings`), Icon Gallery (`/dev/icons`, dev-only).
+- No restating the code, the identifier, or the type signature (incl.
+  `@param`/`@returns` that repeat the types). Prefer a well-named function over
+  a _what_-comment.
+- No process narration ("Added error handling here") and no commented-out
+  code — git holds the history.
+- One home per fact: a rationale needed in several places lives in an ADR,
+  `CONTEXT.md`, or one canonical comment; the other sites get a one-line
+  pointer. Two full copies **will** drift.
+- Keep comments in sync: changing code under a comment means updating or
+  deleting the comment in the same edit.
 
-### Where things live
+Exception: purely **navigational** group headers in large dictionary-style
+files earn their keep even though they restate the keys.
 
-- App pages: `src/app/apps/<name>/`. KB shares form pieces in `src/app/apps/knowledge-base/_form/`.
-- Layout (Shell, Navbar, Sidebar, Footer, ProfileDropdown): `src/components/layout/`.
-- Shared icons: `src/constants/icons.tsx`. Render new icons at `/dev/icons`.
-- Hooks: `src/hooks/` (`usePageTitle`, `useUserRole`, `useCanManage`, `useInfiniteScroll`).
-- Supabase clients + generated `database.types.ts`: `src/lib/supabase/`. Migrations: `supabase/migrations/`. Seed: `supabase/seed.sql`.
-- Proxy (formerly middleware): `src/proxy.ts`. Edge functions: `supabase/functions/`.
-- Build helpers: `scripts/` (`ensure-supabase.sh`, `seed-resources.mjs` chains after `supabase:reset`, `strava-auth.mjs`, tech-logo generator).
+Mechanics: `//` for one-liners, JSDoc for public API where it adds facts.
+Deliberate debt is tagged: `TODO (context):` / `FIXME (context):` — never a
+bare `TODO`. Match the style and density of the file you are editing.
 
-### App-specific behaviors (not derivable from code)
+## Documentation
 
-- **Habits: Graph→Feed**: Clicking a colored day in `HabitScoreGraph` filters `HabitFeed` via `selectedDate` state. Click again or switching action type clears.
-- **KB→Habit auto-link**: AFTER INSERT trigger `trg_knowledge_to_habit` on `public.knowledge` (migration `20260612000000_habit_from_knowledge.sql`) creates a habit row using action `Learning Session` (lookup by name; soft-fail w/ warning). Note = `<question>\n\n<url>`. Mirrors Strava `habit_from_strava_ride`.
-- **KB-scoped fonts**: Baloo 2 / Hanken Grotesk / JetBrains Mono load globally via `next/font` but are used **only** in `knowledge-base/` CSS modules. Do not promote globally without explicit ask.
-- **KB topic palette**: 8-swatch palette derived from deterministic FNV-1a hash of topic name in `_form/topicColor.ts`. No DB column.
-- **KB search**: RPC `search_knowledge` combines `search_vector` tsvector + pg_trgm `word_similarity` for typo tolerance (threshold 0.2). Tag filters URL-driven by tag NAMES via repeated params.
-- **Fragespiel**: Start screen picks group (Friends/Couple), language (DE/EN), round length (16/32/64, default 32), and sort (By intensity / Random, By intensity default). `buildRound()` balances the deck across intensity buckets 1-3 (round-robin draw), random category order; `displayDeck` re-sorts by difficulty when "By intensity" is chosen. Non-wrapping play deck: depth = `p - index`, so the stack shrinks toward the end; final cards swipe away one by one, then a centered "Play another round" CTA returns to the start screen. Swipe via `useSwipe.ts` (PointerEvents, 100px threshold); cards exit + re-enter on the left along one shared trajectory (`pathTransform`, p=0 TOP → p=1 FLY) so release continues the drag. prev disabled at index 0, next at index L. Footer hidden via route gate in `Shell.tsx`.
+Strictly typed code is the source of truth; documentation is need-to-know and
+minimal:
 
-### Layout Components
+- **Decisions** go to [`docs/adr/`](./docs/adr/README.md) — one file per
+  decision, short. **ADRs take precedence over `README.md` and `docs/` when
+  they conflict.**
+- **Domain vocabulary** goes to [CONTEXT.md](./CONTEXT.md) — glossary only, no
+  implementation.
+- **How to run / set up** goes to `README.md` (app) and
+  [`supabase/functions/README.md`](./supabase/functions/README.md) (edge
+  functions).
+- This file holds only rules and conventions an agent needs on every task.
 
-- **Navbar**: Fixed top, centered brand (icon + dynamic title via PageContext) + hamburger (left) + profile (right). Brand icon is route-driven: `/apps/habits*` → `HabitsAppIcon`, `/apps/fahrplan*` → `FahrplanAppIcon`, `/apps/knowledge-base*` → `KnowledgeBaseAppIcon`, `/apps/fragespiel*` → `FragespielAppIcon`. Logo (`/soup.svg`) is the fallback. Map lives inline in `Navbar.tsx`.
-- **Sidebar**: Slide-in from left, app navigation, transparent backdrop blurs main content.
-- **Footer**: Minimal, centered.
+## Writing Tests
 
-### Key Patterns
+- Don't export private functions for the sole purpose of testing. Only test
+  public functions or else a refactoring of the architecture and abstraction
+  is necessary.
+- Unit: Jest + jsdom, colocated `*.test.ts(x)`. E2e: Playwright, chromium
+  only, seeded local Supabase (`config.ci.toml`, seed users in README).
 
-- **PageContext**: Each page uses `usePageTitle(title, subtitle?)` to set navbar title.
-- **PageTitle component**: `<PageTitle title="..." />` as alternative for pages that can't use the hook at top level.
-- **ThemeContext**: Supports "light", "dark", "neo-brutalist" themes.
-- **AuthContext**: `AuthProvider` wraps app, exposes `useAuth()` → `{ user, accessToken, loading }`. Client-side Supabase auth via `@supabase/ssr`.
-- **useUserRole(table)**: Decodes JWT to extract role for a given table. Returns `{ role, loading }`.
-- **useCanManage(table)**: Sugar over `useUserRole`. Returns `{ canManage, loading }` (true for `manager` or `admin`, incl. `_global=admin`). Use for gating write UI.
-- **Proxy** (`src/proxy.ts`): Refreshes Supabase auth cookies on every request and redirects anon to `/login?redirectTo=<path>` for paths in `src/lib/protectedRoutes.ts` (`/resources`, `/apps/habits/*` sub-paths; `/apps/habits` root + `/settings` public). Uses `createProxyClient` from `src/lib/supabase/proxy.ts`.
-- **Icons**: Shared in `src/constants/icons.tsx` — check there first. Domain-specific icons (e.g. transport types) live in feature's `icons.tsx`. Display new icons at `/dev/icons`.
-- **CSS Modules**: All component styles use `.module.css` files. Theme colors via `--foreground`, `--background`, `--border-color`, etc. in `globals.css`.
-- **Auth redirects**: Proxy redirects anon server-side (no content flash); protected pages keep a client-side `useEffect` redirect as fallback. Add new protected paths to `protectedRoutes.ts`. Login reads `redirectTo` and navigates there on success via `safeRedirect()` (rejects non-`/`, `//`, `/\` — open redirect prevention).
-- **Avatar**: `getAvatarUrl(userId, size)` from `src/lib/avatar.ts` returns a DiceBear identicon URL. Hashes user ID with FNV-1a before sending to DiceBear (no raw UUIDs to external service).
-- **Action cache**: `src/lib/actionsCache.ts` — localStorage cache for action rows (24h TTL).
-- **State reset on prop change**: use `key={prop}` at mount site to remount the child fresh. Avoids synchronous `setState` in effects (triggers `react-compiler` lint error).
+## Conventions
 
-### Local Supabase
-
-- Requires Docker Desktop running.
-- Ports offset from defaults (API: 54221, DB: 54222, Studio: 54223).
-- `pnpm supabase:start` to boot, `pnpm supabase:reset` to wipe + reseed (+ uploads dev resources).
-- Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `password123`).
-- `.env.test` points to local instance; e2e tests use it automatically.
-- Signup disabled (`enable_signup = false` in `config.toml` + `config.ci.toml`), min password 8 w/ letters+digits. Users are created via seed / admin API only. Prod dashboard must match manually (config.toml is local/CI only).
-
-### Auth
-
-Three Supabase clients:
-
-- `client.ts` — browser client (`createBrowserClient`).
-- `server.ts` — server components/route handlers (`createServerClient` + cookies).
-- `proxy.ts` — proxy layer (`createServerClient` + request/response cookies).
-
-Access model:
-
-- Public (anon allowed): KB list (`/apps/knowledge-base`) and KB detail (`/apps/knowledge-base/[id]`). RLS opens SELECT on `knowledge`, `knowledge_tags`, `tags`, `resources`, and `storage.objects` for the `resources` bucket to `anon, authenticated` — anon SELECT on `resources` is required so KB detail pages can resolve `{{resource:<id>}}` tokens to signed URLs for public viewers.
-- Authenticated-only (any role): `/resources`, `/apps/habits/create`, `/apps/habits/[id]` — proxy-gated (+ client fallback). Underlying RLS on `resources` / `habit` is still public-read; the gate is UX so management surfaces aren't publicly browsable.
-- Manager-only writes: create/update/delete on KB entries + tags requires `manager` (or `admin`) role on table_name `knowledge`. Same for `resources` writes (table + storage) on table_name `resources`. Global admins (`_global=admin`) override.
-- Enforced two ways: SQL helper `public.is_manager_of(target_table text)` checks the JWT and gates RLS writes; client uses `useCanManage(table)` to hide write UI.
-
-### Scripts
-
-- `pnpm dev` / `pnpm dev:remote` — dev server (local / remote Supabase via `.env.remote`).
-- `pnpm build` — production build.
-- `pnpm lint` / `pnpm lint:check` — ESLint.
-- `pnpm format` / `pnpm format:check` — Prettier.
-- `pnpm test` — unit tests (Jest).
-- `pnpm test:e2e` / `pnpm test:e2e:ui` — Playwright (auto-starts local Supabase).
-- `pnpm supabase:start` / `pnpm supabase:stop` — local Supabase (requires Docker).
-- `pnpm supabase:reset` — reset DB + re-run migrations & seed + upload dev resources.
-- `pnpm seed:resources` — upload files from `supabase/seed-files/` to Storage.
-- `pnpm supabase:types` — regenerate `database.types.ts` from local DB.
-- `pnpm generate-icons` — regenerate per-app PWA icons in `public/icons/`.
-- `pnpm generate-tech-logos` — regenerate tech stack tag PNGs in `public/tech/`.
-- `pnpm strava:auth` — one-time Strava OAuth setup.
-
-### Strava Integration
-
-Daily cron edge function `strava-activity` fetches recent Strava activities into `strava_rides`; a DB trigger then auto-creates a `Cycling` habit row. Tokens encrypted at rest via pgcrypto. Architecture, auth flow, secrets, setup, local testing, and prod-promotion steps live in [`supabase/functions/README.md`](supabase/functions/README.md).
-
-### Knowledge Base MCP
-
-Edge function `kb-mcp` (`supabase/functions/kb-mcp/`) is a remote MCP server (Streamable HTTP, stateless, `@modelcontextprotocol/sdk` via npm specifier) exposing `kb_list_tags`, `kb_search`, `kb_create_entry`. Auth = static bearer token `KB_MCP_TOKEN` (Supabase secret), timing-safe compare; `verify_jwt = false`. Writes use service role (bypass RLS); KB→habit trigger still fires. Clients register via `claude mcp add --transport http --scope user`. Details in [`supabase/functions/README.md`](supabase/functions/README.md).
-
-### CI Post-merge Automation
-
-- Workflow `.github/workflows/log-merge-habit.yml` fires on `pull_request: closed` (filtered to `merged == true`) against `main`. Inserts one habit row using action `Working on apps` (lookup by name). Note = `"Soup's Kitchen: <PR title>\n\n<PR url>\n\n<merge commit message>"` (commit message fetched via `gh api` from `pull_request.merge_commit_sha`).
-- Dedicated Postgres role `ci_inserter` (migration `20260612000001_ci_inserter_role.sql`): `NOLOGIN NOINHERIT`, granted `INSERT` on `public.habit` + `USAGE,SELECT` on `habit_id_seq` + column-level `SELECT (id, name)` on `public.action`. RLS policy `"CI inserts on habit"` (`FOR INSERT TO ci_inserter WITH CHECK (true)`). Nothing else — blast radius = one INSERT on one table.
-- Per-env setup (manual, not committed): `ALTER ROLE ci_inserter LOGIN PASSWORD '<long-random>'` via Supabase SQL editor.
-- Secret: `CI_INSERTER_DB_URL` = session-pooler URL (`postgres://ci_inserter.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres`). Port 5432 = session pooler (not 6543 transaction). GitHub runners are IPv4-only; pooler required.
+- **Layout**: `src/app/apps/<name>/` per app; shared layout in
+  `src/components/layout/`; hooks in `src/hooks/`; Supabase clients + generated
+  `database.types.ts` in `src/lib/supabase/`; migrations in
+  `supabase/migrations/`, seed in `supabase/seed.sql`; edge functions in
+  `supabase/functions/`; build helpers in `scripts/`.
+- **Next.js 16**: request middleware is `src/proxy.ts` (renamed from
+  `middleware.ts`, see
+  <https://nextjs.org/docs/messages/middleware-to-proxy#why-the-change>).
+- **Page title**: `usePageTitle(title, subtitle?)` in every page, or
+  `<PageTitle title="..." />` where the hook can't sit at top level.
+- **Styling**: CSS Modules only; theme via `--foreground`, `--background`,
+  `--border-color` etc. from `globals.css`. Themes: light, dark, neo-brutalist.
+- **Icons**: check `src/constants/icons.tsx` first; domain-specific icons live
+  in the feature's `icons.tsx`; render new ones at `/dev/icons`.
+- **Write gating**: `useCanManage(table)` hides write UI; RLS is the real
+  boundary (ADR-0002). Never rely on the hook for security.
+- **Protected routes**: add paths to `src/lib/protectedRoutes.ts`; the proxy
+  redirects anon server-side, pages keep a client `useEffect` fallback
+  (ADR-0003). Login honours `redirectTo` only through `safeRedirect()`.
+- **State reset on prop change**: remount with `key={prop}` instead of
+  `setState` in an effect (react-compiler lint error).
+- **Migrations**: new file timestamp must sort after the latest existing one;
+  run `pnpm supabase:types` after schema changes and commit the result.
+- **Cross-app side effects** (auto-created habits) belong in DB triggers, not
+  app code (ADR-0005).
+- **KB fonts** stay inside `knowledge-base/` CSS modules (ADR-0009).

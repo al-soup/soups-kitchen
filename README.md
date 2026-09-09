@@ -99,14 +99,41 @@ claude mcp add --transport http --scope user soups-kitchen-kb \
 
 - Public reads: Knowledge Base (list, detail, resource signed URLs)
 - Auth required (proxy redirect to `/login`): `/resources`, `/apps/habits/create`, `/apps/habits/[id]`
-- Signup disabled; accounts created by an admin only
+- Signup disabled (`enable_signup = false` in `config.toml` + `config.ci.toml`; set the same in the
+  prod dashboard by hand). Min password 8 chars w/ letters + digits. Accounts created by an admin only
 - Manager / admin: writes on KB, tags, resources — gated by RLS via `is_manager_of(table)`
+- Rationale: [ADR-0002](docs/adr/0002-per-table-roles-in-jwt.md),
+  [ADR-0003](docs/adr/0003-public-read-rls-with-proxy-gate.md)
 
 ## Testing
 
 - `pnpm test` — Jest, jsdom, colocated `*.test.ts(x)`
 - `pnpm test:e2e` — Playwright, chromium, auto-boots local Supabase from `config.ci.toml`
 - CI: unit + format + lint on push; PR adds e2e
+
+## Post-merge automation
+
+`.github/workflows/log-merge-habit.yml` logs every merged PR as a `Working on apps` habit
+(note = `Soup's Kitchen: <PR title>`, PR url, merge commit message). It connects as the
+least-privilege Postgres role `ci_inserter` ([ADR-0006](docs/adr/0006-ci-merge-habit-least-privilege-role.md)).
+
+Per environment, once, in the Supabase SQL editor:
+
+```sql
+ALTER ROLE ci_inserter LOGIN PASSWORD '<long-random>';
+```
+
+GitHub secret `CI_INSERTER_DB_URL` = session-pooler URL (port 5432, not 6543; runners are IPv4-only):
+
+```text
+postgres://ci_inserter.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres
+```
+
+## Documentation
+
+- [CONTEXT.md](CONTEXT.md) — domain glossary
+- [docs/adr/](docs/adr/README.md) — architecture decisions
+- [supabase/functions/README.md](supabase/functions/README.md) — edge functions (Strava sync, KB MCP)
 
 ## PWA Support
 
