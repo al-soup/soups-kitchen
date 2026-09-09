@@ -81,7 +81,8 @@ Optional (Strava sync, prod only):
 ## Auth model
 
 - Public reads: Knowledge Base (list, detail, resource signed URLs)
-- Auth required: `/resources` page (any role)
+- Auth required (proxy redirect to `/login`): `/resources`, `/apps/habits/create`, `/apps/habits/[id]`
+- Signup disabled; accounts created by an admin only
 - Manager / admin: writes on KB, tags, resources — gated by RLS via `is_manager_of(table)`
 
 ## Testing
