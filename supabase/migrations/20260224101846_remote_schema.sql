@@ -37,7 +37,11 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
 
 
 
-CREATE EXTENSION IF NOT EXISTS "pgjwt" WITH SCHEMA "extensions";
+-- pgjwt removed: deprecated, unused, blocks the PG major upgrade.
+-- Dropped on remote by 20260818000000_drop_pgjwt_extension.sql.
+-- Left commented so fresh local resets never create it (the extension
+-- is absent from newer Postgres images and CREATE would fail).
+-- CREATE EXTENSION IF NOT EXISTS "pgjwt" WITH SCHEMA "extensions";
 
 
 
