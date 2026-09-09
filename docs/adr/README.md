@@ -1,13 +1,25 @@
 # Architecture Decision Records
 
-One file per decision, short. Record a decision only when it is hard to
-reverse, surprising without context, and the result of a real trade-off.
-ADRs take precedence over `README.md` and `docs/` when they conflict.
+One file per decision. Record a decision only when it is hard to reverse, surprising without
+context, and the result of a real trade-off. ADRs take precedence over `README.md` and `docs/`
+when they conflict.
 
-Format: `NNNN-slug.md`, next number = highest existing + 1. Body = 1-3
-sentences (context, decision, why). Add `Considered options` /
-`Consequences` only when they carry information. Mark superseded ADRs with a
-`Status:` line instead of deleting them.
+File: `NNNN-slug.md`, next number = highest existing + 1. Structure:
+
+```md
+# NNNN. Title
+
+Date: YYYY-MM-DD
+
+## Context
+
+## Decision
+
+## Consequences
+```
+
+Keep each section short. Never rewrite history: a reversed decision gets a new ADR and the old
+one a `Status: superseded by NNNN` line under the date.
 
 | ADR                                                   | Decision                                                         |
 | ----------------------------------------------------- | ---------------------------------------------------------------- |

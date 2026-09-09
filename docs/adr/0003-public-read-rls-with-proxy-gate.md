@@ -1,12 +1,27 @@
-# RLS stays public-read; the proxy login gate is UX only
+# 0003. RLS stays public-read; the proxy login gate is UX only
 
-The Knowledge Base is intentionally public (list, detail, and anon `SELECT`
-on `resources` + the `resources` storage bucket so detail pages can resolve
-`{{resource:<id>}}` embeds to signed URLs for anonymous readers). Management
-surfaces (`/resources`, `/apps/habits/*` sub-paths) redirect anonymous users
-to `/login` from `src/proxy.ts`, but the underlying `habit` / `resources` rows
-remain world-readable by RLS. The gate keeps those pages out of casual
-browsing; it is not a security boundary, and no data behind it is secret.
-Writes are the boundary (ADR-0002). Protected paths are listed in
-`src/lib/protectedRoutes.ts`; pages keep a client-side redirect as fallback
-for client navigations.
+Date: 2026-09-09
+
+## Context
+
+The Knowledge Base is meant to be public, including detail pages that embed uploaded resources
+via `{{resource:<id>}}` tokens resolved to signed URLs. Habit and resource management pages are
+not secret, but they are not meant to be browsed casually either. Locking the underlying rows
+would break public KB pages for anonymous readers.
+
+## Decision
+
+RLS grants `SELECT` on `knowledge`, `knowledge_tags`, `tags`, `resources` and the `resources`
+storage bucket to `anon, authenticated`; `habit` stays world-readable too. Management surfaces
+(`/resources`, `/apps/habits/*` sub-paths) are gated in `src/proxy.ts`, which redirects
+anonymous users to `/login?redirectTo=<path>`. Writes are the real boundary (ADR-0002).
+
+## Consequences
+
+- The proxy gate is not a security control. Nothing behind it may become secret without also
+  changing RLS.
+- Protected paths are the list in `src/lib/protectedRoutes.ts`; pages keep a client-side redirect
+  as fallback for client navigations.
+- `redirectTo` is honoured only through `safeRedirect()` to prevent open redirects.
+- Anonymous `SELECT` on `resources` is load-bearing for public KB detail pages; revoking it
+  breaks embeds for visitors.
