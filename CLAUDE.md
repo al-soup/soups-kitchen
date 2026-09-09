@@ -140,6 +140,10 @@ Access model:
 
 Daily cron edge function `strava-activity` fetches recent Strava activities into `strava_rides`; a DB trigger then auto-creates a `Cycling` habit row. Tokens encrypted at rest via pgcrypto. Architecture, auth flow, secrets, setup, local testing, and prod-promotion steps live in [`supabase/functions/README.md`](supabase/functions/README.md).
 
+### Knowledge Base MCP
+
+Edge function `kb-mcp` (`supabase/functions/kb-mcp/`) is a remote MCP server (Streamable HTTP, stateless, `@modelcontextprotocol/sdk` via npm specifier) exposing `kb_list_tags`, `kb_search`, `kb_create_entry`. Auth = static bearer token `KB_MCP_TOKEN` (Supabase secret), timing-safe compare; `verify_jwt = false`. Writes use service role (bypass RLS); KB→habit trigger still fires. Clients register via `claude mcp add --transport http --scope user`. Details in [`supabase/functions/README.md`](supabase/functions/README.md).
+
 ### CI Post-merge Automation
 
 - Workflow `.github/workflows/log-merge-habit.yml` fires on `pull_request: closed` (filtered to `merged == true`) against `main`. Inserts one habit row using action `Working on apps` (lookup by name). Note = `"Soup's Kitchen: <PR title>\n\n<PR url>\n\n<merge commit message>"` (commit message fetched via `gh api` from `pull_request.merge_commit_sha`).

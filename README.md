@@ -78,6 +78,23 @@ Optional (Strava sync, prod only):
 | `pnpm generate-tech-logos` | Regenerate tech-stack tag PNGs in `public/tech/`  |
 | `pnpm strava:auth`         | One-time Strava OAuth setup (stores tokens in DB) |
 
+## Knowledge Base MCP
+
+Remote [MCP](https://modelcontextprotocol.io) server hosted as Supabase edge
+function `kb-mcp` (Streamable HTTP, stateless). Lets an agentic coding tool
+create KB entries from any machine, nothing runs locally. Gated by a static
+bearer token; DB access via service role. Tools: `kb_list_tags`, `kb_search`,
+`kb_create_entry`. Setup, secrets and local testing in
+[`supabase/functions/README.md`](supabase/functions/README.md#kb-mcp).
+
+Register once per machine (user scope):
+
+```sh
+claude mcp add --transport http --scope user soups-kitchen-kb \
+  https://<project-ref>.supabase.co/functions/v1/kb-mcp \
+  --header "Authorization: Bearer <KB_MCP_TOKEN>"
+```
+
 ## Auth model
 
 - Public reads: Knowledge Base (list, detail, resource signed URLs)
