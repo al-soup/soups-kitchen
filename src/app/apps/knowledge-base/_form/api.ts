@@ -5,6 +5,7 @@ import type {
   KnowledgeListPage,
   Tag,
 } from "@/lib/supabase/types";
+import { DEFAULT_SORT, type KnowledgeSort } from "./filterParams";
 
 export interface KnowledgeFormInput {
   question: string;
@@ -145,6 +146,7 @@ export interface ListKnowledgeParams {
   topicIds?: string[];
   conceptIds?: string[];
   q?: string;
+  sort?: KnowledgeSort;
   signal?: AbortSignal;
 }
 
@@ -154,6 +156,7 @@ export async function listKnowledge({
   topicIds,
   conceptIds,
   q,
+  sort = DEFAULT_SORT,
   signal,
 }: ListKnowledgeParams = {}): Promise<KnowledgeListPage> {
   const supabase = getSupabase();
@@ -164,6 +167,7 @@ export async function listKnowledge({
     q: trimmed ? trimmed : undefined,
     p_offset: offset,
     p_limit: limit,
+    p_sort: sort,
   });
   const { data, error } = await (signal ? query.abortSignal(signal) : query);
   if (error) throw new Error(error.message);
@@ -182,6 +186,8 @@ export async function listKnowledge({
     created_at: row.created_at,
     updated_at: row.updated_at,
     tags: (row.tags ?? []) as Tag[],
+    topicName: row.topic_name ?? null,
+    groupCount: Number(row.group_count ?? 0),
   }));
 
   return { items, hasMore, total };

@@ -299,6 +299,7 @@ describe("listKnowledge", () => {
       q: undefined,
       p_offset: 0,
       p_limit: 20,
+      p_sort: "newest",
     });
   });
 
@@ -311,6 +312,7 @@ describe("listKnowledge", () => {
       q: undefined,
       p_offset: 20,
       p_limit: 10,
+      p_sort: "newest",
     });
   });
 
@@ -323,6 +325,7 @@ describe("listKnowledge", () => {
       q: undefined,
       p_offset: 0,
       p_limit: 20,
+      p_sort: "newest",
     });
   });
 
@@ -369,6 +372,7 @@ describe("listKnowledge", () => {
       q: "btree",
       p_offset: 0,
       p_limit: 20,
+      p_sort: "newest",
     });
   });
 
@@ -412,6 +416,36 @@ describe("listKnowledge", () => {
       .mockResolvedValue({ data: null, error: { message: "boom" } });
     (getSupabase as jest.Mock).mockReturnValue({ rpc });
     await expect(listKnowledge()).rejects.toThrow("boom");
+  });
+
+  it("passes the requested sort mode", async () => {
+    const { rpc } = setup([]);
+    await listKnowledge({ sort: "topic" });
+    expect(rpc).toHaveBeenCalledWith(
+      "search_knowledge",
+      expect.objectContaining({ p_sort: "topic" })
+    );
+  });
+
+  it("maps grouping metadata from the RPC row", async () => {
+    setup([
+      {
+        ...entry,
+        id: 1,
+        tags: [],
+        topic_name: "Databases",
+        group_count: 3,
+      },
+      { ...entry, id: 2, tags: [] },
+    ]);
+
+    const page = await listKnowledge({ limit: 20 });
+
+    expect(page.items[0].topicName).toBe("Databases");
+    expect(page.items[0].groupCount).toBe(3);
+    // Entries without a topic tag come back null / 0.
+    expect(page.items[1].topicName).toBeNull();
+    expect(page.items[1].groupCount).toBe(0);
   });
 
   it("reads total from total_count on first row; defaults to 0 when empty", async () => {
