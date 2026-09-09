@@ -230,7 +230,17 @@ test.describe("Knowledge Base", () => {
 // only "Read" navigates. Needs a mobile device descriptor: the behaviour is
 // gated on the (hover: none) media query.
 test.describe("Knowledge Base on touch devices", () => {
-  test.use({ ...devices["Pixel 5"] });
+  // Not `...devices["Pixel 5"]`: the descriptor carries defaultBrowserType,
+  // which Playwright rejects in test.use() inside a describe (it would force a
+  // new worker). Pick only the emulation options.
+  const pixel5 = devices["Pixel 5"];
+  test.use({
+    viewport: pixel5.viewport,
+    userAgent: pixel5.userAgent,
+    deviceScaleFactor: pixel5.deviceScaleFactor,
+    isMobile: pixel5.isMobile,
+    hasTouch: pixel5.hasTouch,
+  });
 
   // The tap toggle spans the whole card, but the revealed summary sits above it
   // so it can scroll — which puts the summary under the toggle's centre point
