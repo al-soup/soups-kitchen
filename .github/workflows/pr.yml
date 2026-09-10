@@ -39,3 +39,45 @@ jobs:
       - name: Stop Supabase
         if: always()
         run: supabase stop
+
+  # Prod is never rebuilt from scratch: it already holds data and receives only
+  # the migrations that are new on this PR. e2e above boots from an empty DB
+  # (seed runs after all migrations), so it cannot catch a migration that
+  # breaks on populated tables. This job replays the prod path: base schema +
+  # seed, then only the PR's new migration files. `migration up` also rejects a
+  # file that sorts before the last applied one. See ADR-0010.
+  migrations:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-node-pnpm
+
+      - name: Start Supabase at base schema + seed
+        env:
+          BASE: origin/${{ github.base_ref }}
+        run: |
+          cp supabase/config.ci.toml supabase/config.toml
+          git rm -rq supabase/migrations
+          git checkout "$BASE" -- supabase/migrations supabase/seed.sql
+          pnpm exec supabase start -x realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+
+      - name: Apply new migrations on top of seeded data
+        run: |
+          git rm -rq supabase/migrations
+          git checkout HEAD -- supabase/migrations supabase/seed.sql
+          pnpm exec supabase migration list --local
+          pnpm exec supabase migration up --local
+
+      - name: Check database.types.ts is up to date
+        run: |
+          pnpm supabase:types
+          pnpm exec prettier --write src/lib/supabase/database.types.ts
+          git diff --exit-code -- src/lib/supabase/database.types.ts \
+            || { echo "::error::database.types.ts out of date. Run pnpm supabase:types && pnpm format, then commit."; exit 1; }
+
+      - name: Stop Supabase
+        if: always()
+        run: pnpm exec supabase stop
