@@ -32,3 +32,5 @@ one a `Status: superseded by NNNN` line under the date.
 | [0007](./0007-kb-search-in-postgres-rpc.md)           | KB list = one RPC: tsvector + trigram, filters and paging in SQL |
 | [0008](./0008-kb-mcp-static-bearer-token.md)          | KB MCP server = edge function behind a static bearer token       |
 | [0009](./0009-kb-scoped-typography.md)                | KB fonts load globally but stay KB-only                          |
+| [0010](./0010-ci-migrations-replay-prod-path.md)      | CI applies new migrations on a seeded base schema                |
+| [0011](./0011-cd-migrations-before-app-deploy.md)     | Merge to main deploys schema and functions before the app        |

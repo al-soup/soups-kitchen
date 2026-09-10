@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+# Vercel auto-deploy for main is off (vercel.json); this workflow is the only
+# path to prod. Order: schema + functions first, app last, so a failed
+# migration leaves old app + old schema. See ADR-0011.
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+    environment: Production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-pnpm
+
+      # link writes supabase/.temp/pooler-url; runners are IPv4-only and the
+      # CLI reaches the DB through the pooler only after link.
+      - name: Link project
+        run: pnpm exec supabase link --project-ref "$SUPABASE_PROJECT_REF" --yes
+
+      - name: Apply migrations
+        run: pnpm exec supabase db push --yes
+
+      - name: Deploy edge functions
+        run: pnpm exec supabase functions deploy --use-api
+
+      - name: Trigger Vercel deploy
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: curl -fsS -X POST "$HOOK" -o /dev/null

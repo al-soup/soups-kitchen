@@ -109,7 +109,10 @@ claude mcp add --transport http --scope user soups-kitchen-kb \
 
 - `pnpm test` — Jest, jsdom, colocated `*.test.ts(x)`
 - `pnpm test:e2e` — Playwright, chromium, auto-boots local Supabase from `config.ci.toml`
-- CI: unit + format + lint on push; PR adds e2e
+- CI: unit + format + lint on push; PR adds e2e and a migrations job; push to `main` deploys
+- Migrations job: boots Supabase on the base branch's migrations + seed, then applies only the
+  PR's new migration files with `supabase migration up`, then checks `database.types.ts` is in
+  sync ([ADR-0010](docs/adr/0010-ci-migrations-replay-prod-path.md))
 
 ## Post-merge automation
 
@@ -127,6 +130,55 @@ GitHub secret `CI_INSERTER_DB_URL` = session-pooler URL (port 5432, not 6543; ru
 
 ```text
 postgres://ci_inserter.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres
+```
+
+## Production deploy (CD)
+
+`.github/workflows/deploy.yml` on push to `main`: CI job, `supabase link`, `db push`,
+`functions deploy`, then a POST to the Vercel deploy hook. Vercel auto-deploy for `main` is off
+(`vercel.json`); PR previews are unaffected. Rationale:
+[ADR-0011](docs/adr/0011-cd-migrations-before-app-deploy.md). Secrets live in the GitHub
+`Production` environment, restricted to `main` (never repo-level):
+
+| Secret                   | Value                                                           |
+| ------------------------ | --------------------------------------------------------------- |
+| `SUPABASE_ACCESS_TOKEN`  | Supabase personal access token, permissions below               |
+| `VERCEL_DEPLOY_HOOK_URL` | Vercel → Project → Settings → Git → Deploy Hooks, branch `main` |
+
+Plus one environment **variable** (not secret) `SUPABASE_PROJECT_REF` = the Supabase project
+ref, kept out of source by preference: `gh variable set SUPABASE_PROJECT_REF --env Production`.
+
+No DB password: the CLI mints a temporary login role through the Management API
+(`POST /v1/projects/{ref}/cli/login-role`) and steps up to `postgres` for DDL. If a push ever fails
+on privileges, add `SUPABASE_DB_PASSWORD` to the environment; it takes precedence.
+
+### Access token
+
+Dashboard → Account → Access Tokens → **full-access** token named `github-actions-deploy`, with
+an expiry and a calendar reminder. Rotation = generate a new one, then one `gh secret set`.
+
+Why not fine-grained: the fine-grained grid (preview, Sept 2026) covers Project, Database,
+Infrastructure and Account only. The CLI also needs `api_gateway_keys_read` (`link` fetches API
+keys, hard failure) and `edge_functions_write` (`functions deploy`), which have no row. Switch to
+fine-grained once those rows exist; the grid would then be:
+
+| Section        | Row                | Level | Used by                                    |
+| -------------- | ------------------ | ----- | ------------------------------------------ |
+| Project        | Project Settings   | Read  | `link` — `GET /v1/projects/{ref}`          |
+| API            | API Keys           | Read  | `link` — `GET .../api-keys`                |
+| Database       | Database           | Write | `db push` — mint login role                |
+| Database       | Connection Pooling | Read  | `link` — pooler URL; runners are IPv4-only |
+| Edge Functions | Edge Functions     | Write | `functions deploy` — list + deploy         |
+
+Everything else None, incl. Database → Migrations (history table is written over SQL) and
+Database JIT. Derived from `x-fga-permissions` in the Management API spec
+(`https://api.supabase.com/api/v1-json`); a 403 names the endpoint to look up.
+
+```bash
+gh auth switch --user al-soup
+gh secret set SUPABASE_ACCESS_TOKEN --env Production -R al-soup/soups-kitchen
+gh secret set VERCEL_DEPLOY_HOOK_URL --env Production -R al-soup/soups-kitchen
+gh secret list --env Production -R al-soup/soups-kitchen
 ```
 
 ## Documentation

@@ -14,7 +14,8 @@ scripts, env vars, auth model: [README.md](./README.md). Domain vocabulary:
 - Commit titles start with one of `feat: fix: refactor: chore: docs: build: ci: style: perf: test:`.
 - No references to Claude in commit messages. Don't prompt for committing
   unless asked.
-- CI on push: build, format:check, lint:check, unit tests. PRs add e2e.
+- CI on push: build, format:check, lint:check, unit tests. PRs add e2e +
+  migrations replay (ADR-0010). Push to `main` deploys prod (ADR-0011).
 
 ## Planning
 
@@ -96,7 +97,8 @@ minimal:
 - **State reset on prop change**: remount with `key={prop}` instead of
   `setState` in an effect (react-compiler lint error).
 - **Migrations**: new file timestamp must sort after the latest existing one;
-  run `pnpm supabase:types` after schema changes and commit the result.
+  run `pnpm supabase:types` after schema changes and commit the result. Must
+  apply on a seeded base schema, not only from scratch. CI checks all three.
 - **Cross-app side effects** (auto-created habits) belong in DB triggers, not
   app code (ADR-0005).
 - **KB fonts** stay inside `knowledge-base/` CSS modules (ADR-0009).
