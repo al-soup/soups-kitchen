@@ -15,6 +15,7 @@ describe("isProtectedPath", () => {
     "/login",
     "/settings",
     "/apps/habits",
+    "/apps/habits/manifest.webmanifest",
     "/apps/knowledge-base",
     "/apps/knowledge-base/1",
     "/resourcesx",
