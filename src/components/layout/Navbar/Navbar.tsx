@@ -1,73 +1,47 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { usePageContext } from "@/context/PageContext";
-import {
-  MenuIcon,
-  HabitsAppIcon,
-  FahrplanAppIcon,
-  KnowledgeBaseAppIcon,
-  FragespielAppIcon,
-} from "@/constants/icons";
+import { findAppByPathname } from "@/constants/apps";
+import { SoupMarkIcon } from "@/constants/icons";
 import styles from "./Navbar.module.css";
-import { ProfileDropdown } from "../ProfileDropdown";
 
-interface NavbarProps {
-  onMenuClick: () => void;
-}
-
-export function Navbar({ onMenuClick }: NavbarProps) {
-  const { title, subtitle, hideBrand } = usePageContext();
+export function Navbar() {
+  const { title } = usePageContext();
   const pathname = usePathname() ?? "";
-  const AppIcon = pathname.startsWith("/apps/habits")
-    ? HabitsAppIcon
-    : pathname.startsWith("/apps/fahrplan")
-      ? FahrplanAppIcon
-      : pathname.startsWith("/apps/knowledge-base")
-        ? KnowledgeBaseAppIcon
-        : pathname.startsWith("/apps/fragespiel")
-          ? FragespielAppIcon
-          : null;
+  const AppIcon = findAppByPathname(pathname)?.Icon;
+
+  const segments = pathname.split("/").filter(Boolean);
+  const root = `/${segments[0] ?? ""}`;
+  const leaf = segments.length > 1 ? title.toLowerCase() : "";
 
   return (
     <header className={styles.navbar}>
-      <button
-        className={styles.menuButton}
-        onClick={onMenuClick}
-        aria-label="Toggle menu"
-      >
-        <MenuIcon />
-      </button>
-
-      <Link
-        href="/"
-        className={`${styles.brand} ${hideBrand ? styles.brandHidden : ""}`}
-      >
-        {AppIcon ? (
-          <span className={styles.logo} aria-hidden="true">
-            <AppIcon size={36} />
-          </span>
-        ) : (
-          <Image
-            src="/soup.svg"
-            alt="Soup's Kitchen logo"
-            width={36}
-            height={36}
-            className={styles.logo}
-            loading="eager"
-          />
-        )}
-        {title && (
-          <div className={styles.titles}>
-            <span className={styles.title}>{title}</span>
-            {subtitle && <span className={styles.subtitle}>{subtitle}</span>}
-          </div>
-        )}
+      <Link href="/" className={styles.brand} aria-label="Home">
+        <SoupMarkIcon size={22} />
+        <span>soup</span>
       </Link>
 
-      <ProfileDropdown />
+      {/* Inert on purpose: the brand is the only way home, index pages stay unlinked. */}
+      <div className={styles.location}>
+        {AppIcon && (
+          <span className={styles.appIcon} aria-hidden="true">
+            <AppIcon size={22} />
+          </span>
+        )}
+        <span className={styles.breadcrumb}>
+          <span className={`${styles.root} ${leaf ? styles.hasLeaf : ""}`}>
+            {root}
+          </span>
+          {leaf && (
+            <span className={styles.leaf}>
+              <span className={styles.separator}> / </span>
+              {leaf}
+            </span>
+          )}
+        </span>
+      </div>
     </header>
   );
 }

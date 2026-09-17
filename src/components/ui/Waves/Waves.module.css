@@ -1,0 +1,64 @@
+.waves {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  contain: strict;
+}
+
+.filterHost {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* Oversized so the displacement filter never pulls in transparent edges. */
+.stripes {
+  --u: 12px;
+  position: absolute;
+  inset: -20% -10%;
+  width: 120%;
+  height: 140%;
+  background: repeating-linear-gradient(
+    to bottom,
+    #0d1931 0,
+    #0d1931 calc(var(--u) * 1),
+    #142744 calc(var(--u) * 1),
+    #142744 calc(var(--u) * 2),
+    #1a3a5c calc(var(--u) * 2),
+    #1a3a5c calc(var(--u) * 3),
+    #1f4a6e calc(var(--u) * 3),
+    #1f4a6e calc(var(--u) * 4),
+    #2e5178 calc(var(--u) * 4),
+    #2e5178 calc(var(--u) * 5),
+    #1a3a5c calc(var(--u) * 5),
+    #1a3a5c calc(var(--u) * 6),
+    #0d1931 calc(var(--u) * 6),
+    #0d1931 calc(var(--u) * 7),
+    #163050 calc(var(--u) * 7),
+    #163050 calc(var(--u) * 8),
+    #4a7ba7 calc(var(--u) * 8),
+    #4a7ba7 calc(var(--u) * 9),
+    #2e5178 calc(var(--u) * 9),
+    #2e5178 calc(var(--u) * 10),
+    #1a3a5c calc(var(--u) * 10),
+    #1a3a5c calc(var(--u) * 11),
+    #0d1931 calc(var(--u) * 11),
+    #0d1931 calc(var(--u) * 12),
+    #142744 calc(var(--u) * 12),
+    #142744 calc(var(--u) * 13),
+    #6b9bc5 calc(var(--u) * 13),
+    #6b9bc5 calc(var(--u) * 13.67),
+    #4a7ba7 calc(var(--u) * 13.67),
+    #4a7ba7 calc(var(--u) * 14.67),
+    #2e5178 calc(var(--u) * 14.67),
+    #2e5178 calc(var(--u) * 15.67),
+    #0d1931 calc(var(--u) * 15.67),
+    #0d1931 calc(var(--u) * 16.67)
+  );
+}
+
+@media (max-width: 700px) {
+  .stripes {
+    --u: 8px;
+  }
+}

@@ -1,116 +1,83 @@
-"use client";
-
-import { useCallback, useEffect, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePageContext } from "@/context/PageContext";
+import { Waves } from "@/components/ui/Waves";
+import { DirectoryMenu } from "@/components/layout/DirectoryMenu";
+import { getMenuGroups } from "@/constants/navigation";
+import { LANDING_INTRO } from "./content";
 import styles from "./page.module.css";
 
-const WAVE_DUR = 16;
-const WAVE_CYCLES = 3;
+// viewBox, font size, tracking and baseline per breakpoint, from the design
+// handoff. The hero keeps the viewBox aspect ratio so the word scales without
+// distortion.
+const CUTOUTS = [
+  {
+    id: "desktop",
+    width: 1100,
+    height: 420,
+    x: 48,
+    y: 360,
+    size: 400,
+    tracking: -20,
+  },
+  {
+    id: "mobile",
+    width: 390,
+    height: 300,
+    x: 20,
+    y: 270,
+    size: 150,
+    tracking: -8,
+  },
+] as const;
 
 export default function Home() {
-  const { setHideBrand } = usePageContext();
-  const animRef = useRef<SVGAnimateElement>(null);
-  const stoppedRef = useRef(false);
-
-  const pauseAnim = useCallback(() => {
-    animRef.current?.closest("svg")?.pauseAnimations();
-  }, []);
-
-  const resumeAnim = useCallback(() => {
-    if (stoppedRef.current) return;
-    animRef.current?.closest("svg")?.unpauseAnimations();
-  }, []);
-
-  useEffect(() => {
-    setHideBrand(true);
-    return () => setHideBrand(false);
-  }, [setHideBrand]);
-
-  // Stop after N cycles
-  useEffect(() => {
-    const timer = setTimeout(
-      () => {
-        stoppedRef.current = true;
-        pauseAnim();
-      },
-      WAVE_DUR * WAVE_CYCLES * 1000
-    );
-    return () => clearTimeout(timer);
-  }, [pauseAnim]);
-
-  // Pause on hidden tab, resume on visible
-  useEffect(() => {
-    const onVisibility = () => {
-      if (document.hidden) pauseAnim();
-      else resumeAnim();
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => document.removeEventListener("visibilitychange", onVisibility);
-  }, [pauseAnim, resumeAnim]);
-
   return (
     <div className={styles.page}>
-      {/* SVG wave distortion filter */}
-      <svg className={styles.svgFilters} aria-hidden="true">
-        <filter id="waves">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.015 0.003"
-            numOctaves="2"
-            seed="2"
-            result="noise"
+      <section className={styles.hero}>
+        <Waves />
+        {CUTOUTS.map((c) => (
+          <svg
+            key={c.id}
+            className={`${styles.cutout} ${styles[c.id]}`}
+            viewBox={`0 0 ${c.width} ${c.height}`}
+            aria-hidden="true"
           >
-            <animate
-              ref={animRef}
-              attributeName="baseFrequency"
-              values="0.015 0.003;0.018 0.005;0.015 0.003"
-              dur={`${WAVE_DUR}s`}
-              repeatCount="indefinite"
+            <defs>
+              <mask id={`soup-cutout-${c.id}`}>
+                <rect width={c.width} height={c.height} fill="#fff" />
+                <text
+                  x={c.x}
+                  y={c.y}
+                  className={styles.cutoutText}
+                  fontSize={c.size}
+                  letterSpacing={c.tracking}
+                  fill="#000"
+                >
+                  soup
+                </text>
+              </mask>
+            </defs>
+            <rect
+              width={c.width}
+              height={c.height}
+              className={styles.cutoutGround}
+              mask={`url(#soup-cutout-${c.id})`}
             />
-          </feTurbulence>
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale="45"
-            xChannelSelector="R"
-            yChannelSelector="G"
+          </svg>
+        ))}
+        <h1 className={styles.owner}>Alex Kräuchi</h1>
+      </section>
+
+      <div className={styles.body}>
+        <div>
+          <p className={styles.lead}>{LANDING_INTRO.lead}</p>
+          <p className={styles.aside}>{LANDING_INTRO.aside}</p>
+        </div>
+        <div className={styles.menu}>
+          <DirectoryMenu
+            groups={getMenuGroups({ surface: "landing", signedIn: false })}
+            variant="inline"
           />
-        </filter>
-      </svg>
-
-      {/* Wavy blue lines background */}
-      <div className={styles.wavesBg}>
-        <div className={styles.wavesStripes} />
+        </div>
       </div>
-
-      {/* Logo */}
-      <Image
-        src="/soup.svg"
-        alt="Soup's Kitchen logo"
-        width={260}
-        height={260}
-        className={styles.logo}
-        priority
-      />
-
-      <h1 className={styles.title}>
-        <span className={styles.titleWord}>Soup&apos;s</span>{" "}
-        <span className={styles.titleWord2}>Kitchen</span>
-      </h1>
-      <p className={styles.subtitle}>
-        A multi-app platform hosting small tools and portfolio.
-      </p>
-
-      <nav className={styles.links}>
-        <Link href="/about" className={styles.linkCard}>
-          About
-        </Link>
-        <Link href="/apps" className={styles.linkCard}>
-          Apps
-        </Link>
-      </nav>
     </div>
   );
 }
