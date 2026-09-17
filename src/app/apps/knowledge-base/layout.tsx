@@ -1,4 +1,5 @@
-import { appManifestPath, appMetadata, appViewport } from "@/lib/appPwa";
+import { AppFrame } from "@/components/layout/AppFrame";
+import { appMetadata, appViewport } from "@/lib/appPwa";
 
 export const metadata = appMetadata("knowledge-base");
 export const viewport = appViewport("knowledge-base");
@@ -8,10 +9,5 @@ export default function KnowledgeBaseLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <link rel="manifest" href={appManifestPath("knowledge-base")} />
-      {children}
-    </>
-  );
+  return <AppFrame slug="knowledge-base">{children}</AppFrame>;
 }

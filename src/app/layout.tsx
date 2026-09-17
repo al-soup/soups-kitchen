@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   Baloo_2,
   Hanken_Grotesk,
+  IBM_Plex_Mono,
   Instrument_Serif,
   Inter,
   JetBrains_Mono,
@@ -12,7 +13,11 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { PageProvider } from "@/context/PageContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { Shell } from "@/components/layout/Shell";
-import { THEME_STORAGE_KEY, NON_DEFAULT_THEMES } from "@/constants/theme";
+import {
+  ALL_THEMES,
+  DEFAULT_THEME,
+  THEME_STORAGE_KEY,
+} from "@/constants/theme";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,8 +30,19 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
 });
 
-// KB-scoped display + body + mono fonts (Direction 1 redesign).
-// Only used inside the Knowledge Base overview; do not promote globally.
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+});
+
+// Site-wide mono for labels, menus and headings; KB also uses it (ADR-0012).
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+});
+
+// KB-scoped display + body fonts; do not promote globally (ADR-0009).
 const baloo2 = Baloo_2({
   variable: "--font-baloo2",
   weight: ["500", "600", "700"],
@@ -35,11 +51,6 @@ const baloo2 = Baloo_2({
 
 const hankenGrotesk = Hanken_Grotesk({
   variable: "--font-hanken",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
   subsets: ["latin"],
 });
 
@@ -57,6 +68,23 @@ const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
 });
 
+const FONT_VARIABLES = [
+  inter,
+  spaceGrotesk,
+  plexMono,
+  jetbrainsMono,
+  baloo2,
+  hankenGrotesk,
+  spaceMono,
+  instrumentSerif,
+]
+  .map((font) => font.variable)
+  .join(" ");
+
+// Runs before paint. Any stored value that is not a current theme (e.g. the
+// removed "neo-brutalist") falls back to the default.
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");document.documentElement.setAttribute("data-theme",${JSON.stringify(ALL_THEMES)}.includes(t)?t:"${DEFAULT_THEME}")}catch(e){}})()`;
+
 export const metadata: Metadata = {
   title: "Soup's Kitchen",
   description: "Multi-app platform hosting small tools and portfolio",
@@ -68,17 +96,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    // Font variables sit on <html> because globals.css resolves
+    // --font-sans / --font-mono from them on :root.
+    <html
+      lang="en"
+      data-theme={DEFAULT_THEME}
+      className={FONT_VARIABLES}
+      suppressHydrationWarning
+    >
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t&&${JSON.stringify([...NON_DEFAULT_THEMES])}.includes(t)){document.documentElement.setAttribute("data-theme",t)}}catch(e){}})()`,
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body
-        className={`${inter.variable} ${spaceGrotesk.variable} ${baloo2.variable} ${hankenGrotesk.variable} ${jetbrainsMono.variable} ${spaceMono.variable} ${instrumentSerif.variable}`}
-      >
+      <body>
         <ThemeProvider>
           <AuthProvider>
             <PageProvider>

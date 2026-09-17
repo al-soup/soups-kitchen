@@ -1,4 +1,5 @@
-import { appManifestPath, appMetadata, appViewport } from "@/lib/appPwa";
+import { AppFrame } from "@/components/layout/AppFrame";
+import { appMetadata, appViewport } from "@/lib/appPwa";
 
 export const metadata = appMetadata("habits");
 export const viewport = appViewport("habits");
@@ -8,10 +9,5 @@ export default function HabitsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <link rel="manifest" href={appManifestPath("habits")} />
-      {children}
-    </>
-  );
+  return <AppFrame slug="habits">{children}</AppFrame>;
 }
