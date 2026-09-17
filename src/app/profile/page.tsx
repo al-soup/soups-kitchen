@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
@@ -8,8 +9,8 @@ import { getSupabase } from "@/lib/supabase/client";
 import { getAvatarUrl } from "@/lib/avatar";
 import styles from "./page.module.css";
 
-export default function SettingsPage() {
-  const { user } = useAuth();
+export default function ProfilePage() {
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   async function handleLogout() {
@@ -23,8 +24,8 @@ export default function SettingsPage() {
 
   return (
     <div className={styles.page}>
-      <PageTitle title="Settings" />
-      <h1 className={styles.title}>Settings</h1>
+      <PageTitle title="Profile" />
+      <h1 className={styles.title}>Profile</h1>
 
       {user && (
         <div className={styles.section}>
@@ -44,6 +45,18 @@ export default function SettingsPage() {
           <button className={styles.logoutButton} onClick={handleLogout}>
             Log out
           </button>
+        </div>
+      )}
+
+      {!user && !loading && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Account</h2>
+          <Link
+            href="/login?redirectTo=%2Fprofile"
+            className={styles.logoutButton}
+          >
+            Log in
+          </Link>
         </div>
       )}
 

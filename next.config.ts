@@ -12,6 +12,16 @@ for (const key of requiredEnv) {
 }
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      { source: "/settings", destination: "/profile", permanent: true },
+      {
+        source: "/resources",
+        destination: "/tools/resources",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

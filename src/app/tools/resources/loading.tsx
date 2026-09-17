@@ -1,4 +1,4 @@
-import sharedStyles from "../shared-page.module.css";
+import sharedStyles from "@/app/shared-page.module.css";
 
 export default function Loading() {
   return (

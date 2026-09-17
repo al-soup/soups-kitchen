@@ -1,4 +1,4 @@
-jest.mock("@/app/resources/api", () => ({
+jest.mock("@/app/tools/resources/api", () => ({
   listResources: jest.fn(),
   getSignedUrl: jest.fn().mockResolvedValue("https://signed.example/x"),
   placeholderToken: (id: string) => `{{resource:${id}}}`,
@@ -13,7 +13,7 @@ import {
   act,
 } from "@testing-library/react";
 import { ResourcePickerModal } from "./ResourcePickerModal";
-import { listResources } from "@/app/resources/api";
+import { listResources } from "@/app/tools/resources/api";
 import type { Resource } from "@/lib/supabase/types";
 
 const resources: Resource[] = [

@@ -2,8 +2,8 @@ import { isProtectedPath } from "./protectedRoutes";
 
 describe("isProtectedPath", () => {
   it.each([
-    "/resources",
-    "/resources/",
+    "/tools/resources",
+    "/tools/resources/",
     "/apps/habits/create",
     "/apps/habits/42",
   ])("protects %s", (path) => {
@@ -13,13 +13,13 @@ describe("isProtectedPath", () => {
   it.each([
     "/",
     "/login",
-    "/settings",
+    "/profile",
+    "/tools",
     "/apps/habits",
     "/apps/habits/manifest.webmanifest",
     "/apps/knowledge-base",
     "/apps/knowledge-base/1",
-    "/resourcesx",
-    "/settingsfoo",
+    "/tools/resourcesx",
   ])("allows %s", (path) => {
     expect(isProtectedPath(path)).toBe(false);
   });

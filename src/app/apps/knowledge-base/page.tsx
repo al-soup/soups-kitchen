@@ -322,7 +322,7 @@ function KnowledgeBasePageInner() {
           </>
         )}
         {canManageResources && (
-          <Link href="/resources" className={styles.toolbarBtn}>
+          <Link href="/tools/resources" className={styles.toolbarBtn}>
             Resources
           </Link>
         )}

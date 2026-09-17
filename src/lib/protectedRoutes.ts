@@ -5,7 +5,7 @@
  */
 
 /** Protected including the path itself. */
-const PROTECTED = ["/resources"];
+const PROTECTED = ["/tools/resources"];
 
 /** Only sub-paths protected; the root stays public (`habit` rows are world-readable by RLS). */
 const PROTECTED_SUBTREES = ["/apps/habits"];
