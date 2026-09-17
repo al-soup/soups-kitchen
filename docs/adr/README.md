@@ -34,3 +34,4 @@ one a `Status: superseded by NNNN` line under the date.
 | [0009](./0009-kb-scoped-typography.md)                | KB fonts load globally but stay KB-only                          |
 | [0010](./0010-ci-migrations-replay-prod-path.md)      | CI applies new migrations on a seeded base schema                |
 | [0011](./0011-cd-migrations-before-app-deploy.md)     | Merge to main deploys schema and functions before the app        |
+| [0012](./0012-mono-shell-apps-keep-typography.md)     | Mono shell and portfolio; apps keep their own typography         |

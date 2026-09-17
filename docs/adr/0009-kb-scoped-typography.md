@@ -1,6 +1,8 @@
 # 0009. KB fonts load globally but stay KB-only
 
 Date: 2026-09-09
+Status: amended by [0012](./0012-mono-shell-apps-keep-typography.md) — JetBrains Mono is now
+site-wide; Baloo 2 and Hanken Grotesk stay KB-only.
 
 ## Context
 

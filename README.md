@@ -9,14 +9,14 @@ Multi-app platform hosting small tools and my portfolio.
 - **Knowledge Base** — markdown notes, tag filters, full-text search (typo-tolerant)
 - **Fragespiel** — risograph swipe deck of philosophical questions (DE/EN, mobile-first)
 - **Resources** — file uploads on Supabase Storage, reusable across apps
-- **About** — portfolio (experience + me)
+- **About** — portfolio (`/about/me` CV, `/about/experience` coming soon)
 
 ## Tech stack
 
 - Next.js 16 (app router, `proxy.ts` not `middleware.ts`)
 - React 19 + TypeScript 5
 - Supabase (auth, Postgres w/ RLS, Storage, Edge Functions)
-- CSS Modules + theme CSS vars (light / dark / neo-brutalist)
+- CSS Modules + theme CSS vars (dark default / light)
 - pnpm 11.5 (pinned via `packageManager`)
 - Jest (unit) + Playwright (e2e, chromium)
 
@@ -98,7 +98,7 @@ claude mcp add --transport http --scope user soups-kitchen-kb \
 ## Auth model
 
 - Public reads: Knowledge Base (list, detail, resource signed URLs)
-- Auth required (proxy redirect to `/login`): `/resources`, `/apps/habits/create`, `/apps/habits/[id]`
+- Auth required (proxy redirect to `/login`): `/tools/resources`, `/apps/habits/create`, `/apps/habits/[id]`
 - Signup disabled (`enable_signup = false` in `config.toml` + `config.ci.toml`; set the same in the
   prod dashboard by hand). Min password 8 chars w/ letters + digits. Accounts created by an admin only
 - Manager / admin: writes on KB, tags, resources — gated by RLS via `is_manager_of(table)`

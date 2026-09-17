@@ -13,7 +13,7 @@ would break public KB pages for anonymous readers.
 
 RLS grants `SELECT` on `knowledge`, `knowledge_tags`, `tags`, `resources` and the `resources`
 storage bucket to `anon, authenticated`; `habit` stays world-readable too. Management surfaces
-(`/resources`, `/apps/habits/*` sub-paths) are gated in `src/proxy.ts`, which redirects
+(`/tools/resources`, `/apps/habits/*` sub-paths) are gated in `src/proxy.ts`, which redirects
 anonymous users to `/login?redirectTo=<path>`. Writes are the real boundary (ADR-0002).
 
 ## Consequences
