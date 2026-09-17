@@ -1,19 +1,7 @@
-import type { Metadata, Viewport } from "next";
+import { appManifestPath, appMetadata, appViewport } from "@/lib/appPwa";
 
-export const metadata: Metadata = {
-  other: {
-    "mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
-  },
-  icons: {
-    apple: "/icons/fragespiel-192.png",
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: "#1b2a6b",
-};
+export const metadata = appMetadata("fragespiel");
+export const viewport = appViewport("fragespiel");
 
 export default function FragespielLayout({
   children,
@@ -22,7 +10,7 @@ export default function FragespielLayout({
 }) {
   return (
     <>
-      <link rel="manifest" href="/apps/fragespiel/manifest.webmanifest" />
+      <link rel="manifest" href={appManifestPath("fragespiel")} />
       {children}
     </>
   );

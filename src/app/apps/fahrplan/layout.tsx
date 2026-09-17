@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
+import { appManifestPath, appMetadata, appViewport } from "@/lib/appPwa";
 
-export const metadata: Metadata = {
-  other: {
-    "mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
-  },
-  icons: {
-    apple: "/icons/fahrplan-192.png",
-  },
-};
+export const metadata = appMetadata("fahrplan");
+export const viewport = appViewport("fahrplan");
 
 export default function FahrplanLayout({
   children,
@@ -18,7 +10,7 @@ export default function FahrplanLayout({
 }) {
   return (
     <>
-      <link rel="manifest" href="/apps/fahrplan/manifest.webmanifest" />
+      <link rel="manifest" href={appManifestPath("fahrplan")} />
       {children}
     </>
   );

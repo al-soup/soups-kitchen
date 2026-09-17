@@ -189,7 +189,11 @@ gh secret list --env Production -R al-soup/soups-kitchen
 
 ## PWA Support
 
-All apps under _/apps_ are installable as PWAs (Android "Add to Home Screen", iOS home screen icon). Each app has its own web app manifest and icons. Run `pnpm generate-icons` to regenerate icons from `public/soup.svg`.
+All apps under _/apps_ are installable as PWAs (Android "Add to Home Screen", iOS home screen icon).
+Manifest, icons and home-screen title derive from `src/constants/apps.ts` via `src/lib/appPwa.ts`.
+Manifests stay public even inside auth-gated subtrees, because browsers fetch them without cookies.
+Run `pnpm generate-icons` to regenerate the icons; glyph paths are mirrored by hand from
+`src/constants/icons.tsx` into `scripts/generate-icons.mjs`.
 
 ## TODO
 
