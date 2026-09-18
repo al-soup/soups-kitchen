@@ -60,7 +60,8 @@ minimal:
   they conflict.**
 - **Domain vocabulary** goes to [CONTEXT.md](./CONTEXT.md) — glossary only, no
   implementation.
-- **How to run / set up** goes to `README.md` (app) and
+- **How to run / set up** goes to `README.md` (app),
+  [`docs/ops.md`](./docs/ops.md) (production secrets, one-time setup) and
   [`supabase/functions/README.md`](./supabase/functions/README.md) (edge
   functions).
 - This file holds only rules and conventions an agent needs on every task.
