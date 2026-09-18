@@ -28,6 +28,17 @@ const CUTOUTS = [
   },
 ] as const;
 
+// The SVG scales to the band with sub-pixel rounding; a covering rect that
+// stops at the viewBox edge lets a hairline of waves through at some widths.
+// Overshoot in every direction; the band clips the excess.
+const BLEED = 10;
+const bleedRect = (c: { width: number; height: number }) => ({
+  x: -BLEED,
+  y: -BLEED,
+  width: c.width + BLEED * 2,
+  height: c.height + BLEED * 2,
+});
+
 export default function Home() {
   return (
     <div className={styles.page}>
@@ -42,7 +53,7 @@ export default function Home() {
           >
             <defs>
               <mask id={`soup-cutout-${c.id}`}>
-                <rect width={c.width} height={c.height} fill="#fff" />
+                <rect {...bleedRect(c)} fill="#fff" />
                 <text
                   x={c.x}
                   y={c.y}
@@ -56,8 +67,7 @@ export default function Home() {
               </mask>
             </defs>
             <rect
-              width={c.width}
-              height={c.height}
+              {...bleedRect(c)}
               className={styles.cutoutGround}
               mask={`url(#soup-cutout-${c.id})`}
             />
