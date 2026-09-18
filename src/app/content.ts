@@ -1,5 +1,4 @@
-// Placeholder copy; rewrite freely, the landing page renders whatever is here.
 export const LANDING_INTRO = {
-  lead: "Hi, I'm Alex. Software engineer in Zurich. Election maps for a newspaper, an ERP nobody will ever see, CMS infrastructure for the Swiss government. Business degree, then the terminal.",
-  aside: "Bikes, board games, history podcasts. This is my kitchen.",
+  lead: "Hi, I'm Alex — software engineer in Zürich. I enjoy coding, with and without AI; we live in exciting times. I love learning new things and solving difficult problems along the way.",
+  aside: "This is my kitchen, a shelf of small personal apps.",
 };

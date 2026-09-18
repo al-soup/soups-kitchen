@@ -74,6 +74,7 @@ export const LIKES: string[] = [
   "road & touring bikes",
   "calisthenics",
   "board games with too many rules",
+  "techno",
   "dogs",
 ];
 
