@@ -110,18 +110,37 @@
   color: var(--foreground-muted);
 }
 
+/* Markdown task list: every box ticked. */
+.like {
+  font-size: 13.5px;
+  color: var(--foreground-body);
+}
+
+.check {
+  color: var(--color-primary);
+}
+
 .linkRow {
   font-size: 13.5px;
   line-height: 1.75;
   overflow-wrap: anywhere;
 }
 
-.mdLink {
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
   color: var(--link-color);
 }
 
-.mdLink:hover {
+.link:hover span {
   text-decoration: underline;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .signOff {

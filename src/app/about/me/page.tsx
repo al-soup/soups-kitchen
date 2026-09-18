@@ -3,7 +3,7 @@ import path from "node:path";
 import Image from "next/image";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { Waves } from "@/components/ui/Waves";
-import { BEFORE, HEADLINE, JOBS, LAST_UPDATED, LINKS } from "./data";
+import { BEFORE, HEADLINE, JOBS, LAST_UPDATED, LIKES, LINKS } from "./data";
 import styles from "./Me.module.css";
 
 const PORTRAIT = "/portrait.jpg";
@@ -72,23 +72,36 @@ export default function MePage() {
 
         <section>
           <h2 className={styles.h2}>
+            <span className={styles.hash}>##</span> likes
+          </h2>
+          <ul className={styles.plainList}>
+            {LIKES.map((like) => (
+              <li key={like} className={styles.like}>
+                - <span className={styles.check}>[x]</span> {like}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h2 className={styles.h2}>
             <span className={styles.hash}>##</span> links
           </h2>
           <ul className={styles.plainList}>
-            {LINKS.map((link) => (
-              <li key={link.label} className={styles.linkRow}>
-                - [
+            {LINKS.map(({ label, href, display, Icon }) => (
+              <li key={label} className={styles.linkRow}>
                 <a
-                  href={link.href}
-                  className={styles.mdLink}
-                  {...(link.href.startsWith("http") && {
+                  href={href}
+                  className={styles.link}
+                  aria-label={label}
+                  {...(href.startsWith("http") && {
                     target: "_blank",
                     rel: "noopener noreferrer",
                   })}
                 >
-                  {link.label}
+                  <Icon size={14} />
+                  <span>&lt;{display}&gt;</span>
                 </a>
-                ]({link.display})
               </li>
             ))}
           </ul>
