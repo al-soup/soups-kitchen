@@ -120,10 +120,13 @@
   color: var(--color-primary);
 }
 
-.linkRow {
-  font-size: 13.5px;
-  line-height: 1.75;
-  overflow-wrap: anywhere;
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin-top: 10px;
+  list-style: none;
+  font-size: 13px;
 }
 
 .link {

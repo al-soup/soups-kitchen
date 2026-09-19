@@ -31,7 +31,7 @@ export const JOBS: Job[] = [
     years: "2026 – now",
     role: "Senior Software Engineer",
     summary: "Building up competence ...",
-    tech: [".NET", "node", "React", "Azure"],
+    tech: [ "node", "React", "Azure", ".NET", "Dynamics 365"],
   },
   {
     company: "Swisscom",
@@ -75,7 +75,6 @@ export const LIKES: string[] = [
   "calisthenics",
   "board games with too many rules",
   "techno",
-  "dogs",
 ];
 
 export const LINKS: CvLink[] = [

@@ -17,12 +17,14 @@ const CUTOUTS = [
     size: 400,
     tracking: -20,
   },
+  // Shorter than the handoff's 300 so hero, intro and menu fit a phone
+  // screen with the browser chrome visible.
   {
     id: "mobile",
     width: 390,
-    height: 300,
+    height: 220,
     x: 20,
-    y: 270,
+    y: 195,
     size: 150,
     tracking: -8,
   },

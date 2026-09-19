@@ -28,6 +28,24 @@ export default function MePage() {
               <span className={styles.hash}>#</span> {HEADLINE.name}
             </h1>
             <p className={styles.tagline}>{HEADLINE.tagline}</p>
+            <ul className={styles.links}>
+              {LINKS.map(({ label, href, display, Icon }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    className={styles.link}
+                    aria-label={label}
+                    {...(href.startsWith("http") && {
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                    })}
+                  >
+                    <Icon size={14} />
+                    <span>&lt;{display}&gt;</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
           {hasPortrait && (
             <Image
@@ -78,30 +96,6 @@ export default function MePage() {
             {LIKES.map((like) => (
               <li key={like} className={styles.like}>
                 - <span className={styles.check}>[x]</span> {like}
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2 className={styles.h2}>
-            <span className={styles.hash}>##</span> links
-          </h2>
-          <ul className={styles.plainList}>
-            {LINKS.map(({ label, href, display, Icon }) => (
-              <li key={label} className={styles.linkRow}>
-                <a
-                  href={href}
-                  className={styles.link}
-                  aria-label={label}
-                  {...(href.startsWith("http") && {
-                    target: "_blank",
-                    rel: "noopener noreferrer",
-                  })}
-                >
-                  <Icon size={14} />
-                  <span>&lt;{display}&gt;</span>
-                </a>
               </li>
             ))}
           </ul>

@@ -422,7 +422,8 @@
      accounts for this element's own top margin + padding inside .reveal. */
   max-height: calc(var(--kb-reveal-height) - 26px);
   overflow-y: auto;
-  overscroll-behavior: contain;
+  /* No overscroll-behavior: contain here. It also applies when the summary
+     fits and does not scroll, which swallows the touch and pins the list. */
   scrollbar-width: thin;
   scrollbar-color: var(--kb-line2) transparent;
 }
