@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ActionType, HabitDetail } from "@/lib/supabase/types";
+import type { ActionType, HabitDetail, HabitSort } from "@/lib/supabase/types";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { getLocalToday } from "@/lib/dateUtils";
@@ -39,10 +39,14 @@ function groupByDate(items: HabitDetail[]): DateGroup[] {
 
 export function HabitFeed({
   actionTypes,
+  actionId,
+  sort = "desc",
   selectedDate,
   onClearDate,
 }: {
   actionTypes: ActionType[];
+  actionId?: number | null;
+  sort?: HabitSort;
   selectedDate?: string | null;
   onClearDate?: () => void;
 }) {
@@ -66,6 +70,8 @@ export function HabitFeed({
 
     getHabitFeed({
       actionTypes,
+      actionId,
+      sort,
       offset: 0,
       date: selectedDate,
       signal: controller.signal,
@@ -86,7 +92,7 @@ export function HabitFeed({
       });
 
     return () => controller.abort();
-  }, [actionTypes, selectedDate]);
+  }, [actionTypes, actionId, sort, selectedDate]);
 
   const handleLoadMore = () => {
     if (loadingMore) return;
@@ -96,6 +102,8 @@ export function HabitFeed({
     setLoadingMore(true);
     getHabitFeed({
       actionTypes,
+      actionId,
+      sort,
       offset,
       date: selectedDate,
       signal: controller.signal,

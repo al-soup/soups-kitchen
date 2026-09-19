@@ -343,7 +343,11 @@ export type Database = {
     Functions: {
       custom_access_token_hook: { Args: { event: Json }; Returns: Json };
       get_daily_habit_scores: {
-        Args: { action_type: number; start_date?: string };
+        Args: {
+          action_type: number;
+          filter_action_id?: number;
+          start_date?: string;
+        };
         Returns: {
           completed_date: string;
           habit_ids: number[];

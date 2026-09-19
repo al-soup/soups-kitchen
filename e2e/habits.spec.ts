@@ -73,4 +73,40 @@ test.describe("Habits — combined view", () => {
     await expect(page.locator("[class*='legendKey']")).toHaveCount(3);
     await expect(page.getByTestId("type-2")).toBeVisible();
   });
+
+  test("action pill filters the feed, sort toggle reverses it", async ({
+    page,
+  }) => {
+    await page.goto("/apps/habits?type=1");
+    const [feedResponse, scoresRequest] = await Promise.all([
+      page.waitForResponse(
+        (r) =>
+          decodeURIComponent(r.url()).includes("action_id=eq.") &&
+          r.request().method() === "GET"
+      ),
+      page.waitForRequest(
+        (r) =>
+          r.url().includes("/rpc/get_daily_habit_scores") &&
+          r.postData()?.includes("filter_action_id") === true
+      ),
+      page
+        .getByRole("group", { name: "Filter by action" })
+        .getByRole("button", { name: /^L\d Cycling \d+$/ })
+        .click(),
+    ]);
+    expect(decodeURIComponent(feedResponse.url())).toContain("action_id=eq.");
+    // The Score Graph follows the action filter too
+    expect(scoresRequest.postDataJSON().filter_action_id).toEqual(
+      expect.any(Number)
+    );
+    await expect(page).toHaveURL(/action=\d+/);
+    const names = page.locator("[class*='item'] [class*='name']");
+    await expect(names.first()).toHaveText("Cycling", { timeout: 10000 });
+
+    await page.getByRole("button", { name: /Sorted newest first/ }).click();
+    await expect(page).toHaveURL(/sort=asc/);
+    await expect(
+      page.getByRole("button", { name: /Sorted oldest first/ })
+    ).toBeVisible();
+  });
 });

@@ -51,9 +51,12 @@ export function useHabitsView() {
 type ScoresResult = { key: string; scores: ScoresByType; error: string | null };
 const NO_SCORES: ScoresByType = {};
 
-/** Daily scores of the past year for each given type. */
-export function useDailyHabitScores(types: ActionType[]) {
-  const typesKey = types.join(",");
+/** Daily scores of the past year for each given type, optionally of one Action. */
+export function useDailyHabitScores(
+  types: ActionType[],
+  actionId: number | null = null
+) {
+  const typesKey = `${types.join(",")}|${actionId ?? ""}`;
   // Keyed by the request so a stale result never shows for a newer selection.
   const [result, setResult] = useState<ScoresResult>({
     key: "",
@@ -63,7 +66,7 @@ export function useDailyHabitScores(types: ActionType[]) {
 
   useEffect(() => {
     const controller = new AbortController();
-    getDailyHabitScoresByType(types, getLocalToday())
+    getDailyHabitScoresByType(types, getLocalToday(), actionId)
       .then((scores) => {
         if (!controller.signal.aborted)
           setResult({ key: typesKey, scores, error: null });
@@ -73,7 +76,7 @@ export function useDailyHabitScores(types: ActionType[]) {
           setResult({ key: typesKey, scores: NO_SCORES, error: err.message });
       });
     return () => controller.abort();
-  }, [types, typesKey]);
+  }, [types, actionId, typesKey]);
 
   const loading = result.key !== typesKey;
   return {

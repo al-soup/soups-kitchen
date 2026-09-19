@@ -93,8 +93,8 @@ The sum of the Levels of all Habits completed on one day for one Action Type.
 _Avoid_: total, points
 
 **Feed**:
-The reverse-chronological list of Habits for one Action Type, or for every
-type in the Combined View, optionally narrowed to a single day.
+The chronological list of Habits for one Action Type (newest first by default),
+optionally narrowed to a single Action (the Score Graph follows) or a single day.
 _Avoid_: history, timeline, list
 
 **Score Graph**:

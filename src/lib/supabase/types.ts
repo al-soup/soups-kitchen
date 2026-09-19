@@ -34,6 +34,7 @@ export type DailyHabitScore =
 export type GetDailyHabitScoresParams = {
   action_type: ActionType;
   start_date: string;
+  filter_action_id?: number;
 };
 
 export type ActionType = 1 | 2 | 3;
@@ -57,4 +58,8 @@ export type HabitFeedPage = {
   hasMore: boolean;
 };
 
+export type HabitSort = "asc" | "desc";
+
 export type ScoresByType = Partial<Record<ActionType, DailyHabitScore[]>>;
+
+export type ActionCount = Action & { habitCount: number };
