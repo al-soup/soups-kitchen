@@ -65,7 +65,19 @@ export default function MePage() {
           {JOBS.map((job) => (
             <div key={job.company} className={styles.job}>
               <h3 className={styles.h3}>
-                <span className={styles.hash}>###</span> {job.company}{" "}
+                <span className={styles.hash}>###</span>{" "}
+                {job.url ? (
+                  <a
+                    href={job.url}
+                    className={styles.company}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {job.company}
+                  </a>
+                ) : (
+                  job.company
+                )}{" "}
                 <span className={styles.years}>{job.years}</span>
               </h3>
               <p className={styles.role}>_{job.role}_</p>

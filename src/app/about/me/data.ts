@@ -3,6 +3,7 @@ import { GitHubIcon, LinkedInIcon, MailIcon } from "@/constants/icons";
 
 export interface Job {
   company: string;
+  url?: string;
   years: string;
   role: string;
   summary: string;
@@ -28,41 +29,47 @@ export const HEADLINE = {
 export const JOBS: Job[] = [
   {
     company: "Ambit Group",
+    url: "https://www.ambit.ch",
     years: "2026 – now",
     role: "Senior Software Engineer",
-    summary: "Building up competence ...",
-    tech: [ "node", "React", "Azure", ".NET", "Dynamics 365"],
+    summary:
+      "In-house competence build-up for Frontend, CustomComponents, NodeJS & OpenSource.",
+    tech: ["NodeJS", "React", "Azure", ".NET", "Dynamics 365"],
   },
   {
     company: "Swisscom",
+    url: "https://www.swisscom.ch",
     years: "2025",
     role: "DevOps Engineer",
     summary:
       "CMS infrastructure for the Swiss government: backend, frontend, CI/CD.",
-    tech: ["go", "node", "nuxt", "kubernetes", "gitlab ci"],
+    tech: ["Golang", "NodeJS", "Nuxt", "Kubernetes", "Gitlab CI"],
   },
   {
     company: "NZZ",
+    url: "https://www.nzz.ch",
     years: "2022 – 2024",
     role: "Senior Software Engineer",
     summary:
       "Building interactive visuals and data visualization software for journalists.",
-    tech: ["typescript", "sveltekit", "d3", "node", "couchdb"],
+    tech: ["SvelteKit", "D3.js", "Node", "CouchDB"],
   },
   {
     company: "Smallstack",
+    url: "https://smallstack.com",
     years: "2020 – 2022",
     role: "Software Engineer · Product Owner",
     summary: "Full-stack work in a start-up building an ERP/CRM product.",
-    tech: ["typescript", "angular", "nestjs", "java", "mongodb", "GCP"],
+    tech: ["Angular", "NestJS", "Java", "MongoDB", "GCP"],
   },
   {
     company: "University of Bern",
+    url: "https://www.unibe.ch",
     years: "2017 – 2020",
     role: "Software Engineer",
     summary:
       "Research and consulting projects around open source and open data.",
-    tech: ["typescript", "angular", "d3", "python", "mysql"],
+    tech: ["Angular", "D3.js", "Python", "SQL"],
   },
 ];
 
@@ -73,6 +80,7 @@ export const BEFORE: string[] = [
 export const LIKES: string[] = [
   "road & touring bikes",
   "calisthenics",
+  "dogs",
   "board games with too many rules",
   "techno",
 ];
