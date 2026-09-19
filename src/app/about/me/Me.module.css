@@ -21,14 +21,13 @@
 }
 
 .heading {
+  position: relative;
   margin-bottom: 28px;
 }
 
-.withPortrait {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 120px;
-  gap: 32px;
-  align-items: start;
+/* Text stays left so the portrait has the right side of the column. */
+.withPortrait .headingText {
+  max-width: 420px;
 }
 
 .hash {
@@ -48,13 +47,16 @@
   color: var(--foreground-muted);
 }
 
-/* B&W regardless of the source file. */
+/* Source is already B&W with coral glitch strips on transparency: no frame,
+   no filter. Out of flow so it can overlap the strip's fade and the heading;
+   centred in the space right of the 420px text column at full width. */
 .portrait {
-  width: 120px;
-  height: 150px;
-  object-fit: cover;
-  border: 1px solid var(--border-strong);
-  filter: grayscale(1) contrast(1.15);
+  position: absolute;
+  top: -10px;
+  right: 24px;
+  width: 240px;
+  height: auto;
+  pointer-events: none;
 }
 
 .h2 {
@@ -177,11 +179,14 @@
   border-radius: 50%;
 }
 
-@media (max-width: 700px) {
-  .waveStrip {
-    height: 120px;
+@media (max-width: 900px) {
+  .portrait {
+    right: 0;
+    width: clamp(170px, 28vw, 240px);
   }
+}
 
+@media (max-width: 700px) {
   .content {
     padding: 0 var(--page-gutter) 40px;
   }
@@ -189,14 +194,44 @@
   .h1 {
     font-size: 24px;
   }
+}
 
-  .withPortrait {
-    grid-template-columns: minmax(0, 1fr) 90px;
-    gap: 20px;
+/* Phones: portrait pokes into the strip, name and tagline wrap beside it,
+   links run under its faded lower edge. */
+@media (max-width: 480px) {
+  .waveStrip {
+    height: 110px;
   }
 
   .portrait {
-    width: 90px;
-    height: 112px;
+    top: -30px;
+    right: 8px;
+    width: 170px;
+  }
+
+  .withPortrait .h1 {
+    max-width: 200px;
+    font-size: 26px;
+    line-height: 1.2;
+  }
+
+  .withPortrait .tagline {
+    max-width: 190px;
+    margin-top: 8px;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  .withPortrait .taglinePart {
+    display: block;
+  }
+
+  .withPortrait .taglineSep {
+    display: none;
+  }
+
+  .withPortrait .links {
+    margin-top: 18px;
+    font-size: 12.5px;
   }
 }

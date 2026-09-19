@@ -23,7 +23,8 @@ export const LAST_UPDATED = "2026-09-17";
 
 export const HEADLINE = {
   name: "alex kräuchi",
-  tagline: "senior software engineer · zürich · 1991",
+  // One line on desktop, one part per line on phones (next to the portrait).
+  tagline: ["senior software engineer", "zürich · 1991"],
 };
 
 export const JOBS: Job[] = [

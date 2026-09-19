@@ -6,8 +6,8 @@ import { Waves } from "@/components/ui/Waves";
 import { BEFORE, HEADLINE, JOBS, LAST_UPDATED, LIKES, LINKS } from "./data";
 import styles from "./Me.module.css";
 
-const PORTRAIT = "/portrait.jpg";
-// Evaluated at build time (static page): drop public/portrait.jpg and rebuild.
+const PORTRAIT = "/portrait.webp";
+// Evaluated at build time (static page): swap the file and rebuild.
 const hasPortrait = existsSync(path.join(process.cwd(), "public", PORTRAIT));
 
 export default function MePage() {
@@ -23,11 +23,18 @@ export default function MePage() {
         <header
           className={`${styles.heading} ${hasPortrait ? styles.withPortrait : ""}`}
         >
-          <div>
+          <div className={styles.headingText}>
             <h1 className={styles.h1}>
               <span className={styles.hash}>#</span> {HEADLINE.name}
             </h1>
-            <p className={styles.tagline}>{HEADLINE.tagline}</p>
+            <p className={styles.tagline}>
+              {HEADLINE.tagline.map((part, i) => (
+                <span key={part} className={styles.taglinePart}>
+                  {i > 0 && <span className={styles.taglineSep}> · </span>}
+                  {part}
+                </span>
+              ))}
+            </p>
             <ul className={styles.links}>
               {LINKS.map(({ label, href, display, Icon }) => (
                 <li key={label}>
@@ -51,9 +58,10 @@ export default function MePage() {
             <Image
               src={PORTRAIT}
               alt="Portrait of Alex Kräuchi"
-              width={120}
-              height={150}
+              width={240}
+              height={288}
               className={styles.portrait}
+              priority
             />
           )}
         </header>
