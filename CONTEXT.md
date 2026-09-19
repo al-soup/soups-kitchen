@@ -67,8 +67,13 @@ _Avoid_: task, exercise, activity, habit type
 
 **Action Type**:
 The broad category of an Action: Sports, Bad Habits or Learning. The Feed and
-Score Graph show one Action Type at a time.
+Score Graph show one Action Type at a time, or all of them in the Combined View.
 _Avoid_: category, kind
+
+**Combined View**:
+The "All" selection: the Score Graph splits each day into one stripe per Action
+Type and the Feed mixes every type. Bad Habits stay out of it when signed out.
+_Avoid_: overlay, all types, merged view
 
 **Level**:
 The weight of an Action, summed into a Score. Harder Actions have a higher
@@ -88,13 +93,24 @@ The sum of the Levels of all Habits completed on one day for one Action Type.
 _Avoid_: total, points
 
 **Feed**:
-The reverse-chronological list of Habits for one Action Type.
+The chronological list of Habits for one Action Type (newest first by default),
+optionally narrowed to a single Action (the Score Graph follows) or a single day.
 _Avoid_: history, timeline, list
 
 **Score Graph**:
 The calendar heat-map of daily Scores; selecting a day filters the Feed to
 that day.
 _Avoid_: heatmap, chart, calendar
+
+**Streak**:
+Consecutive days with at least one Habit of the selected Action Type(s). The
+current Streak survives an empty today until the day is over.
+_Avoid_: run, chain, combo
+
+**Insights**:
+The analytics page of the Habits app: Streaks, weekly Scores, weekday rhythm and
+top Actions.
+_Avoid_: stats, analytics, dashboard, report
 
 **Ride**:
 A cycling activity imported from Strava. Every Ride yields a "Cycling" Habit.

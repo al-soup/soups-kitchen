@@ -5,14 +5,19 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitScoreGraph } from "@/components/ui/HabitScoreGraph";
-import { useUserRole } from "@/hooks/useUserRole";
-import type { ActionType, DailyHabitScore } from "@/lib/supabase/types";
-import { actionTypeQuery, parseActionType, TYPE_PARAM } from "@/lib/actionType";
-import { getDailyHabitScores } from "./api";
-import { HabitTypeSelector } from "./HabitTypeSelector";
+import type { ActionCount, HabitSort } from "@/lib/supabase/types";
+import { ALL_TYPES, TYPE_PARAM, type ActionTypeFilter } from "@/lib/actionType";
+import { getActionCounts } from "./api";
+import { HabitTypeSelector, type HabitTypeOption } from "./HabitTypeSelector";
 import { HabitFeed } from "./HabitFeed";
+import { ActionFilter } from "./ActionFilter";
+import { useDailyHabitScores, useHabitsView } from "./useHabitsView";
 
-import styles from "../../shared-page.module.css";
+import sharedStyles from "../../shared-page.module.css";
+import styles from "./page.module.css";
+
+const ACTION_PARAM = "action";
+const SORT_PARAM = "sort";
 
 export default function HabitsPage() {
   return (
@@ -26,94 +31,108 @@ function HabitsPageInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { canManage, visibleTypes, typeFilter, actionTypes } = useHabitsView();
 
-  const { role } = useUserRole("habit");
-  const canCreate = role === "admin" || role === "manager";
-  const canSeeType2 = role === "admin" || role === "manager";
-  const availableTypes = useMemo(
-    () => [
-      { value: 1 as ActionType, label: "Sports" },
-      ...(canSeeType2 ? [{ value: 2 as ActionType, label: "Bad Habits" }] : []),
-      { value: 3 as ActionType, label: "Learning" },
-    ],
-    [canSeeType2]
+  const typeOptions = useMemo<HabitTypeOption<ActionTypeFilter>[]>(
+    () => [...visibleTypes, { value: ALL_TYPES, label: "All" }],
+    [visibleTypes]
   );
 
-  const actionType: ActionType =
-    parseActionType(searchParams.get(TYPE_PARAM)) ?? 1;
-  const effectiveType: ActionType =
-    !canSeeType2 && actionType === 2 ? 1 : actionType;
-  const [scores, setScores] = useState<DailyHabitScore[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const actionParam = Number(searchParams.get(ACTION_PARAM));
+  const actionId =
+    Number.isInteger(actionParam) && actionParam > 0 ? actionParam : null;
+  const sort: HabitSort =
+    searchParams.get(SORT_PARAM) === "asc" ? "asc" : "desc";
+
+  const { scores, loading, error } = useDailyHabitScores(actionTypes, actionId);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [actions, setActions] = useState<ActionCount[]>([]);
+
+  const replaceParams = useCallback(
+    (patch: Record<string, string | null>) => {
+      const next = new URLSearchParams(searchParams);
+      for (const [key, value] of Object.entries(patch)) {
+        if (value === null) next.delete(key);
+        else next.set(key, value);
+      }
+      router.replace(`${pathname}?${next}`, { scroll: false });
+    },
+    [router, pathname, searchParams]
+  );
 
   const handleTypeChange = useCallback(
-    (type: ActionType) => {
+    (type: ActionTypeFilter) => {
       setSelectedDate(null);
-      setScores([]);
-      setError(null);
-      setLoading(true);
-      router.replace(`${pathname}${actionTypeQuery(type)}`, { scroll: false });
+      replaceParams({ [TYPE_PARAM]: String(type), [ACTION_PARAM]: null });
     },
-    [router, pathname]
+    [replaceParams]
   );
 
   useEffect(() => {
     const controller = new AbortController();
-    const today = new Date().toISOString().split("T")[0];
-
-    getDailyHabitScores({ start_date: today, action_type: effectiveType })
-      .then((data) => {
-        if (!controller.signal.aborted) setScores(data);
+    getActionCounts({ actionTypes, signal: controller.signal })
+      .then((rows) => {
+        if (!controller.signal.aborted) setActions(rows);
       })
-      .catch((err) => {
-        if (!controller.signal.aborted) setError(err.message);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+      .catch(() => {
+        // Pills are a convenience; the feed reports real errors.
       });
-
     return () => controller.abort();
-  }, [effectiveType]);
+  }, [actionTypes]);
 
   return (
-    <div className={styles.page}>
+    <div className={sharedStyles.page}>
       <PageTitle title="Habit Tracker" />
-      <h1 className={styles.title}>
+      <h1 className={sharedStyles.title}>
         Habit Tracker
-        {canCreate && (
+        {canManage && (
           <Link
-            href={`/apps/habits/create${actionTypeQuery(effectiveType)}`}
+            href={`/apps/habits/create?${TYPE_PARAM}=${typeFilter === ALL_TYPES ? 1 : typeFilter}`}
             aria-label="Create habit"
-            style={{
-              marginLeft: 12,
-              fontSize: "1.2rem",
-              verticalAlign: "middle",
-              textDecoration: "none",
-            }}
+            className={styles.createLink}
           >
             +
           </Link>
         )}
       </h1>
-      <HabitTypeSelector
-        value={effectiveType}
-        onChange={handleTypeChange}
-        disabled={loading}
-        types={availableTypes}
-      />
+      <div className={styles.typeRow}>
+        <HabitTypeSelector
+          value={typeFilter}
+          onChange={handleTypeChange}
+          disabled={loading}
+          types={typeOptions}
+        />
+        <Link
+          href={`/apps/habits/insights?${TYPE_PARAM}=${typeFilter}`}
+          className={styles.insightsLink}
+        >
+          Insights →
+        </Link>
+      </div>
       <HabitScoreGraph
         scores={scores}
         loading={loading}
         error={error}
-        actionType={effectiveType}
+        actionType={typeFilter}
         selectedDate={selectedDate}
         onSelectDate={setSelectedDate}
       />
+      <ActionFilter
+        actions={actions}
+        value={actionId}
+        onChange={(id) =>
+          replaceParams({ [ACTION_PARAM]: id === null ? null : String(id) })
+        }
+        sort={sort}
+        onSortChange={(next) =>
+          replaceParams({ [SORT_PARAM]: next === "asc" ? "asc" : null })
+        }
+      />
       <HabitFeed
-        key={`${effectiveType}-${selectedDate ?? "all"}`}
-        actionType={effectiveType}
+        key={`${actionTypes.join(",")}-${actionId ?? "all"}-${sort}-${selectedDate ?? "all"}`}
+        actionTypes={actionTypes}
+        actionId={actionId}
+        sort={sort}
         selectedDate={selectedDate}
         onClearDate={() => setSelectedDate(null)}
       />

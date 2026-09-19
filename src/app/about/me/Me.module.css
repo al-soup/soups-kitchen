@@ -25,8 +25,11 @@
   margin-bottom: 28px;
 }
 
-/* Text stays left so the portrait has the right side of the column. */
+/* Text stays left so the portrait has the right side of the column and
+   paints above it where they overlap on narrow screens. */
 .withPortrait .headingText {
+  position: relative;
+  z-index: 1;
   max-width: 420px;
 }
 
@@ -203,10 +206,18 @@
     height: 110px;
   }
 
+  /* Bleeds into the gutter so as little text as possible sits on it; the
+     text halo keeps the overlap legible on both themes. */
   .portrait {
     top: -30px;
-    right: 8px;
+    right: calc(4px - var(--page-gutter));
     width: 170px;
+  }
+
+  .withPortrait .headingText {
+    text-shadow:
+      0 0 3px var(--background),
+      0 0 8px var(--background);
   }
 
   .withPortrait .h1 {

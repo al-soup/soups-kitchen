@@ -1,28 +1,28 @@
-import type { ActionType } from "@/lib/supabase/types";
+import { ACTION_TYPES, type ActionTypeFilter } from "@/lib/actionType";
 import styles from "./HabitTypeSelector.module.css";
 
-const TYPES: { value: ActionType; label: string }[] = [
-  { value: 1, label: "Sports" },
-  { value: 2, label: "Bad Habits" },
-  { value: 3, label: "Learning" },
-];
+export type HabitTypeOption<T extends ActionTypeFilter> = {
+  value: T;
+  label: string;
+};
 
-interface HabitTypeSelectorProps {
-  value: ActionType;
-  onChange: (type: ActionType) => void;
+interface HabitTypeSelectorProps<T extends ActionTypeFilter> {
+  value: T;
+  onChange: (type: T) => void;
   disabled: boolean;
-  types?: { value: ActionType; label: string }[];
+  types?: HabitTypeOption<T>[];
 }
 
-export function HabitTypeSelector({
+export function HabitTypeSelector<T extends ActionTypeFilter>({
   value,
   onChange,
   disabled,
   types,
-}: HabitTypeSelectorProps) {
+}: HabitTypeSelectorProps<T>) {
+  const options = types ?? (ACTION_TYPES as HabitTypeOption<T>[]);
   return (
     <div className={styles.group} role="radiogroup" aria-label="Habit type">
-      {(types ?? TYPES).map((t) => (
+      {options.map((t) => (
         <button
           key={t.value}
           className={styles.option}

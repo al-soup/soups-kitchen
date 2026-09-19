@@ -1,0 +1,69 @@
+.figure {
+  margin: 0;
+}
+
+.caption {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--foreground-muted);
+  margin-bottom: 12px;
+}
+
+.empty {
+  font-size: 14px;
+  color: var(--foreground-muted);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 12px;
+  row-gap: 10px;
+}
+
+.row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  grid-template-rows: auto auto;
+  align-items: center;
+}
+
+.name {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.count {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--habit-score-level-0);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+}
+
+.share {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

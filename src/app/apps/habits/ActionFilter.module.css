@@ -1,0 +1,70 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.sortToggle,
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  height: 28px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground-muted);
+  background: var(--background);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.sortToggle:hover,
+.chip:hover:not([data-active]) {
+  color: var(--foreground);
+  background: var(--background-alt);
+}
+
+.chip[data-active] {
+  color: var(--background);
+  background: var(--foreground);
+  border-color: var(--foreground);
+}
+
+.chips {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* Fade the clipped edge so the row reads as scrollable. */
+  mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+  padding-right: 24px;
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+.level {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 4px;
+  border-radius: var(--radius-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
