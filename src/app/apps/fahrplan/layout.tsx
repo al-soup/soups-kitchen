@@ -1,25 +1,13 @@
-import type { Metadata } from "next";
+import { AppFrame } from "@/components/layout/AppFrame";
+import { appMetadata, appViewport } from "@/lib/appPwa";
 
-export const metadata: Metadata = {
-  other: {
-    "mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
-  },
-  icons: {
-    apple: "/icons/fahrplan-192.png",
-  },
-};
+export const metadata = appMetadata("fahrplan");
+export const viewport = appViewport("fahrplan");
 
 export default function FahrplanLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <link rel="manifest" href="/apps/fahrplan/manifest.webmanifest" />
-      {children}
-    </>
-  );
+  return <AppFrame slug="fahrplan">{children}</AppFrame>;
 }

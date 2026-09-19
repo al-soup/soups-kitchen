@@ -1,0 +1,98 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 200ms ease-out,
+    visibility 200ms ease-out;
+  z-index: 150;
+}
+
+.backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Sits above the top bar (100) and below the shell controls (200), so the
+   menu button stays clickable as the close control. */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--drawer-width);
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  padding: 80px 48px 32px;
+  background: var(--drawer-background);
+  border-left: 1px solid var(--border-color);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 200ms ease-out,
+    visibility 200ms ease-out;
+  z-index: 160;
+  overflow-y: auto;
+}
+
+.drawer.open {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.account {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.accountLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--foreground-muted);
+  transition: color var(--transition-fast);
+}
+
+.accountLink:hover {
+  color: var(--foreground);
+}
+
+.accountLink:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+}
+
+.accountText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+}
+
+@media (max-width: 700px) {
+  .drawer {
+    width: 100vw;
+    padding: 80px 20px 24px;
+    border-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .backdrop {
+    transition: none;
+  }
+}

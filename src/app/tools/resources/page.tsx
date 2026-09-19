@@ -9,7 +9,7 @@ import type { Resource } from "@/lib/supabase/types";
 import { listResources, renameResource, deleteResource } from "./api";
 import { UploadDropzone } from "./UploadDropzone";
 import { ResourceGrid } from "./ResourceGrid";
-import sharedStyles from "../shared-page.module.css";
+import sharedStyles from "@/app/shared-page.module.css";
 import styles from "./page.module.css";
 
 export default function ResourcesPage() {

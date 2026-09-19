@@ -6,7 +6,10 @@ import dynamic from "next/dynamic";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useCanManage } from "@/hooks/useCanManage";
 import { listTags } from "@/app/apps/knowledge-base/tags/api";
-import { getSignedUrlsByIds, type ResolvedResource } from "@/app/resources/api";
+import {
+  getSignedUrlsByIds,
+  type ResolvedResource,
+} from "@/app/tools/resources/api";
 import { EyeIcon, PencilIcon } from "@/constants/icons";
 import type { Knowledge, Tag } from "@/lib/supabase/types";
 import {

@@ -4,80 +4,70 @@
   left: 0;
   right: 0;
   height: var(--navbar-height);
-  background: var(--background);
-  border-bottom: var(--border-width) solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  gap: 16px;
+  padding-left: var(--page-gutter);
+  /* Leaves room for the shell controls (theme toggle + menu button), which
+     Shell renders in a separate layer above the drawer. */
+  padding-right: calc(var(--page-gutter) + 100px);
+  background: var(--background);
+  border-bottom: 1px solid var(--border-color);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
   z-index: 100;
 }
 
-.menuButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: transparent;
-  border: var(--border-width) solid var(--border-color);
-  border-radius: var(--radius-sm);
-  color: var(--foreground);
-  transition:
-    background var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-.menuButton:hover {
-  background: var(--background-alt);
-  box-shadow: var(--shadow);
-}
-
 .brand {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  flex: none;
   display: flex;
   align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  color: inherit;
+  gap: 10px;
+  color: var(--foreground);
 }
 
-.logo {
-  flex-shrink: 0;
+.brand:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
 }
 
-.brandHidden {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition-normal);
-}
-
-.titles {
+.location {
   display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.subtitle {
-  font-size: 0.75rem;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
   color: var(--foreground-muted);
-  line-height: 1.2;
 }
 
-@media (max-width: 600px) {
-  .title {
-    font-size: 1rem;
+.appIcon {
+  flex: none;
+  display: inline-flex;
+  color: var(--foreground);
+}
+
+.breadcrumb {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.root {
+  color: var(--color-primary);
+}
+
+.separator {
+  white-space: pre;
+}
+
+@media (max-width: 700px) {
+  .navbar {
+    padding-right: calc(var(--page-gutter) + 88px);
   }
 
-  .subtitle {
+  .root.hasLeaf,
+  .separator {
     display: none;
   }
 }

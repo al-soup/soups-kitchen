@@ -5,8 +5,41 @@
   padding-top: var(--navbar-height);
 }
 
+.noNavbar {
+  padding-top: 0;
+}
+
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+/* Own layer above the drawer so the menu button doubles as its close control.
+   9px = MenuButton's inner padding, keeps the bars on the page gutter. */
+.controls {
+  position: fixed;
+  top: calc((var(--navbar-height) - 40px) / 2);
+  right: calc(var(--page-gutter) - 9px);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 200;
+}
+
+/* The landing page has no bar: the controls scroll away with the hero, unless
+   the drawer is open and they must stay reachable. */
+.controlsLanding {
+  position: absolute;
+  top: 21px;
+}
+
+.controlsLanding.controlsPinned {
+  position: fixed;
+}
+
+@media (max-width: 700px) {
+  .controlsLanding {
+    top: 8px;
+  }
 }

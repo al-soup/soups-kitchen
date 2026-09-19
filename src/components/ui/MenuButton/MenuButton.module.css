@@ -1,0 +1,34 @@
+.button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 0 9px;
+  background: none;
+  border: 0;
+  color: var(--foreground);
+}
+
+.bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: currentColor;
+  transition: transform 0.2s;
+}
+
+/* 3.5px = half of bar height + gap, so both bars cross at the centre. */
+.open .bar:first-child {
+  transform: translateY(3.5px) rotate(45deg);
+}
+
+.open .bar:last-child {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

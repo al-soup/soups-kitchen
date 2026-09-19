@@ -37,9 +37,11 @@ test.describe("Knowledge Base", () => {
     await expect(page.getByRole("button", { name: "Delete" })).toHaveCount(0);
   });
 
-  test("anon hitting /resources is redirected to login", async ({ page }) => {
-    await page.goto("/resources");
-    await expect(page).toHaveURL("/login?redirectTo=%2Fresources");
+  test("anon hitting /tools/resources is redirected to login", async ({
+    page,
+  }) => {
+    await page.goto("/tools/resources");
+    await expect(page).toHaveURL("/login?redirectTo=%2Ftools%2Fresources");
   });
 
   test("overview lists seed entries", async ({ page }) => {

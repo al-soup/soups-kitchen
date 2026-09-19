@@ -12,6 +12,16 @@ for (const key of requiredEnv) {
 }
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      { source: "/settings", destination: "/profile", permanent: true },
+      {
+        source: "/resources",
+        destination: "/tools/resources",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
@@ -25,7 +35,8 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            // geolocation=(self): Fahrplan's "locate nearest station" needs it.
+            value: "camera=(), microphone=(), geolocation=(self)",
           },
         ],
       },

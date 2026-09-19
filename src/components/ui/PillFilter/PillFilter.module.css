@@ -27,6 +27,6 @@
 
 .pillActive {
   background: var(--color-primary);
-  color: white;
+  color: var(--on-primary);
   border-color: var(--color-primary);
 }

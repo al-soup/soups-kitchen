@@ -43,10 +43,12 @@ test.describe("Fahrplan", () => {
     await expect(page.getByPlaceholder("Search station...")).toBeVisible();
   });
 
-  test("sidebar has Fahrplan link", async ({ page }) => {
+  test("drawer has Fahrplan link", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Toggle menu" }).click();
-    const link = page.getByRole("link", { name: "Fahrplan" });
+    const link = page
+      .locator("#site-drawer")
+      .getByRole("link", { name: "/ fahrplan" });
     await expect(link).toBeVisible();
     await link.click();
     await expect(page).toHaveURL("/apps/fahrplan");

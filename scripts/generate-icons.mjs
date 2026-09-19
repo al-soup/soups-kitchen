@@ -9,7 +9,10 @@ const GOLD = "#d8ba3c";
 const BG = "#000000";
 const SIZES = [192, 512];
 const CANVAS = 512;
-const MARGIN = 64; // 12.5% — leaves room for OS adaptive masks
+const MARGIN = 64;
+// Maskable icons are cropped to a circle of 80% diameter; a 56% glyph box
+// is the largest square that fits inside it.
+const MASKABLE_MARGIN = 112;
 
 // Source of truth for glyph shapes: src/constants/icons.tsx.
 // Paths are duplicated here intentionally — Node can't import the .tsx
@@ -46,15 +49,18 @@ const apps = [
   },
 ];
 
-function buildSvg({ viewBox, paint, inner }) {
-  const inset = MARGIN;
-  const glyphSize = CANVAS - MARGIN * 2;
+function buildSvg({ viewBox, paint, inner }, { maskable = false } = {}) {
+  const inset = maskable ? MASKABLE_MARGIN : MARGIN;
+  const glyphSize = CANVAS - inset * 2;
+  const background = maskable
+    ? `<rect width="${CANVAS}" height="${CANVAS}" fill="${BG}"/>`
+    : `<circle cx="${CANVAS / 2}" cy="${CANVAS / 2}" r="${CANVAS / 2}" fill="${BG}"/>`;
   const glyphAttrs =
     paint === "stroke"
       ? `fill="none" stroke="${GOLD}" stroke-width="1.5" stroke-linecap="round"`
       : `fill="${GOLD}"`;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS}" height="${CANVAS}" viewBox="0 0 ${CANVAS} ${CANVAS}">
-  <circle cx="${CANVAS / 2}" cy="${CANVAS / 2}" r="${CANVAS / 2}" fill="${BG}"/>
+  ${background}
   <svg x="${inset}" y="${inset}" width="${glyphSize}" height="${glyphSize}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet" ${glyphAttrs}>
     ${inner}
   </svg>
@@ -70,6 +76,17 @@ async function generate() {
       await sharp(buf).resize(size, size).png().toFile(out);
       console.log(`Generated ${out}`);
     }
+    const maskableOut = path.join(
+      root,
+      "public",
+      "icons",
+      `${app.name}-maskable-512.png`
+    );
+    await sharp(Buffer.from(buildSvg(app, { maskable: true })))
+      .resize(512, 512)
+      .png()
+      .toFile(maskableOut);
+    console.log(`Generated ${maskableOut}`);
   }
 }
 

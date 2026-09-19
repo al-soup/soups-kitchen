@@ -1,0 +1,12 @@
+/* Apps keep their pre-redesign typography; the shell and portfolio pages use
+   the mono stack (ADR-0012). Deleting these two overrides turns apps mono. */
+.frame {
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  --font-display:
+    var(--font-space-grotesk), "Space Grotesk", system-ui, -apple-system,
+    sans-serif;
+  font-family: var(--font-sans);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

@@ -3,15 +3,12 @@
 import { notFound } from "next/navigation";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
-  MenuIcon,
-  UserIcon,
   LogInIcon,
-  SettingsIcon,
-  LogOutIcon,
   LinkedInIcon,
   MailIcon,
   InfoIcon,
   SearchIcon,
+  SoupMarkIcon,
   XIcon,
   CopyIcon,
   CheckIcon,
@@ -83,9 +80,7 @@ const icons: { name: string; Component: ComponentType<{ size?: number }> }[] = [
   { name: "LinkedInIcon", Component: LinkedInIcon },
   { name: "LocateIcon", Component: LocateIcon },
   { name: "LogInIcon", Component: LogInIcon },
-  { name: "LogOutIcon", Component: LogOutIcon },
   { name: "MailIcon", Component: MailIcon },
-  { name: "MenuIcon", Component: MenuIcon },
   { name: "MongoDBIcon", Component: MongoDBIcon },
   { name: "MySQLIcon", Component: MySQLIcon },
   { name: "NativeScriptIcon", Component: NativeScriptIcon },
@@ -99,12 +94,11 @@ const icons: { name: string; Component: ComponentType<{ size?: number }> }[] = [
   { name: "ReactIcon", Component: ReactIcon },
   { name: "RedisIcon", Component: RedisIcon },
   { name: "SearchIcon", Component: SearchIcon },
-  { name: "SettingsIcon", Component: SettingsIcon },
+  { name: "SoupMarkIcon", Component: SoupMarkIcon },
   { name: "SupabaseIcon", Component: SupabaseIcon },
   { name: "SvelteKitIcon", Component: SvelteKitIcon },
   { name: "TrashIcon", Component: TrashIcon },
   { name: "TypeScriptIcon", Component: TypeScriptIcon },
-  { name: "UserIcon", Component: UserIcon },
   { name: "XIcon", Component: XIcon },
 ];
 
