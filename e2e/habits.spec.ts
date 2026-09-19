@@ -46,7 +46,7 @@ test.describe("Habits", () => {
   });
 });
 
-test.describe("Habits — combined view", () => {
+test.describe("Habits — combined view, filters, insights", () => {
   test("All shows a type key instead of the ramp and mixes types in the feed", async ({
     page,
   }) => {
@@ -108,5 +108,28 @@ test.describe("Habits — combined view", () => {
     await expect(
       page.getByRole("button", { name: /Sorted oldest first/ })
     ).toBeVisible();
+  });
+
+  test("insights page renders tiles and charts per type", async ({ page }) => {
+    await login(page, "admin@local.test", "password123");
+    await page.goto("/apps/habits/insights?type=all");
+    await expect(page.locator("main h1")).toContainText("Insights");
+    await expect(page.getByText("Current streak")).toBeVisible();
+    await expect(page.getByRole("img", { name: /Weekly score/ })).toBeVisible({
+      timeout: 10000,
+    });
+    await expect(
+      page.getByRole("img", { name: /Weekday rhythm/ })
+    ).toBeVisible();
+    await expect(page.getByText(/Top actions/)).toBeVisible();
+    await page.getByTestId("type-3").click();
+    await expect(page).toHaveURL(/type=3/);
+  });
+
+  test("unauthenticated user redirected from insights", async ({ page }) => {
+    await page.goto("/apps/habits/insights");
+    await expect(page).toHaveURL(
+      "/login?redirectTo=%2Fapps%2Fhabits%2Finsights"
+    );
   });
 });

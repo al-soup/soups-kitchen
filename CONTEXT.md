@@ -102,6 +102,16 @@ The calendar heat-map of daily Scores; selecting a day filters the Feed to
 that day.
 _Avoid_: heatmap, chart, calendar
 
+**Streak**:
+Consecutive days with at least one Habit of the selected Action Type(s). The
+current Streak survives an empty today until the day is over.
+_Avoid_: run, chain, combo
+
+**Insights**:
+The analytics page of the Habits app: Streaks, weekly Scores, weekday rhythm and
+top Actions.
+_Avoid_: stats, analytics, dashboard, report
+
 **Ride**:
 A cycling activity imported from Strava. Every Ride yields a "Cycling" Habit.
 _Avoid_: activity (Strava's word), workout, session

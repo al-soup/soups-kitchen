@@ -4,3 +4,21 @@
   vertical-align: middle;
   text-decoration: none;
 }
+
+.typeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.insightsLink {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  text-decoration: none;
+}
+
+.insightsLink:hover {
+  color: var(--foreground);
+}

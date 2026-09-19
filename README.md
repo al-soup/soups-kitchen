@@ -5,7 +5,7 @@ Multi-app platform hosting small personal tools and my portfolio.
 ## What's inside
 
 - **Habits** — habit tracker, infinite-scroll feed, score graph (per type or combined),
-  action filter + sort, daily Strava sync
+  action filter + sort, insights (streaks, weekly/weekday charts, top actions), daily Strava sync
 - **Fahrplan** — Swiss departure board (search.ch)
 - **Knowledge Base** — markdown notes, tag filters, full-text search (typo-tolerant)
 - **Fragespiel** — risograph swipe deck of philosophical questions (DE/EN, mobile-first)
@@ -70,7 +70,8 @@ Against the remote project instead: put its URL and publishable key in `.env.rem
 ## Auth model
 
 - Public reads: Knowledge Base (list, detail, resource signed URLs)
-- Auth required (proxy redirect to `/login`): `/tools/resources`, `/apps/habits/create`, `/apps/habits/[id]`
+- Auth required (proxy redirect to `/login`): `/tools/resources`, `/apps/habits/create`,
+  `/apps/habits/insights`, `/apps/habits/[id]`
 - Signup disabled (`enable_signup = false` in `config.toml` + `config.ci.toml`; set the same in the
   prod dashboard by hand). Min password 8 chars w/ letters + digits. Accounts created by an admin only
 - Manager / admin: writes on KB, tags, resources — gated by RLS via `is_manager_of(table)`

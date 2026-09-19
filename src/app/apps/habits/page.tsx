@@ -95,12 +95,20 @@ function HabitsPageInner() {
           </Link>
         )}
       </h1>
-      <HabitTypeSelector
-        value={typeFilter}
-        onChange={handleTypeChange}
-        disabled={loading}
-        types={typeOptions}
-      />
+      <div className={styles.typeRow}>
+        <HabitTypeSelector
+          value={typeFilter}
+          onChange={handleTypeChange}
+          disabled={loading}
+          types={typeOptions}
+        />
+        <Link
+          href={`/apps/habits/insights?${TYPE_PARAM}=${typeFilter}`}
+          className={styles.insightsLink}
+        >
+          Insights →
+        </Link>
+      </div>
       <HabitScoreGraph
         scores={scores}
         loading={loading}
