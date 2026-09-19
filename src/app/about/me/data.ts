@@ -29,7 +29,7 @@ export const HEADLINE = {
 export const JOBS: Job[] = [
   {
     company: "Ambit Group",
-    url: "https://www.ambit.ch",
+    url: "https://ambit-group.com/",
     years: "2026 – now",
     role: "Senior Software Engineer",
     summary:
@@ -38,7 +38,7 @@ export const JOBS: Job[] = [
   },
   {
     company: "Swisscom",
-    url: "https://www.swisscom.ch",
+    url: "https://swisscom.ch",
     years: "2025",
     role: "DevOps Engineer",
     summary:
@@ -47,7 +47,7 @@ export const JOBS: Job[] = [
   },
   {
     company: "NZZ",
-    url: "https://www.nzz.ch",
+    url: "https://nzz.ch",
     years: "2022 – 2024",
     role: "Senior Software Engineer",
     summary:
@@ -64,7 +64,7 @@ export const JOBS: Job[] = [
   },
   {
     company: "University of Bern",
-    url: "https://www.unibe.ch",
+    url: "https://digitale-nachhaltigkeit.unibe.ch/",
     years: "2017 – 2020",
     role: "Software Engineer",
     summary:
