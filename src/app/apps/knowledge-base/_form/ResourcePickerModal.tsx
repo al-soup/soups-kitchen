@@ -6,7 +6,7 @@ import {
   getSignedUrl,
   listResources,
   placeholderToken,
-} from "@/app/resources/api";
+} from "@/app/tools/resources/api";
 import styles from "./ResourcePickerModal.module.css";
 
 interface ResourcePickerModalProps {

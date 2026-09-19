@@ -1,25 +1,13 @@
-import type { Metadata } from "next";
+import { AppFrame } from "@/components/layout/AppFrame";
+import { appMetadata, appViewport } from "@/lib/appPwa";
 
-export const metadata: Metadata = {
-  other: {
-    "mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
-  },
-  icons: {
-    apple: "/icons/knowledge-base-192.png",
-  },
-};
+export const metadata = appMetadata("knowledge-base");
+export const viewport = appViewport("knowledge-base");
 
 export default function KnowledgeBaseLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <link rel="manifest" href="/apps/knowledge-base/manifest.webmanifest" />
-      {children}
-    </>
-  );
+  return <AppFrame slug="knowledge-base">{children}</AppFrame>;
 }

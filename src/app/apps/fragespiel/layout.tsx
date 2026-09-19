@@ -1,29 +1,13 @@
-import type { Metadata, Viewport } from "next";
+import { AppFrame } from "@/components/layout/AppFrame";
+import { appMetadata, appViewport } from "@/lib/appPwa";
 
-export const metadata: Metadata = {
-  other: {
-    "mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
-  },
-  icons: {
-    apple: "/icons/fragespiel-192.png",
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: "#1b2a6b",
-};
+export const metadata = appMetadata("fragespiel");
+export const viewport = appViewport("fragespiel");
 
 export default function FragespielLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <link rel="manifest" href="/apps/fragespiel/manifest.webmanifest" />
-      {children}
-    </>
-  );
+  return <AppFrame slug="fragespiel">{children}</AppFrame>;
 }

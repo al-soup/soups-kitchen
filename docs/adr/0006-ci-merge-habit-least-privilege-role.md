@@ -24,4 +24,4 @@ as that role.
   password.
 - The secret `CI_INSERTER_DB_URL` must use the session pooler on port 5432: GitHub runners are
   IPv4-only and the transaction pooler (6543) does not suit `psql` sessions.
-- Setup steps: [README](../../README.md#post-merge-automation).
+- Setup steps: [docs/ops.md](../ops.md#post-merge-automation).

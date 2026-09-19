@@ -1,4 +1,4 @@
-import type { ResolvedResource } from "@/app/resources/api";
+import type { ResolvedResource } from "@/app/tools/resources/api";
 import {
   extractResourceIds,
   replaceResourceTokens,

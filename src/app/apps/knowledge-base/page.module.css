@@ -1,6 +1,6 @@
 /* ---------- KB-scoped design tokens (Direction 1 — Refined Baseline) ----
-   Light defaults from the design handoff; dark + neo-brutalist fall back
-   to the global theme tokens so the redesign doesn't bleed into them.
+   Light defaults from the design handoff; dark falls back to the global
+   theme tokens so the redesign doesn't bleed into it.
    --------------------------------------------------------------------- */
 .pageWide {
   --kb-page-bg: #fbfaf2;
@@ -25,8 +25,7 @@
   font-family: var(--font-hanken), system-ui, sans-serif;
 }
 
-:global([data-theme="dark"]) .pageWide,
-:global([data-theme="neo-brutalist"]) .pageWide {
+:global([data-theme="dark"]) .pageWide {
   --kb-page-bg: var(--background);
   --kb-paper: var(--background-alt);
   --kb-ink: var(--foreground);
@@ -423,7 +422,8 @@
      accounts for this element's own top margin + padding inside .reveal. */
   max-height: calc(var(--kb-reveal-height) - 26px);
   overflow-y: auto;
-  overscroll-behavior: contain;
+  /* No overscroll-behavior: contain here. It also applies when the summary
+     fits and does not scroll, which swallows the touch and pins the list. */
   scrollbar-width: thin;
   scrollbar-color: var(--kb-line2) transparent;
 }

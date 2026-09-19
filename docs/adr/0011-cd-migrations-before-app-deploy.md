@@ -23,7 +23,7 @@ password.
   Fix forward; there is no automatic rollback.
 - The access token can do anything to the account. Containment is the environment's branch
   restriction and a 1-year expiry. Fine-grained tokens do not yet cover the CLI's endpoints
-  (README, "Access token"); revisit when they do.
+  ([docs/ops.md](../ops.md#access-token)); revisit when they do.
 - The `migrations` PR job (ADR-0010) is now the last check before prod, so it is a required
   status check and branches must be up to date before merge.
 - Preview deploys for PR branches still come from Vercel's git integration.

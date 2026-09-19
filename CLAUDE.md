@@ -60,7 +60,8 @@ minimal:
   they conflict.**
 - **Domain vocabulary** goes to [CONTEXT.md](./CONTEXT.md) — glossary only, no
   implementation.
-- **How to run / set up** goes to `README.md` (app) and
+- **How to run / set up** goes to `README.md` (app),
+  [`docs/ops.md`](./docs/ops.md) (production secrets, one-time setup) and
   [`supabase/functions/README.md`](./supabase/functions/README.md) (edge
   functions).
 - This file holds only rules and conventions an agent needs on every task.
@@ -86,7 +87,8 @@ minimal:
 - **Page title**: `usePageTitle(title, subtitle?)` in every page, or
   `<PageTitle title="..." />` where the hook can't sit at top level.
 - **Styling**: CSS Modules only; theme via `--foreground`, `--background`,
-  `--border-color` etc. from `globals.css`. Themes: light, dark, neo-brutalist.
+  `--border-color` etc. from `globals.css`. Themes: dark (default), light. Shell and
+  portfolio are mono; apps keep their fonts via `AppFrame` (ADR-0012).
 - **Icons**: check `src/constants/icons.tsx` first; domain-specific icons live
   in the feature's `icons.tsx`; render new ones at `/dev/icons`.
 - **Write gating**: `useCanManage(table)` hides write UI; RLS is the real
@@ -101,4 +103,6 @@ minimal:
   apply on a seeded base schema, not only from scratch. CI checks all three.
 - **Cross-app side effects** (auto-created habits) belong in DB triggers, not
   app code (ADR-0005).
-- **KB fonts** stay inside `knowledge-base/` CSS modules (ADR-0009).
+- **KB fonts** (Baloo 2, Hanken Grotesk) stay inside `knowledge-base/` CSS modules (ADR-0009).
+- **Apps registry**: `src/constants/apps.ts` feeds menus, `/apps`, manifests and the top bar
+  icon; every app layout renders `AppFrame`. Menu groups live in `src/constants/navigation.ts`.

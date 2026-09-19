@@ -14,6 +14,16 @@ One self-contained tool reachable under `/apps/<name>`, with its own navbar
 title, icon and installable manifest.
 _Avoid_: module, feature, tool
 
+**Directory menu**:
+The site navigation, written as a directory listing (`/apps / habits`). Shown
+inline on the landing page and inside the drawer.
+_Avoid_: sidebar, nav links
+
+**Drawer**:
+The panel that slides in from the right and holds the directory menu plus the
+login or profile entry.
+_Avoid_: sidebar, hamburger menu
+
 **Resource**:
 An uploaded file stored once and embeddable from any app by its id.
 _Avoid_: attachment, upload, asset, media

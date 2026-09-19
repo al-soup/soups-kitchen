@@ -10,11 +10,13 @@ export default function AboutPage() {
       <nav className={styles.list}>
         <Link href="/about/me" className={styles.link}>
           <p className={styles.linkTitle}>Me</p>
-          <p className={styles.linkDesc}>CV, languages & interests</p>
+          <p className={styles.linkDesc}>Short CV & links</p>
         </Link>
         <Link href="/about/experience" className={styles.link}>
           <p className={styles.linkTitle}>Experience</p>
-          <p className={styles.linkDesc}>Work history & education</p>
+          <p className={styles.linkDesc}>
+            Work history in detail — coming soon
+          </p>
         </Link>
       </nav>
     </div>

@@ -1,7 +1,7 @@
 /* ---------- KB-scoped design tokens (matches overview redesign) ---------
    Same scheme as ../page.module.css .pageWide: light defaults from the
-   design handoff; dark + neo-brutalist remap to the global theme tokens
-   so the cream palette doesn't bleed into them.
+   design handoff; dark remaps to the global theme tokens so the cream
+   palette doesn't bleed into it.
    --------------------------------------------------------------------- */
 .pageContainer {
   --kb-page-bg: #fbfaf2;
@@ -21,8 +21,7 @@
   font-family: var(--font-hanken), system-ui, sans-serif;
 }
 
-:global([data-theme="dark"]) .pageContainer,
-:global([data-theme="neo-brutalist"]) .pageContainer {
+:global([data-theme="dark"]) .pageContainer {
   --kb-page-bg: var(--background);
   --kb-paper: var(--background-alt);
   --kb-ink: var(--foreground);

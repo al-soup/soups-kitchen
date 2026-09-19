@@ -1,4 +1,4 @@
-import type { ResolvedResource } from "@/app/resources/api";
+import type { ResolvedResource } from "@/app/tools/resources/api";
 
 const TOKEN_RE = /\{\{resource:([0-9a-f-]{36})\}\}/g;
 

@@ -5,9 +5,11 @@ test.describe("Auth", () => {
   test("anon visiting protected page is redirected server-side", async ({
     page,
   }) => {
-    const res = await page.goto("/resources");
-    expect(res?.request().redirectedFrom()?.url()).toContain("/resources");
-    await expect(page).toHaveURL("/login?redirectTo=%2Fresources");
+    const res = await page.goto("/tools/resources");
+    expect(res?.request().redirectedFrom()?.url()).toContain(
+      "/tools/resources"
+    );
+    await expect(page).toHaveURL("/login?redirectTo=%2Ftools%2Fresources");
   });
 
   test("login with valid credentials", async ({ page }) => {
@@ -25,11 +27,34 @@ test.describe("Auth", () => {
     );
   });
 
-  test("logout redirects to login", async ({ page }) => {
-    await login(page, "admin@local.test", "password123");
+  test("old /resources path still ends at the login gate", async ({ page }) => {
+    await page.goto("/resources");
+    await expect(page).toHaveURL("/login?redirectTo=%2Ftools%2Fresources");
+  });
 
-    // Open profile dropdown and click logout
-    await page.getByRole("button", { name: "Profile menu" }).click();
+  test("drawer offers login to anon and the profile when signed in", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Toggle menu" }).click();
+    const drawer = page.locator("#site-drawer");
+    await expect(drawer.getByRole("link", { name: "login" })).toBeVisible();
+    await expect(drawer.getByRole("link", { name: "/ resources" })).toHaveCount(
+      0
+    );
+
+    await login(page, "admin@local.test", "password123");
+    await page.getByRole("button", { name: "Toggle menu" }).click();
+    await expect(
+      drawer.getByRole("link", { name: "/ resources" })
+    ).toBeVisible();
+    await drawer.getByRole("link", { name: "admin@local.test" }).click();
+    await expect(page).toHaveURL("/profile");
+  });
+
+  test("logout from the profile page redirects to login", async ({ page }) => {
+    await login(page, "admin@local.test", "password123");
+    await page.goto("/profile");
     await page.getByRole("button", { name: "Log out" }).click();
     await expect(page).toHaveURL("/login");
   });

@@ -57,6 +57,7 @@
 }
 
 .logoutButton {
+  display: inline-block;
   padding: 8px 16px;
   background: transparent;
   border: var(--border-width) solid var(--border-color);

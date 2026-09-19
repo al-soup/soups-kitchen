@@ -34,7 +34,7 @@
 }
 
 .appLink:hover {
-  background: var(--background-secondary);
+  background: var(--background-alt);
   border-color: var(--color-primary);
 }
 
