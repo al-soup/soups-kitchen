@@ -53,7 +53,7 @@ test.describe("Habits — Feed", () => {
     ]);
 
     // DB-agnostic: verify the refetch applied the type-2 filter
-    expect(decodeURIComponent(response.url())).toContain("action.type=eq.2");
+    expect(decodeURIComponent(response.url())).toContain("action.type=in.(2)");
 
     // Feed settled (items or empty state visible)
     await expect(
@@ -72,13 +72,13 @@ test.describe("Habits — Feed", () => {
       timeout: 10000,
     });
 
-    // Wait for type-2 feed response (filter includes action.type=eq.2)
+    // Wait for type-2 feed response (filter includes action.type=in.(2))
     await Promise.all([
       page.waitForResponse(
         (r) =>
           r.url().includes("/rest/v1/habit") &&
           r.request().method() === "GET" &&
-          decodeURIComponent(r.url()).includes("action.type=eq.2")
+          decodeURIComponent(r.url()).includes("action.type=in.(2)")
       ),
       page.getByTestId("type-2").click(),
     ]);

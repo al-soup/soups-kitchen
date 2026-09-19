@@ -56,3 +56,5 @@ export type HabitFeedPage = {
   items: HabitDetail[];
   hasMore: boolean;
 };
+
+export type ScoresByType = Partial<Record<ActionType, DailyHabitScore[]>>;

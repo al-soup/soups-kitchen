@@ -38,11 +38,11 @@ function groupByDate(items: HabitDetail[]): DateGroup[] {
 }
 
 export function HabitFeed({
-  actionType,
+  actionTypes,
   selectedDate,
   onClearDate,
 }: {
-  actionType: ActionType;
+  actionTypes: ActionType[];
   selectedDate?: string | null;
   onClearDate?: () => void;
 }) {
@@ -65,7 +65,7 @@ export function HabitFeed({
     const controller = new AbortController();
 
     getHabitFeed({
-      actionType,
+      actionTypes,
       offset: 0,
       date: selectedDate,
       signal: controller.signal,
@@ -86,7 +86,7 @@ export function HabitFeed({
       });
 
     return () => controller.abort();
-  }, [actionType, selectedDate]);
+  }, [actionTypes, selectedDate]);
 
   const handleLoadMore = () => {
     if (loadingMore) return;
@@ -95,7 +95,7 @@ export function HabitFeed({
     loadMoreCtrlRef.current = controller;
     setLoadingMore(true);
     getHabitFeed({
-      actionType,
+      actionTypes,
       offset,
       date: selectedDate,
       signal: controller.signal,

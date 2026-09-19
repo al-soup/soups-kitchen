@@ -1,18 +1,17 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitScoreGraph } from "@/components/ui/HabitScoreGraph";
-import { useUserRole } from "@/hooks/useUserRole";
-import type { ActionType, DailyHabitScore } from "@/lib/supabase/types";
-import { actionTypeQuery, parseActionType, TYPE_PARAM } from "@/lib/actionType";
-import { getDailyHabitScores } from "./api";
-import { HabitTypeSelector } from "./HabitTypeSelector";
+import { ALL_TYPES, TYPE_PARAM, type ActionTypeFilter } from "@/lib/actionType";
+import { HabitTypeSelector, type HabitTypeOption } from "./HabitTypeSelector";
 import { HabitFeed } from "./HabitFeed";
+import { useDailyHabitScores, useHabitsView } from "./useHabitsView";
 
-import styles from "../../shared-page.module.css";
+import sharedStyles from "../../shared-page.module.css";
+import styles from "./page.module.css";
 
 export default function HabitsPage() {
   return (
@@ -26,94 +25,68 @@ function HabitsPageInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { canManage, visibleTypes, typeFilter, actionTypes } = useHabitsView();
 
-  const { role } = useUserRole("habit");
-  const canCreate = role === "admin" || role === "manager";
-  const canSeeType2 = role === "admin" || role === "manager";
-  const availableTypes = useMemo(
-    () => [
-      { value: 1 as ActionType, label: "Sports" },
-      ...(canSeeType2 ? [{ value: 2 as ActionType, label: "Bad Habits" }] : []),
-      { value: 3 as ActionType, label: "Learning" },
-    ],
-    [canSeeType2]
+  const typeOptions = useMemo<HabitTypeOption<ActionTypeFilter>[]>(
+    () => [...visibleTypes, { value: ALL_TYPES, label: "All" }],
+    [visibleTypes]
   );
 
-  const actionType: ActionType =
-    parseActionType(searchParams.get(TYPE_PARAM)) ?? 1;
-  const effectiveType: ActionType =
-    !canSeeType2 && actionType === 2 ? 1 : actionType;
-  const [scores, setScores] = useState<DailyHabitScore[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { scores, loading, error } = useDailyHabitScores(actionTypes);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  const handleTypeChange = useCallback(
-    (type: ActionType) => {
-      setSelectedDate(null);
-      setScores([]);
-      setError(null);
-      setLoading(true);
-      router.replace(`${pathname}${actionTypeQuery(type)}`, { scroll: false });
+  const replaceParams = useCallback(
+    (patch: Record<string, string | null>) => {
+      const next = new URLSearchParams(searchParams);
+      for (const [key, value] of Object.entries(patch)) {
+        if (value === null) next.delete(key);
+        else next.set(key, value);
+      }
+      router.replace(`${pathname}?${next}`, { scroll: false });
     },
-    [router, pathname]
+    [router, pathname, searchParams]
   );
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const today = new Date().toISOString().split("T")[0];
-
-    getDailyHabitScores({ start_date: today, action_type: effectiveType })
-      .then((data) => {
-        if (!controller.signal.aborted) setScores(data);
-      })
-      .catch((err) => {
-        if (!controller.signal.aborted) setError(err.message);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-
-    return () => controller.abort();
-  }, [effectiveType]);
+  const handleTypeChange = useCallback(
+    (type: ActionTypeFilter) => {
+      setSelectedDate(null);
+      replaceParams({ [TYPE_PARAM]: String(type) });
+    },
+    [replaceParams]
+  );
 
   return (
-    <div className={styles.page}>
+    <div className={sharedStyles.page}>
       <PageTitle title="Habit Tracker" />
-      <h1 className={styles.title}>
+      <h1 className={sharedStyles.title}>
         Habit Tracker
-        {canCreate && (
+        {canManage && (
           <Link
-            href={`/apps/habits/create${actionTypeQuery(effectiveType)}`}
+            href={`/apps/habits/create?${TYPE_PARAM}=${typeFilter === ALL_TYPES ? 1 : typeFilter}`}
             aria-label="Create habit"
-            style={{
-              marginLeft: 12,
-              fontSize: "1.2rem",
-              verticalAlign: "middle",
-              textDecoration: "none",
-            }}
+            className={styles.createLink}
           >
             +
           </Link>
         )}
       </h1>
       <HabitTypeSelector
-        value={effectiveType}
+        value={typeFilter}
         onChange={handleTypeChange}
         disabled={loading}
-        types={availableTypes}
+        types={typeOptions}
       />
       <HabitScoreGraph
         scores={scores}
         loading={loading}
         error={error}
-        actionType={effectiveType}
+        actionType={typeFilter}
         selectedDate={selectedDate}
         onSelectDate={setSelectedDate}
       />
       <HabitFeed
-        key={`${effectiveType}-${selectedDate ?? "all"}`}
-        actionType={effectiveType}
+        key={`${actionTypes.join(",")}-${selectedDate ?? "all"}`}
+        actionTypes={actionTypes}
         selectedDate={selectedDate}
         onClearDate={() => setSelectedDate(null)}
       />

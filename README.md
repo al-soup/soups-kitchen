@@ -4,7 +4,8 @@ Multi-app platform hosting small personal tools and my portfolio.
 
 ## What's inside
 
-- **Habits** — habit tracker, infinite-scroll feed, score graph, daily Strava sync
+- **Habits** — habit tracker, infinite-scroll feed, score graph (per type or combined),
+  daily Strava sync
 - **Fahrplan** — Swiss departure board (search.ch)
 - **Knowledge Base** — markdown notes, tag filters, full-text search (typo-tolerant)
 - **Fragespiel** — risograph swipe deck of philosophical questions (DE/EN, mobile-first)

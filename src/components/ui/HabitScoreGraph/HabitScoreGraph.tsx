@@ -1,15 +1,22 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ActionType, DailyHabitScore } from "@/lib/supabase/types";
-import { HabitScoreGraphDay } from "./HabitScoreGraphDay";
+import type { ActionType, ScoresByType } from "@/lib/supabase/types";
+import {
+  ACTION_TYPES,
+  actionTypeLabel,
+  type ActionTypeFilter,
+} from "@/lib/actionType";
+import { habitScoreColor, MAX_SCORE_LEVEL } from "@/lib/badgeStyles";
+import { HabitScoreGraphDay, type DaySegment } from "./HabitScoreGraphDay";
 import styles from "./HabitScoreGraph.module.css";
 
 interface HabitScoreGraphProps {
-  scores: DailyHabitScore[];
+  scores: ScoresByType;
   loading: boolean;
   error: string | null;
-  actionType: ActionType;
+  /** Single type paints one ramp; `"all"` splits every cell into one stripe per type. */
+  actionType: ActionTypeFilter;
   selectedDate?: string | null;
   onSelectDate?: (date: string | null) => void;
 }
@@ -55,13 +62,26 @@ export function HabitScoreGraph({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
+  const types = useMemo<ActionType[]>(
+    () =>
+      actionType === "all"
+        ? ACTION_TYPES.map((t) => t.value).filter((t) => t in scores)
+        : [actionType],
+    [actionType, scores]
+  );
+
   const { days, weeks, monthLabels } = useMemo(() => {
-    const scoreMap = new Map<string, { score: number; habitCount: number }>();
-    for (const s of scores) {
-      scoreMap.set(s.completed_date, {
-        score: s.total_score,
-        habitCount: s.habit_ids.length,
-      });
+    const scoreMap = new Map<string, DaySegment[]>();
+    for (const type of types) {
+      for (const s of scores[type] ?? []) {
+        const segments = scoreMap.get(s.completed_date) ?? [];
+        segments.push({
+          type,
+          score: s.total_score,
+          habitCount: s.habit_ids.length,
+        });
+        scoreMap.set(s.completed_date, segments);
+      }
     }
 
     const end = new Date();
@@ -72,18 +92,25 @@ export function HabitScoreGraph({
 
     const allDays: {
       date: string;
-      score: number;
+      segments: DaySegment[];
       habitCount: number;
       jsDate: Date;
     }[] = [];
     const cursor = new Date(start);
     while (cursor <= end) {
       const dateStr = formatDate(cursor);
-      const entry = scoreMap.get(dateStr);
+      const byType = new Map(
+        (scoreMap.get(dateStr) ?? []).map((s) => [s.type, s])
+      );
+      // Every cell carries one stripe per visible type so stripe position
+      // stays meaningful across days.
+      const segments = types.map(
+        (type) => byType.get(type) ?? { type, score: 0, habitCount: 0 }
+      );
       allDays.push({
         date: dateStr,
-        score: entry?.score ?? 0,
-        habitCount: entry?.habitCount ?? 0,
+        segments,
+        habitCount: segments.reduce((sum, s) => sum + s.habitCount, 0),
         jsDate: new Date(cursor),
       });
       cursor.setDate(cursor.getDate() + 1);
@@ -114,7 +141,7 @@ export function HabitScoreGraph({
     }
 
     return { days: allDays, weeks: weekGroups, monthLabels: labels };
-  }, [scores]);
+  }, [scores, types]);
 
   const updateScrollButtons = useCallback(() => {
     const el = scrollRef.current;
@@ -146,7 +173,7 @@ export function HabitScoreGraph({
   const totalWeeks = weeks.length;
 
   return (
-    <div className={styles.outer} data-color-type={actionType}>
+    <div className={styles.outer}>
       <div className={styles.bodyRow}>
         <div className={styles.dayLabels}>
           {DAY_LABELS.map((label) => (
@@ -186,8 +213,7 @@ export function HabitScoreGraph({
                 <HabitScoreGraphDay
                   key={day.date}
                   date={day.date}
-                  score={day.score}
-                  habitCount={day.habitCount}
+                  segments={day.segments}
                   loading={loading}
                   selected={day.date === selectedDate}
                   onClick={
@@ -240,19 +266,36 @@ export function HabitScoreGraph({
 
         {/* Habit score legend */}
         <div className={styles.footer}>
-          <span>Less</span>
-          <div className={styles.legendCells}>
-            {[0, 1, 2, 3, 4, 5, 6].map((level) => (
-              <HabitScoreGraphDay
-                loading={false}
-                key={level}
-                date=""
-                score={level}
-                habitCount={0}
-              />
-            ))}
-          </div>
-          <span>More</span>
+          {actionType === "all" ? (
+            types.map((type) => (
+              <span key={type} className={styles.legendKey}>
+                <span
+                  className={styles.legendSwatch}
+                  style={{
+                    background: habitScoreColor(type, MAX_SCORE_LEVEL - 1),
+                  }}
+                />
+                {actionTypeLabel(type)}
+              </span>
+            ))
+          ) : (
+            <>
+              <span>Less</span>
+              <div className={styles.legendCells}>
+                {Array.from({ length: MAX_SCORE_LEVEL + 1 }, (_, level) => (
+                  <HabitScoreGraphDay
+                    loading={false}
+                    key={level}
+                    date=""
+                    segments={[
+                      { type: actionType, score: level, habitCount: 0 },
+                    ]}
+                  />
+                ))}
+              </div>
+              <span>More</span>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -4,17 +4,18 @@ import type {
   GetDailyHabitScoresParams,
   HabitDetail,
   HabitFeedPage,
+  ScoresByType,
 } from "@/lib/supabase/types";
 
 export const PAGE_SIZE = 20;
 
 export async function getHabitFeed({
-  actionType,
+  actionTypes,
   offset,
   date,
   signal,
 }: {
-  actionType: ActionType;
+  actionTypes: ActionType[];
   offset: number;
   date?: string | null;
   signal?: AbortSignal;
@@ -24,7 +25,7 @@ export async function getHabitFeed({
     .select(
       "id, note, completed_at, created_at, action!inner(id, name, description, type, level)"
     )
-    .eq("action.type", actionType)
+    .in("action.type", actionTypes)
     .not("completed_at", "is", null);
 
   if (date) {
@@ -61,4 +62,21 @@ export async function getDailyHabitScores(params: GetDailyHabitScoresParams) {
   }
 
   return data;
+}
+
+/** One RPC call per type; the RPC only knows a single `action_type`. */
+export async function getDailyHabitScoresByType(
+  types: ActionType[],
+  startDate: string
+): Promise<ScoresByType> {
+  const results = await Promise.all(
+    types.map((t) =>
+      getDailyHabitScores({ action_type: t, start_date: startDate })
+    )
+  );
+  const byType: ScoresByType = {};
+  types.forEach((t, i) => {
+    byType[t] = results[i];
+  });
+  return byType;
 }

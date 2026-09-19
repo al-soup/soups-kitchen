@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { HabitScoreGraph } from "./HabitScoreGraph";
 import type { DailyHabitScore } from "@/lib/supabase/types";
+import { getLocalToday } from "@/lib/dateUtils";
 
 // Mock scrollBy/scrollWidth for scroll logic
 beforeAll(() => {
@@ -27,7 +28,7 @@ describe("HabitScoreGraph", () => {
   it("renders without crashing with empty scores", () => {
     render(
       <HabitScoreGraph
-        scores={[]}
+        scores={{}}
         loading={false}
         error={null}
         actionType={1}
@@ -41,7 +42,7 @@ describe("HabitScoreGraph", () => {
   it("renders day cells for a year (grid + legend)", () => {
     render(
       <HabitScoreGraph
-        scores={[]}
+        scores={{}}
         loading={false}
         error={null}
         actionType={1}
@@ -60,7 +61,7 @@ describe("HabitScoreGraph", () => {
     ];
     render(
       <HabitScoreGraph
-        scores={scores}
+        scores={{ 1: scores }}
         loading={false}
         error={null}
         actionType={1}
@@ -77,7 +78,7 @@ describe("HabitScoreGraph", () => {
   it("shows every-other day labels", () => {
     render(
       <HabitScoreGraph
-        scores={[]}
+        scores={{}}
         loading={false}
         error={null}
         actionType={1}
@@ -94,7 +95,7 @@ describe("HabitScoreGraph", () => {
   it("renders month labels", () => {
     render(
       <HabitScoreGraph
-        scores={[]}
+        scores={{}}
         loading={false}
         error={null}
         actionType={1}
@@ -106,7 +107,7 @@ describe("HabitScoreGraph", () => {
   it("renders legend with Less and More", () => {
     render(
       <HabitScoreGraph
-        scores={[]}
+        scores={{}}
         loading={false}
         error={null}
         actionType={1}
@@ -118,7 +119,7 @@ describe("HabitScoreGraph", () => {
 
   it("sets data-loading on cells when loading", () => {
     render(
-      <HabitScoreGraph scores={[]} loading={true} error={null} actionType={1} />
+      <HabitScoreGraph scores={{}} loading={true} error={null} actionType={1} />
     );
     const cells = screen.getAllByRole("gridcell");
     const loadingCells = cells.filter((c) => c.hasAttribute("data-loading"));
@@ -128,7 +129,7 @@ describe("HabitScoreGraph", () => {
   it("shows error message when error is set", () => {
     render(
       <HabitScoreGraph
-        scores={[]}
+        scores={{}}
         loading={false}
         error="Something went wrong"
         actionType={1}
@@ -139,7 +140,7 @@ describe("HabitScoreGraph", () => {
 
   it("disables scroll buttons when loading", () => {
     render(
-      <HabitScoreGraph scores={[]} loading={true} error={null} actionType={1} />
+      <HabitScoreGraph scores={{}} loading={true} error={null} actionType={1} />
     );
     const leftBtn = screen.getByLabelText("Scroll left");
     const rightBtn = screen.getByLabelText("Scroll right");
@@ -154,7 +155,7 @@ describe("HabitScoreGraph", () => {
 
     render(
       <HabitScoreGraph
-        scores={[makeScore(dateStr, 3, [1, 2, 3])]}
+        scores={{ 1: [makeScore(dateStr, 3, [1, 2, 3])] }}
         loading={false}
         error={null}
         actionType={1}
@@ -181,7 +182,7 @@ describe("HabitScoreGraph", () => {
 
     render(
       <HabitScoreGraph
-        scores={[makeScore(dateStr, 3, [1, 2, 3])]}
+        scores={{ 1: [makeScore(dateStr, 3, [1, 2, 3])] }}
         loading={false}
         error={null}
         actionType={1}
@@ -205,7 +206,7 @@ describe("HabitScoreGraph", () => {
 
     render(
       <HabitScoreGraph
-        scores={[makeScore(dateStr, 3, [1, 2, 3])]}
+        scores={{ 1: [makeScore(dateStr, 3, [1, 2, 3])] }}
         loading={false}
         error={null}
         actionType={1}
@@ -226,25 +227,46 @@ describe("HabitScoreGraph", () => {
     }
   });
 
-  it("sets data-color-type on outer div", () => {
-    const { container, rerender } = render(
+  it("paints one stripe per type in the combined view", () => {
+    const dateStr = getLocalToday();
+    render(
       <HabitScoreGraph
-        scores={[]}
+        scores={{
+          1: [makeScore(dateStr, 2, [1, 2])],
+          3: [makeScore(dateStr, 1, [3])],
+        }}
         loading={false}
         error={null}
-        actionType={2}
+        actionType="all"
       />
     );
-    expect(container.firstChild).toHaveAttribute("data-color-type", "2");
+    const cell = screen
+      .getAllByRole("gridcell")
+      .find((c) => c.getAttribute("data-level") === "3")!;
+    const stripes = cell.querySelectorAll("span[style]");
+    expect(stripes).toHaveLength(2);
+    expect(stripes[0]).toHaveStyle({
+      background: "var(--habit-score-level-2)",
+    });
+    expect(stripes[1]).toHaveStyle({
+      background: "var(--habit-score-t3-level-1)",
+    });
+    expect(screen.getByText("Sports: 2 entries")).toBeInTheDocument();
+    expect(screen.getByText("Learning: 1 entry")).toBeInTheDocument();
+  });
 
-    rerender(
+  it("shows a type key instead of the ramp in the combined view", () => {
+    render(
       <HabitScoreGraph
-        scores={[]}
+        scores={{ 1: [], 2: [] }}
         loading={false}
         error={null}
-        actionType={3}
+        actionType="all"
       />
     );
-    expect(container.firstChild).toHaveAttribute("data-color-type", "3");
+    expect(screen.queryByText("Less")).not.toBeInTheDocument();
+    expect(screen.getByText("Sports")).toBeInTheDocument();
+    expect(screen.getByText("Bad Habits")).toBeInTheDocument();
+    expect(screen.queryByText("Learning")).not.toBeInTheDocument();
   });
 });
