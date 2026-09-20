@@ -61,38 +61,30 @@ export async function getHabitFeed({
   };
 }
 
-export async function getDailyHabitScores(params: GetDailyHabitScoresParams) {
-  const { data, error } = await getSupabase().rpc(
-    "get_daily_habit_scores",
-    params
-  );
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
-}
-
-/** One RPC call per type; the RPC only knows a single `action_type`. */
-export async function getDailyHabitScoresByType(
+/**
+ * Daily scores of the past year, grouped by type. Every requested type gets
+ * an entry (possibly empty) so `type in scores` means "was requested".
+ */
+export async function getDailyHabitScores(
   types: ActionType[],
   startDate: string,
-  actionId?: number | null
+  actionId?: number | null,
+  signal?: AbortSignal
 ): Promise<ScoresByType> {
-  const results = await Promise.all(
-    types.map((t) =>
-      getDailyHabitScores({
-        action_type: t,
-        start_date: startDate,
-        ...(actionId != null ? { filter_action_id: actionId } : {}),
-      })
-    )
-  );
+  const params: GetDailyHabitScoresParams = {
+    action_types: types,
+    start_date: startDate,
+    ...(actionId != null ? { filter_action_id: actionId } : {}),
+  };
+  const query = getSupabase().rpc("get_daily_habit_scores", params);
+  const { data, error } = await (signal ? query.abortSignal(signal) : query);
+  if (error) throw new Error(error.message);
+
   const byType: ScoresByType = {};
-  types.forEach((t, i) => {
-    byType[t] = results[i];
-  });
+  for (const t of types) byType[t] = [];
+  for (const row of data ?? []) {
+    byType[row.action_type as ActionType]?.push(row);
+  }
   return byType;
 }
 

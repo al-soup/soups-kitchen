@@ -1,6 +1,7 @@
 import { getSupabase } from "@/lib/supabase/client";
 import type { Action } from "@/lib/supabase/types";
 import { getCachedActions, setCachedActions } from "@/lib/actionsCache";
+import { invalidateHabitsCache } from "../queryCache";
 
 export async function getActions(): Promise<Action[]> {
   const cached = getCachedActions();
@@ -30,5 +31,6 @@ export async function createHabits(rows: HabitRow[]): Promise<number[]> {
     .insert(rows)
     .select("id");
   if (error) throw new Error(error.message);
+  invalidateHabitsCache();
   return (data ?? []).map((r) => r.id);
 }

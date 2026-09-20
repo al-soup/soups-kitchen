@@ -1,5 +1,6 @@
 import { getSupabase } from "@/lib/supabase/client";
 import type { HabitDetail } from "@/lib/supabase/types";
+import { invalidateHabitsCache } from "../queryCache";
 
 export async function getHabitById(id: number): Promise<HabitDetail | null> {
   const { data, error } = await getSupabase()
@@ -26,9 +27,11 @@ export async function updateHabit(
     .update(fields)
     .eq("id", id);
   if (error) throw new Error(error.message);
+  invalidateHabitsCache();
 }
 
 export async function deleteHabit(id: number): Promise<void> {
   const { error } = await getSupabase().from("habit").delete().eq("id", id);
   if (error) throw new Error(error.message);
+  invalidateHabitsCache();
 }

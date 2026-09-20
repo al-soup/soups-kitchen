@@ -19,9 +19,15 @@ beforeAll(() => {
 function makeScore(
   date: string,
   score: number,
-  ids: number[] = []
+  count = 0,
+  type = 1
 ): DailyHabitScore {
-  return { completed_date: date, total_score: score, habit_ids: ids };
+  return {
+    action_type: type,
+    completed_date: date,
+    total_score: score,
+    habit_count: count,
+  };
 }
 
 describe("HabitScoreGraph", () => {
@@ -56,8 +62,8 @@ describe("HabitScoreGraph", () => {
 
   it("sets correct data-level for given scores", () => {
     const scores = [
-      makeScore("2025-06-01", 3, [1, 2, 3]),
-      makeScore("2025-06-02", 5, [1, 2, 3, 4, 5]),
+      makeScore("2025-06-01", 3, 3),
+      makeScore("2025-06-02", 5, 5),
     ];
     render(
       <HabitScoreGraph
@@ -155,7 +161,7 @@ describe("HabitScoreGraph", () => {
 
     render(
       <HabitScoreGraph
-        scores={{ 1: [makeScore(dateStr, 3, [1, 2, 3])] }}
+        scores={{ 1: [makeScore(dateStr, 3, 3)] }}
         loading={false}
         error={null}
         actionType={1}
@@ -182,7 +188,7 @@ describe("HabitScoreGraph", () => {
 
     render(
       <HabitScoreGraph
-        scores={{ 1: [makeScore(dateStr, 3, [1, 2, 3])] }}
+        scores={{ 1: [makeScore(dateStr, 3, 3)] }}
         loading={false}
         error={null}
         actionType={1}
@@ -206,7 +212,7 @@ describe("HabitScoreGraph", () => {
 
     render(
       <HabitScoreGraph
-        scores={{ 1: [makeScore(dateStr, 3, [1, 2, 3])] }}
+        scores={{ 1: [makeScore(dateStr, 3, 3)] }}
         loading={false}
         error={null}
         actionType={1}
@@ -232,8 +238,8 @@ describe("HabitScoreGraph", () => {
     render(
       <HabitScoreGraph
         scores={{
-          1: [makeScore(dateStr, 2, [1, 2])],
-          3: [makeScore(dateStr, 1, [3])],
+          1: [makeScore(dateStr, 2, 2)],
+          3: [makeScore(dateStr, 1, 1)],
         }}
         loading={false}
         error={null}

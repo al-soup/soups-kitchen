@@ -344,13 +344,14 @@ export type Database = {
       custom_access_token_hook: { Args: { event: Json }; Returns: Json };
       get_daily_habit_scores: {
         Args: {
-          action_type: number;
+          action_types: number[];
           filter_action_id?: number;
           start_date?: string;
         };
         Returns: {
+          action_type: number;
           completed_date: string;
-          habit_ids: number[];
+          habit_count: number;
           total_score: number;
         }[];
       };
