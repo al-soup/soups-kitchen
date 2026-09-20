@@ -32,7 +32,7 @@ export type DailyHabitScore =
   Functions["get_daily_habit_scores"]["Returns"][number];
 
 export type GetDailyHabitScoresParams = {
-  action_type: ActionType;
+  action_types: ActionType[];
   start_date: string;
   filter_action_id?: number;
 };

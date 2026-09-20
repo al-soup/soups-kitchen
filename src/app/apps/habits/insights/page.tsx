@@ -1,19 +1,21 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { PageTitle } from "@/components/ui/PageTitle";
-import type { ActionCount } from "@/lib/supabase/types";
 import {
   actionTypeQuery,
   ALL_TYPES,
   type ActionTypeFilter,
 } from "@/lib/actionType";
 import { getLocalToday } from "@/lib/dateUtils";
-import { getActionCounts } from "../api";
 import { HabitTypeSelector, type HabitTypeOption } from "../HabitTypeSelector";
-import { useDailyHabitScores, useHabitsView } from "../useHabitsView";
+import {
+  useActionCounts,
+  useDailyHabitScores,
+  useHabitsView,
+} from "../useHabitsView";
 import { BarChart } from "./BarChart";
 import { RankedActions } from "./RankedActions";
 import {
@@ -48,14 +50,16 @@ export default function InsightsPage() {
 function InsightsPageInner() {
   const router = useRouter();
   const pathname = usePathname();
-  const { visibleTypes, typeFilter, actionTypes } = useHabitsView();
+  const { visibleTypes, typeFilter, actionTypes, ready } = useHabitsView();
+  const readyTypes = ready ? actionTypes : null;
   const typeOptions = useMemo<HabitTypeOption<ActionTypeFilter>[]>(
     () => [...visibleTypes, { value: ALL_TYPES, label: "All" }],
     [visibleTypes]
   );
 
-  const { scores, loading, error } = useDailyHabitScores(actionTypes);
-  const [counts, setCounts] = useState<ActionCount[]>([]);
+  const { scores, loading, error } = useDailyHabitScores(readyTypes);
+  const today = getLocalToday();
+  const counts = useActionCounts(readyTypes, addDays(today, -RANKING_DAYS));
 
   const handleTypeChange = useCallback(
     (type: ActionTypeFilter) => {
@@ -64,23 +68,6 @@ function InsightsPageInner() {
     [router, pathname]
   );
 
-  useEffect(() => {
-    const controller = new AbortController();
-    getActionCounts({
-      actionTypes,
-      since: addDays(getLocalToday(), -RANKING_DAYS),
-      signal: controller.signal,
-    })
-      .then((rows) => {
-        if (!controller.signal.aborted) setCounts(rows);
-      })
-      .catch(() => {
-        // The scores request surfaces connectivity errors; the ranking just stays empty.
-      });
-    return () => controller.abort();
-  }, [actionTypes]);
-
-  const today = getLocalToday();
   const streaks = useMemo(() => computeStreaks(scores, today), [scores, today]);
   const weeks = useMemo(
     () =>

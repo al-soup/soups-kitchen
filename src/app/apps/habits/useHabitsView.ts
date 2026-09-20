@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
-import type { ActionType, ScoresByType } from "@/lib/supabase/types";
+import type {
+  ActionCount,
+  ActionType,
+  ScoresByType,
+} from "@/lib/supabase/types";
 import {
   ACTION_TYPES,
   parseActionTypeFilter,
@@ -13,7 +17,8 @@ import {
   type ActionTypeFilter,
 } from "@/lib/actionType";
 import { getLocalToday } from "@/lib/dateUtils";
-import { getDailyHabitScoresByType } from "./api";
+import { getActionCounts, getDailyHabitScores } from "./api";
+import { useCachedQuery } from "./queryCache";
 
 /**
  * Type selection shared by the tracker and insights pages: role-gated type
@@ -21,7 +26,7 @@ import { getDailyHabitScoresByType } from "./api";
  */
 export function useHabitsView() {
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { role } = useUserRole("habit");
   const canManage = role === "admin" || role === "manager";
   const signedIn = user !== null;
@@ -36,52 +41,58 @@ export function useHabitsView() {
   const typeFilter: ActionTypeFilter =
     requested === 2 && !signedIn ? 1 : requested;
 
+  // Memoised on the joined key: `signedIn` resolving after mount must not
+  // hand consumers a new array with the same contents (each one refetches).
+  const typesKey = resolveActionTypes(
+    typeFilter,
+    visibleTypes.map((t) => t.value)
+  ).join(",");
   const actionTypes = useMemo(
-    () =>
-      resolveActionTypes(
-        typeFilter,
-        visibleTypes.map((t) => t.value)
-      ),
-    [typeFilter, visibleTypes]
+    () => typesKey.split(",").map(Number) as ActionType[],
+    [typesKey]
   );
 
-  return { canManage, visibleTypes, typeFilter, actionTypes };
+  // Reads wait for the session: the type list differs signed in vs out, so
+  // fetching before it resolves costs a second round of requests.
+  return {
+    canManage,
+    visibleTypes,
+    typeFilter,
+    actionTypes,
+    ready: !authLoading,
+  };
 }
 
-type ScoresResult = { key: string; scores: ScoresByType; error: string | null };
 const NO_SCORES: ScoresByType = {};
+const NO_COUNTS: ActionCount[] = [];
 
-/** Daily scores of the past year for each given type, optionally of one Action. */
+const NO_TYPES: ActionType[] = [];
+
+/**
+ * Daily scores of the past year for each given type, optionally of one
+ * Action. `null` types = not ready yet, stays loading.
+ */
 export function useDailyHabitScores(
-  types: ActionType[],
+  types: ActionType[] | null,
   actionId: number | null = null
 ) {
-  const typesKey = `${types.join(",")}|${actionId ?? ""}`;
-  // Keyed by the request so a stale result never shows for a newer selection.
-  const [result, setResult] = useState<ScoresResult>({
-    key: "",
-    scores: NO_SCORES,
-    error: null,
-  });
+  const today = getLocalToday();
+  const key = types && `scores|${types.join(",")}|${actionId ?? ""}|${today}`;
+  const fetcher = useCallback(
+    () => getDailyHabitScores(types ?? NO_TYPES, today, actionId),
+    [types, today, actionId]
+  );
+  const { data, loading, error } = useCachedQuery(key, fetcher);
+  return { scores: data ?? NO_SCORES, loading, error };
+}
 
-  useEffect(() => {
-    const controller = new AbortController();
-    getDailyHabitScoresByType(types, getLocalToday(), actionId)
-      .then((scores) => {
-        if (!controller.signal.aborted)
-          setResult({ key: typesKey, scores, error: null });
-      })
-      .catch((err) => {
-        if (!controller.signal.aborted)
-          setResult({ key: typesKey, scores: NO_SCORES, error: err.message });
-      });
-    return () => controller.abort();
-  }, [types, actionId, typesKey]);
-
-  const loading = result.key !== typesKey;
-  return {
-    scores: loading ? NO_SCORES : result.scores,
-    error: loading ? null : result.error,
-    loading,
-  };
+/** Actions of the given types with their habit count, optionally since a date. */
+export function useActionCounts(types: ActionType[] | null, since?: string) {
+  const key = types && `counts|${types.join(",")}|${since ?? ""}`;
+  const fetcher = useCallback(
+    () => getActionCounts({ actionTypes: types ?? NO_TYPES, since }),
+    [types, since]
+  );
+  const { data } = useCachedQuery(key, fetcher);
+  return data ?? NO_COUNTS;
 }

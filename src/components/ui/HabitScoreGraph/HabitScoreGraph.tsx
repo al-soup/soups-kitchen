@@ -78,7 +78,7 @@ export function HabitScoreGraph({
         segments.push({
           type,
           score: s.total_score,
-          habitCount: s.habit_ids.length,
+          habitCount: s.habit_count,
         });
         scoreMap.set(s.completed_date, segments);
       }

@@ -12,7 +12,12 @@ import {
 const TODAY = "2026-09-16";
 
 function day(date: string, score: number) {
-  return { completed_date: date, total_score: score, habit_ids: [1] };
+  return {
+    action_type: 1,
+    completed_date: date,
+    total_score: score,
+    habit_count: 1,
+  };
 }
 
 describe("date helpers", () => {

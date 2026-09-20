@@ -1,17 +1,20 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitScoreGraph } from "@/components/ui/HabitScoreGraph";
-import type { ActionCount, HabitSort } from "@/lib/supabase/types";
+import type { HabitSort } from "@/lib/supabase/types";
 import { ALL_TYPES, TYPE_PARAM, type ActionTypeFilter } from "@/lib/actionType";
-import { getActionCounts } from "./api";
 import { HabitTypeSelector, type HabitTypeOption } from "./HabitTypeSelector";
 import { HabitFeed } from "./HabitFeed";
 import { ActionFilter } from "./ActionFilter";
-import { useDailyHabitScores, useHabitsView } from "./useHabitsView";
+import {
+  useActionCounts,
+  useDailyHabitScores,
+  useHabitsView,
+} from "./useHabitsView";
 
 import sharedStyles from "../../shared-page.module.css";
 import styles from "./page.module.css";
@@ -31,7 +34,9 @@ function HabitsPageInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { canManage, visibleTypes, typeFilter, actionTypes } = useHabitsView();
+  const { canManage, visibleTypes, typeFilter, actionTypes, ready } =
+    useHabitsView();
+  const readyTypes = ready ? actionTypes : null;
 
   const typeOptions = useMemo<HabitTypeOption<ActionTypeFilter>[]>(
     () => [...visibleTypes, { value: ALL_TYPES, label: "All" }],
@@ -44,9 +49,9 @@ function HabitsPageInner() {
   const sort: HabitSort =
     searchParams.get(SORT_PARAM) === "asc" ? "asc" : "desc";
 
-  const { scores, loading, error } = useDailyHabitScores(actionTypes, actionId);
+  const { scores, loading, error } = useDailyHabitScores(readyTypes, actionId);
+  const actions = useActionCounts(readyTypes);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [actions, setActions] = useState<ActionCount[]>([]);
 
   const replaceParams = useCallback(
     (patch: Record<string, string | null>) => {
@@ -67,18 +72,6 @@ function HabitsPageInner() {
     },
     [replaceParams]
   );
-
-  useEffect(() => {
-    const controller = new AbortController();
-    getActionCounts({ actionTypes, signal: controller.signal })
-      .then((rows) => {
-        if (!controller.signal.aborted) setActions(rows);
-      })
-      .catch(() => {
-        // Pills are a convenience; the feed reports real errors.
-      });
-    return () => controller.abort();
-  }, [actionTypes]);
 
   return (
     <div className={sharedStyles.page}>
@@ -128,14 +121,16 @@ function HabitsPageInner() {
           replaceParams({ [SORT_PARAM]: next === "asc" ? "asc" : null })
         }
       />
-      <HabitFeed
-        key={`${actionTypes.join(",")}-${actionId ?? "all"}-${sort}-${selectedDate ?? "all"}`}
-        actionTypes={actionTypes}
-        actionId={actionId}
-        sort={sort}
-        selectedDate={selectedDate}
-        onClearDate={() => setSelectedDate(null)}
-      />
+      {ready && (
+        <HabitFeed
+          key={`${actionTypes.join(",")}-${actionId ?? "all"}-${sort}-${selectedDate ?? "all"}`}
+          actionTypes={actionTypes}
+          actionId={actionId}
+          sort={sort}
+          selectedDate={selectedDate}
+          onClearDate={() => setSelectedDate(null)}
+        />
+      )}
     </div>
   );
 }

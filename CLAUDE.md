@@ -103,6 +103,8 @@ minimal:
   apply on a seeded base schema, not only from scratch. CI checks all three.
 - **Cross-app side effects** (auto-created habits) belong in DB triggers, not
   app code (ADR-0005).
+- **Habits reads** go through `useCachedQuery` (`habits/queryCache.ts`); habit
+  write functions call `invalidateHabitsCache()` (ADR-0013).
 - **KB fonts** (Baloo 2, Hanken Grotesk) stay inside `knowledge-base/` CSS modules (ADR-0009).
 - **Apps registry**: `src/constants/apps.ts` feeds menus, `/apps`, manifests and the top bar
   icon; every app layout renders `AppFrame`. Menu groups live in `src/constants/navigation.ts`.
