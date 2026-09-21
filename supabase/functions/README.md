@@ -136,7 +136,7 @@ supabase secrets set \
 pnpm supabase:reset   # local
 # or push to remote
 
-# 3. Add STRAVA_TOKEN_KEY to .env.local (same value as the Supabase secret)
+# 3. Add STRAVA_TOKEN_KEY to the root .env.local (same value as the Supabase secret)
 #    so `pnpm strava:auth` can call the encrypting RPC.
 
 # 4. One-time OAuth authorization
@@ -152,7 +152,7 @@ pnpm strava:auth
 # Start local Supabase
 pnpm supabase:start
 
-# Serve Edge functions
+# Serve Edge functions (from the repo root; root .env.local, not apps/web/.env.local)
 supabase functions serve --env-file .env.local
 
 export CRON_SECRET="<your-secret>"

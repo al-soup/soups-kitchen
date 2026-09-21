@@ -36,3 +36,4 @@ one a `Status: superseded by NNNN` line under the date.
 | [0011](./0011-cd-migrations-before-app-deploy.md)     | Merge to main deploys schema and functions before the app        |
 | [0012](./0012-mono-shell-apps-keep-typography.md)     | Mono shell and portfolio; apps keep their own typography         |
 | [0013](./0013-habits-client-query-cache.md)           | Habits reads: in-memory SWR cache, writes invalidate             |
+| [0014](./0014-pnpm-workspace-monorepo.md)             | pnpm workspace: app in `apps/web`, Supabase stays at the root    |
