@@ -86,6 +86,30 @@ test.describe("Knowledge Base", () => {
     ).not.toBeVisible();
   });
 
+  test("search marks the matched words on the cards", async ({ page }) => {
+    await page.goto("/apps/knowledge-base");
+
+    await page.getByLabel("Search entries").fill("index");
+
+    const card = page.getByTestId("kb-card").filter({
+      has: page.getByRole("heading", { name: "Why use a B-tree index?" }),
+    });
+    await expect(card.locator("h2 mark")).toHaveText("index");
+  });
+
+  test("search ignores text that only occurs in the detail", async ({
+    page,
+  }) => {
+    await page.goto("/apps/knowledge-base");
+
+    // Seed: "fingerprint" occurs in one entry's detail only.
+    await page.getByLabel("Search entries").fill("fingerprint");
+
+    await expect(
+      page.getByText('No entries match "fingerprint".')
+    ).toBeVisible();
+  });
+
   test("topic pill filter narrows results and updates URL", async ({
     page,
   }) => {

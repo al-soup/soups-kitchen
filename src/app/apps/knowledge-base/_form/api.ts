@@ -168,6 +168,9 @@ export async function listKnowledge({
     p_offset: offset,
     p_limit: limit,
     p_sort: sort,
+    // The list shows question + summary only; a detail-only hit would be
+    // unexplainable. kb-mcp keeps the RPC default (detail included).
+    p_search_detail: false,
   });
   const { data, error } = await (signal ? query.abortSignal(signal) : query);
   if (error) throw new Error(error.message);

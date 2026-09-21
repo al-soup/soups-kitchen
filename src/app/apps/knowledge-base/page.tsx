@@ -25,6 +25,7 @@ import { MarkdownSummary } from "./_form/MarkdownSummary";
 import { MarkdownInline } from "./_form/MarkdownInline";
 import { formatDate } from "./_form/format";
 import { topicColorFor } from "./_form/topicColor";
+import { withViewTransition } from "./_form/viewTransition";
 import {
   TOPICS_PARAM,
   CONCEPTS_PARAM,
@@ -165,19 +166,22 @@ function KnowledgeBasePageInner() {
       signal: controller.signal,
     })
       .then((page) => {
-        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
-        setItems(page.items);
-        setOffset(PAGE_SIZE);
-        setHasMore(page.hasMore);
-        setFilteredCount(page.total);
-        setError(null);
+        const isStale = () =>
+          controller.signal.aborted || epochRef.current !== myEpoch;
+        if (isStale()) return;
+        withViewTransition(() => {
+          if (isStale()) return;
+          setItems(page.items);
+          setOffset(PAGE_SIZE);
+          setHasMore(page.hasMore);
+          setFilteredCount(page.total);
+          setError(null);
+          setLoading(false);
+        });
       })
       .catch((err: Error) => {
         if (controller.signal.aborted || epochRef.current !== myEpoch) return;
         setError(err.message);
-      })
-      .finally(() => {
-        if (controller.signal.aborted || epochRef.current !== myEpoch) return;
         setLoading(false);
       });
     return () => controller.abort();
@@ -276,8 +280,13 @@ function KnowledgeBasePageInner() {
     onLoadMore: handleLoadMore,
   });
 
+  // A refetch keeps the previous results on screen (dimmed) so the change is
+  // visible; skeletons are for when there is nothing to keep.
+  const showSkeletons = loading && items.length === 0;
+  const isRefreshing = loading && items.length > 0;
+
   const countLabel =
-    !loading && !error && totalCount !== null && filteredCount !== null
+    !showSkeletons && !error && totalCount !== null && filteredCount !== null
       ? hasFilters
         ? `${filteredCount} of ${totalCount} entries`
         : `${totalCount} entries`
@@ -368,8 +377,12 @@ function KnowledgeBasePageInner() {
         </div>
       </div>
 
-      <ul className={styles.list}>
-        {loading ? (
+      <ul
+        className={styles.list}
+        data-refreshing={isRefreshing}
+        aria-busy={loading}
+      >
+        {showSkeletons ? (
           Array.from({ length: 9 }).map((_, i) => (
             <li
               key={`sk-${i}`}
@@ -427,7 +440,7 @@ function KnowledgeBasePageInner() {
                       </span>
                     </li>
                   )}
-                  <li>
+                  <li style={{ viewTransitionName: `kb-card-${item.id}` }}>
                     <article
                       className={styles.card}
                       data-expanded={isExpanded}
@@ -468,7 +481,7 @@ function KnowledgeBasePageInner() {
                         <TagBreadcrumb tags={crumbTags} size="sm" />
                       </div>
                       <h2 className={styles.question}>
-                        <MarkdownInline source={item.question} />
+                        <MarkdownInline source={item.question} highlight={q} />
                       </h2>
                       <div
                         className={styles.reveal}
@@ -478,7 +491,11 @@ function KnowledgeBasePageInner() {
                           className={styles.summary}
                           data-testid="kb-card-summary"
                         >
-                          <MarkdownSummary source={item.summary} disableLinks />
+                          <MarkdownSummary
+                            source={item.summary}
+                            disableLinks
+                            highlight={q}
+                          />
                         </div>
                       </div>
                       <div className={styles.cardFooter}>

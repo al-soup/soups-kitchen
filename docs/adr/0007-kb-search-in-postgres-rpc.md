@@ -15,6 +15,10 @@ with pg*trgm `word_similarity` (threshold 0.2), applies tag filters, and paginat
 limit + 1 over-fetch so the client knows whether another page exists. Tag filters are URL-driven
 by tag \_name* as repeated params.
 
+The list page searches question + summary only (`p_search_detail = false`): a card shows nothing
+else, so a hit inside `detail` would be unexplainable. The default stays `true` for the kb-mcp
+`kb_search` tool, where the caller reads the full entry.
+
 ## Consequences
 
 - Pages are cut in SQL, so anything that affects ordering or grouping must live in the RPC;

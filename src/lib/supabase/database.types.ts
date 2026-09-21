@@ -376,6 +376,7 @@ export type Database = {
           concept_ids?: string[];
           p_limit?: number;
           p_offset?: number;
+          p_search_detail?: boolean;
           p_sort?: string;
           q?: string;
           topic_ids?: string[];

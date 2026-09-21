@@ -10,6 +10,7 @@
   --kb-muted: #928d7e;
   --kb-line: #e7e3d4;
   --kb-line2: #d8d3c2;
+  --kb-mark-bg: #ffe27a;
   /* Height of the revealed summary area. The summary scrolls inside it. */
   --kb-reveal-height: 200px;
   --kb-card-shadow: 0 1px 2px rgba(50, 35, 15, 0.04);
@@ -33,6 +34,7 @@
   --kb-muted: var(--foreground-muted);
   --kb-line: var(--border-color);
   --kb-line2: var(--border-color);
+  --kb-mark-bg: rgba(255, 200, 60, 0.3);
   --kb-card-shadow: none;
   --kb-card-hover-shadow: var(--shadow-lg);
   font-family: var(--font-sans);
@@ -187,6 +189,11 @@
   padding: 0;
   list-style: none;
   align-items: start;
+  transition: opacity var(--transition-fast);
+}
+
+.list[data-refreshing="true"] {
+  opacity: 0.55;
 }
 
 /* ---------- Card ---------- */
@@ -364,6 +371,15 @@
   font-style: italic;
 }
 
+/* Search hits (rehypeMarkQuery). */
+.question mark,
+.summary mark {
+  background: var(--kb-mark-bg);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
 /* Reveal — closes snappily (no delay), opens smoothly after a hover
    debounce so brief mouse-overs don't trigger a flash. */
 .reveal {
@@ -477,6 +493,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .list,
   .card,
   .reveal,
   .readCta,
