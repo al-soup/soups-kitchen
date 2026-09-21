@@ -1,8 +1,8 @@
 import Link from "next/link";
 import type { HabitDetail } from "@/lib/supabase/types";
 import { getBadgeStyle } from "@/lib/badgeStyles";
-import { linkifyText } from "@/lib/linkifyText";
 import { InfoIcon } from "@/constants/icons";
+import { CollapsibleNote } from "./CollapsibleNote";
 import styles from "./HabitFeedItem.module.css";
 
 interface HabitFeedItemProps {
@@ -36,7 +36,7 @@ export function HabitFeedItem({ habit, showDetailLink }: HabitFeedItemProps) {
           </Link>
         )}
       </div>
-      {note && <p className={styles.note}>{linkifyText(note)}</p>}
+      {note && <CollapsibleNote note={note} />}
     </div>
   );
 }

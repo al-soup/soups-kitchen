@@ -1,0 +1,58 @@
+.note {
+  font-size: 13px;
+  color: var(--foreground);
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  background: var(--background);
+  border-left: 3px solid var(--border-color);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  line-height: 1.4;
+}
+
+/* The clamp sits on the inner element: on a padded box the next line would
+   peek into the bottom padding. */
+.text {
+  margin: 0;
+  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+
+.text[data-expanded="true"] {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+
+.text a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+
+.text a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.toggle {
+  margin-top: 6px;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  color: var(--foreground-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.toggle:hover {
+  color: var(--foreground);
+}

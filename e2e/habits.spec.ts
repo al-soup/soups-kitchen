@@ -110,6 +110,13 @@ test.describe("Habits — combined view, filters, insights", () => {
     ).toBeVisible();
   });
 
+  test("insights link keeps the selected type", async ({ page }) => {
+    await login(page, "admin@local.test", "password123");
+    await page.goto("/apps/habits?type=3");
+    await page.getByRole("link", { name: "Insights" }).click();
+    await expect(page).toHaveURL(/\/apps\/habits\/insights\?type=3/);
+  });
+
   test("insights page renders tiles and charts per type", async ({ page }) => {
     await login(page, "admin@local.test", "password123");
     await page.goto("/apps/habits/insights?type=all");
@@ -121,6 +128,11 @@ test.describe("Habits — combined view, filters, insights", () => {
     await expect(
       page.getByRole("img", { name: /Weekday rhythm/ })
     ).toBeVisible();
+    // Weekly bars are labelled by ISO calendar week; the table adds the date.
+    await page.getByText("Data").first().click();
+    await expect(
+      page.getByRole("rowheader", { name: /^CW \d{1,2} \(\d{1,2} \w{3,4}\)$/ })
+    ).toHaveCount(12);
     await expect(page.getByText(/Top actions/)).toBeVisible();
     await page.getByTestId("type-3").click();
     await expect(page).toHaveURL(/type=3/);
