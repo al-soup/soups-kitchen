@@ -2,6 +2,7 @@ import type { ActionCount, ScoresByType } from "@/lib/supabase/types";
 import {
   addDays,
   computeStreaks,
+  isoWeek,
   isoWeekday,
   rankActions,
   weekdayAverages,
@@ -88,8 +89,23 @@ describe("weeklyTotals", () => {
     };
     const weeks = weeklyTotals(scores, TODAY, 2);
     expect(weeks.map((w) => w.weekStart)).toEqual(["2026-09-07", "2026-09-14"]);
+    expect(weeks.map((w) => w.week)).toEqual([37, 38]);
     expect(weeks[0]).toMatchObject({ byType: { 1: 5 }, total: 5 });
     expect(weeks[1]).toMatchObject({ byType: { 1: 5, 3: 1 }, total: 6 });
+  });
+});
+
+describe("isoWeek", () => {
+  it.each([
+    ["2026-09-16", 38],
+    ["2026-01-01", 1],
+    // Year boundaries: the week belongs to the year of its Thursday.
+    ["2024-12-30", 1],
+    ["2027-01-03", 53],
+    ["2021-01-03", 53],
+    ["2023-01-01", 52],
+  ])("%s is week %i", (date, week) => {
+    expect(isoWeek(date)).toBe(week);
   });
 });
 

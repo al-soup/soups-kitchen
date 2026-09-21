@@ -300,6 +300,7 @@ describe("listKnowledge", () => {
       p_offset: 0,
       p_limit: 20,
       p_sort: "newest",
+      p_search_detail: false,
     });
   });
 
@@ -313,6 +314,7 @@ describe("listKnowledge", () => {
       p_offset: 20,
       p_limit: 10,
       p_sort: "newest",
+      p_search_detail: false,
     });
   });
 
@@ -326,6 +328,7 @@ describe("listKnowledge", () => {
       p_offset: 0,
       p_limit: 20,
       p_sort: "newest",
+      p_search_detail: false,
     });
   });
 
@@ -373,6 +376,7 @@ describe("listKnowledge", () => {
       p_offset: 0,
       p_limit: 20,
       p_sort: "newest",
+      p_search_detail: false,
     });
   });
 

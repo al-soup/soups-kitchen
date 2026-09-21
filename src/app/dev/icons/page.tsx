@@ -3,6 +3,7 @@
 import { notFound } from "next/navigation";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
+  BarChartIcon,
   LogInIcon,
   LinkedInIcon,
   MailIcon,
@@ -57,6 +58,7 @@ if (process.env.NODE_ENV === "production") {
 
 const icons: { name: string; Component: ComponentType<{ size?: number }> }[] = [
   { name: "AngularIcon", Component: AngularIcon },
+  { name: "BarChartIcon", Component: BarChartIcon },
   { name: "CheckIcon", Component: CheckIcon },
   { name: "CopyIcon", Component: CopyIcon },
   { name: "CouchDBIcon", Component: CouchDBIcon },

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitScoreGraph } from "@/components/ui/HabitScoreGraph";
+import { BarChartIcon } from "@/constants/icons";
 import type { HabitSort } from "@/lib/supabase/types";
 import { ALL_TYPES, TYPE_PARAM, type ActionTypeFilter } from "@/lib/actionType";
 import { HabitTypeSelector, type HabitTypeOption } from "./HabitTypeSelector";
@@ -76,32 +77,34 @@ function HabitsPageInner() {
   return (
     <div className={sharedStyles.page}>
       <PageTitle title="Habit Tracker" />
-      <h1 className={sharedStyles.title}>
-        Habit Tracker
-        {canManage && (
-          <Link
-            href={`/apps/habits/create?${TYPE_PARAM}=${typeFilter === ALL_TYPES ? 1 : typeFilter}`}
-            aria-label="Create habit"
-            className={styles.createLink}
-          >
-            +
-          </Link>
-        )}
-      </h1>
-      <div className={styles.typeRow}>
-        <HabitTypeSelector
-          value={typeFilter}
-          onChange={handleTypeChange}
-          disabled={loading}
-          types={typeOptions}
-        />
+      <div className={styles.titleRow}>
+        <h1 className={sharedStyles.title}>
+          Habit Tracker
+          {canManage && (
+            <Link
+              href={`/apps/habits/create?${TYPE_PARAM}=${typeFilter === ALL_TYPES ? 1 : typeFilter}`}
+              aria-label="Create habit"
+              className={styles.createLink}
+            >
+              +
+            </Link>
+          )}
+        </h1>
         <Link
           href={`/apps/habits/insights?${TYPE_PARAM}=${typeFilter}`}
           className={styles.insightsLink}
+          aria-label="Insights"
         >
-          Insights →
+          <BarChartIcon size={18} />
+          <span className={styles.insightsLabel}>Insights</span>
         </Link>
       </div>
+      <HabitTypeSelector
+        value={typeFilter}
+        onChange={handleTypeChange}
+        disabled={loading}
+        types={typeOptions}
+      />
       <HabitScoreGraph
         scores={scores}
         loading={loading}

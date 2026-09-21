@@ -154,4 +154,29 @@ test.describe("Habits — Feed", () => {
       page.locator("[class*='item']").first().locator("[class*='name']")
     ).not.toBeEmpty();
   });
+
+  test("long notes are collapsed until expanded", async ({ page }) => {
+    await page.goto("/apps/habits?type=3");
+    // Seed: the Go lexer note is 8 lines long.
+    const item = page
+      .locator("[class*='item']")
+      .filter({ hasText: "built lexer for Go interpreter" });
+    const lastLine = item.getByText("read chapter 2 again");
+    const toggle = item.getByRole("button", { name: "Show more" });
+
+    await expect(toggle).toBeVisible({ timeout: 10000 });
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    await toggle.click();
+    await expect(
+      item.getByRole("button", { name: "Show less" })
+    ).toHaveAttribute("aria-expanded", "true");
+    await expect(lastLine).toBeInViewport();
+
+    // Short notes get no toggle.
+    const short = page
+      .locator("[class*='item']")
+      .filter({ hasText: "HTTP server parsing" });
+    await expect(short.getByRole("button")).toHaveCount(0);
+  });
 });

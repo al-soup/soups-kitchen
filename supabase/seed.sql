@@ -68,7 +68,15 @@ need to add hip flexor work'),
   (18, now() - interval '1 day',  'solved 2 medium problems'),
   (5, now() - interval '2 days',  'upper body focus'),
   (12, now() - interval '2 days', 'chocolate after lunch'),
-  (15, now() - interval '2 days', 'built lexer for Go interpreter'),
+  -- Long on purpose: exercises the collapsed note in the feed.
+  (15, now() - interval '2 days', 'built lexer for Go interpreter
+- tokens: ident, int, operators, delimiters, keywords
+- lexer keeps position + readPosition, peeks one char for == and !=
+- skipped unicode for now, bytes only
+- table-driven tests caught an off-by-one at EOF
+- next: Pratt parser, start with let + return statements
+- open question: how to report line/column in errors
+- read chapter 2 again before continuing'),
   (9, now() - interval '3 days',  '25km ride'),
   (4, now() - interval '3 days',  '30min session'),
   (20, now() - interval '4 days', 'added habit score graph'),

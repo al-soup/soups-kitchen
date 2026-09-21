@@ -2,15 +2,18 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { rehypeMarkQuery } from "./rehypeMarkQuery";
 
 interface MarkdownInlineProps {
   source: string;
+  highlight?: string;
 }
 
-export function MarkdownInline({ source }: MarkdownInlineProps) {
+export function MarkdownInline({ source, highlight }: MarkdownInlineProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
+      rehypePlugins={[[rehypeMarkQuery, highlight]]}
       skipHtml
       components={{
         p: ({ children }) => <>{children}</>,
