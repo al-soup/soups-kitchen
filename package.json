@@ -15,6 +15,7 @@
     "test": "pnpm --filter web test",
     "test:e2e": "./scripts/ensure-supabase.sh && pnpm --filter web test:e2e",
     "test:e2e:ui": "pnpm --filter web test:e2e:ui",
+    "test:e2e:local": "./scripts/ensure-supabase.sh && pnpm --filter web test:e2e:local",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset && node scripts/seed-resources.mjs",
