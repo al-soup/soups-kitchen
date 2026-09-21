@@ -21,6 +21,7 @@ import { RankedActions } from "./RankedActions";
 import {
   addDays,
   computeStreaks,
+  isoWeek,
   rankActions,
   weekdayAverages,
   weeklyTotals,
@@ -73,7 +74,8 @@ function InsightsPageInner() {
     () =>
       weeklyTotals(scores, today, WEEKS).map((w) => ({
         key: w.weekStart,
-        label: shortDate(w.weekStart),
+        label: `W${w.week}`,
+        detail: `CW ${w.week} (${shortDate(w.weekStart)})`,
         byType: w.byType,
         total: w.total,
       })),
@@ -129,7 +131,7 @@ function InsightsPageInner() {
         <StatTile
           label="Score this week"
           value={String(thisWeek)}
-          hint="Mon–today"
+          hint={`CW ${isoWeek(today)} · Mon–today`}
         />
       </div>
 
@@ -138,7 +140,6 @@ function InsightsPageInner() {
           title={`Weekly score · last ${WEEKS} weeks`}
           bars={weeks}
           types={actionTypes}
-          detail={(bar) => `Week of ${bar.label}`}
         />
       </section>
 

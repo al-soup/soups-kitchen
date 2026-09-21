@@ -38,12 +38,62 @@
 }
 
 .plot {
+  /* Height of the x-axis label row under the bars. */
+  --x-band: 18px;
+
+  display: flex;
+  gap: 6px;
+  height: 168px;
+  /* Room for the top tick label, which is centred on its gridline. */
+  padding-top: 8px;
+}
+
+.yAxis {
+  position: relative;
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground-muted);
+}
+
+.yAxisSizer {
+  visibility: hidden;
+}
+
+/* `--at` = tick / top tick (0–1). Ticks and gridlines share the bars' scale:
+   the area above the x-axis label row. */
+.tick,
+.gridline {
+  position: absolute;
+  bottom: calc(var(--x-band) + (100% - var(--x-band)) * var(--at));
+}
+
+.tick {
+  right: 0;
+  line-height: 1;
+  transform: translateY(50%);
+}
+
+.bars {
+  position: relative;
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: flex-end;
   gap: 4px;
-  height: 160px;
-  padding-top: 8px;
-  border-bottom: 1px solid var(--border-color);
+}
+
+.gridline {
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border-color);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.gridline[data-baseline] {
+  opacity: 1;
 }
 
 .column {
@@ -61,7 +111,7 @@
 
 .stack {
   width: min(24px, 100%);
-  height: calc(100% - 18px);
+  height: calc(100% - var(--x-band));
   display: flex;
   flex-direction: column-reverse;
   justify-content: flex-start;
@@ -85,8 +135,8 @@
 }
 
 .axisLabel {
-  height: 18px;
-  line-height: 18px;
+  height: var(--x-band);
+  line-height: var(--x-band);
   font-size: 10px;
   color: var(--foreground-muted);
   white-space: nowrap;

@@ -1,7 +1,9 @@
+import type { CSSProperties } from "react";
 import type { ActionType } from "@/lib/supabase/types";
 import { actionTypeLabel } from "@/lib/actionType";
 import { habitScoreColor } from "@/lib/badgeStyles";
 import type { ScoreByType } from "./insights";
+import { niceTicks } from "./ticks";
 import styles from "./BarChart.module.css";
 
 /** Ramp step used for series fills; mid-ramp keeps both themes inside the lightness band. */
@@ -12,6 +14,8 @@ export type Bar = {
   label: string;
   byType: ScoreByType;
   total: number;
+  /** Longer form of `label` for the tooltip and the data table. */
+  detail?: string;
 };
 
 interface BarChartProps {
@@ -19,8 +23,6 @@ interface BarChartProps {
   bars: Bar[];
   types: ActionType[];
   format?: (value: number) => string;
-  /** Extra line shown in the tooltip and table for a bar. */
-  detail?: (bar: Bar) => string;
 }
 
 const defaultFormat = (v: number) =>
@@ -31,10 +33,13 @@ export function BarChart({
   bars,
   types,
   format = defaultFormat,
-  detail,
 }: BarChartProps) {
-  const max = Math.max(1, ...bars.map((b) => b.total));
+  const dataMax = Math.max(0, ...bars.map((b) => b.total));
+  const isCountLike = bars.every((b) => Number.isInteger(b.total));
+  const ticks = niceTicks(dataMax, isCountLike ? 1 : 0);
+  const max = ticks[ticks.length - 1];
   const stacked = types.length > 1;
+  const hasDetail = bars.some((b) => b.detail);
 
   return (
     <figure className={styles.figure}>
@@ -56,43 +61,67 @@ export function BarChart({
       </figcaption>
 
       <div className={styles.plot} role="img" aria-label={title}>
-        {bars.map((bar) => (
-          <div key={bar.key} className={styles.column} tabIndex={0}>
-            <div className={styles.stack}>
-              {types
-                .filter((type) => (bar.byType[type] ?? 0) > 0)
-                .map((type) => (
-                  <span
-                    key={type}
-                    className={styles.segment}
-                    style={{
-                      height: `${((bar.byType[type] ?? 0) / max) * 100}%`,
-                      background: habitScoreColor(type, SERIES_LEVEL),
-                    }}
-                  />
-                ))}
-            </div>
-            <span className={styles.axisLabel}>{bar.label}</span>
-            <div className={styles.tooltip}>
-              <strong>{format(bar.total)}</strong>
-              <span>{detail ? detail(bar) : bar.label}</span>
-              {stacked &&
-                types
+        <div className={styles.yAxis} aria-hidden="true">
+          {/* In-flow copy of the widest label: the real ticks are absolutely
+              positioned and cannot size the column. */}
+          <span className={styles.yAxisSizer}>{format(max)}</span>
+          {ticks.map((tick) => (
+            <span
+              key={tick}
+              className={styles.tick}
+              style={{ "--at": tick / max } as CSSProperties}
+            >
+              {format(tick)}
+            </span>
+          ))}
+        </div>
+        <div className={styles.bars}>
+          {ticks.map((tick) => (
+            <span
+              key={tick}
+              className={styles.gridline}
+              data-baseline={tick === 0 || undefined}
+              style={{ "--at": tick / max } as CSSProperties}
+            />
+          ))}
+          {bars.map((bar) => (
+            <div key={bar.key} className={styles.column} tabIndex={0}>
+              <div className={styles.stack}>
+                {types
                   .filter((type) => (bar.byType[type] ?? 0) > 0)
                   .map((type) => (
-                    <span key={type} className={styles.tooltipRow}>
-                      <span
-                        className={styles.tooltipKey}
-                        style={{
-                          background: habitScoreColor(type, SERIES_LEVEL),
-                        }}
-                      />
-                      {actionTypeLabel(type)} {format(bar.byType[type] ?? 0)}
-                    </span>
+                    <span
+                      key={type}
+                      className={styles.segment}
+                      style={{
+                        height: `${((bar.byType[type] ?? 0) / max) * 100}%`,
+                        background: habitScoreColor(type, SERIES_LEVEL),
+                      }}
+                    />
                   ))}
+              </div>
+              <span className={styles.axisLabel}>{bar.label}</span>
+              <div className={styles.tooltip}>
+                <strong>{format(bar.total)}</strong>
+                <span>{bar.detail ?? bar.label}</span>
+                {stacked &&
+                  types
+                    .filter((type) => (bar.byType[type] ?? 0) > 0)
+                    .map((type) => (
+                      <span key={type} className={styles.tooltipRow}>
+                        <span
+                          className={styles.tooltipKey}
+                          style={{
+                            background: habitScoreColor(type, SERIES_LEVEL),
+                          }}
+                        />
+                        {actionTypeLabel(type)} {format(bar.byType[type] ?? 0)}
+                      </span>
+                    ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       <details className={styles.tableToggle}>
@@ -100,7 +129,7 @@ export function BarChart({
         <table className={styles.table}>
           <thead>
             <tr>
-              <th scope="col">{detail ? "Period" : "Label"}</th>
+              <th scope="col">{hasDetail ? "Period" : "Label"}</th>
               {stacked &&
                 types.map((type) => (
                   <th key={type} scope="col">
@@ -113,7 +142,7 @@ export function BarChart({
           <tbody>
             {bars.map((bar) => (
               <tr key={bar.key}>
-                <th scope="row">{detail ? detail(bar) : bar.label}</th>
+                <th scope="row">{bar.detail ?? bar.label}</th>
                 {stacked &&
                   types.map((type) => (
                     <td key={type}>{format(bar.byType[type] ?? 0)}</td>

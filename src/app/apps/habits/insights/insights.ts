@@ -10,6 +10,8 @@ export type ScoreByType = Partial<Record<ActionType, number>>;
 export type WeekBucket = {
   /** Monday of the week, `YYYY-MM-DD`. */
   weekStart: string;
+  /** ISO 8601 calendar week, 1–53. */
+  week: number;
   byType: ScoreByType;
   total: number;
 };
@@ -50,6 +52,17 @@ export function addDays(date: string, days: number): string {
 /** 0 = Monday … 6 = Sunday. */
 export function isoWeekday(date: string): number {
   return (new Date(date + "T12:00:00").getDay() + 6) % 7;
+}
+
+/** ISO 8601 week number: week 1 is the week holding the year's first Thursday. */
+export function isoWeek(date: string): number {
+  const thursday = addDays(date, 3 - isoWeekday(date));
+  const jan1 = `${thursday.slice(0, 4)}-01-01`;
+  const dayOfYear = Math.round(
+    (Date.parse(thursday + "T12:00:00Z") - Date.parse(jan1 + "T12:00:00Z")) /
+      86_400_000
+  );
+  return Math.floor(dayOfYear / 7) + 1;
 }
 
 function typesIn(scores: ScoresByType): ActionType[] {
@@ -132,7 +145,12 @@ export function weeklyTotals(
         byType[t] = (byType[t] ?? 0) + (score ?? 0);
       }
     }
-    buckets.push({ weekStart, byType, total: sumByType(byType) });
+    buckets.push({
+      weekStart,
+      week: isoWeek(weekStart),
+      byType,
+      total: sumByType(byType),
+    });
   }
   return buckets;
 }
