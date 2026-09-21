@@ -59,6 +59,7 @@ root one for edge function work.
 | `pnpm lint` / `format`     | ESLint fix / Prettier fix (`:check` variants: CI) |
 | `pnpm test`                | Unit tests                                        |
 | `pnpm test:e2e` / `:ui`    | Playwright (auto-starts Supabase) / UI mode       |
+| `pnpm test:e2e:local`      | Same, env from `apps/web/.env.test`               |
 | `pnpm supabase:start/stop` | Local Supabase                                    |
 | `pnpm supabase:reset`      | Reset DB + rerun migrations & seed + dev uploads  |
 | `pnpm supabase:types`      | Regenerate `database.types.ts`                    |
@@ -70,8 +71,8 @@ root one for edge function work.
 ## Testing & CI
 
 - Unit: Jest, jsdom, colocated `*.test.ts(x)`
-- E2e: Playwright, chromium, boots local Supabase from `config.ci.toml`. Against `.env.test`
-  without touching `.env.local`: `pnpm --filter web exec dotenv -e .env.test -- playwright test`
+- E2e: Playwright, chromium, boots local Supabase from `config.ci.toml`. `pnpm test:e2e:local`
+  takes its env from `.env.test`, so it runs without an `apps/web/.env.local`
 - CI on push: build, format, lint, unit. PRs add e2e and a migrations job that replays only the
   PR's new migration files on a seeded base schema and checks `database.types.ts` is in sync
   ([ADR-0010](docs/adr/0010-ci-migrations-replay-prod-path.md))

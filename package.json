@@ -8,13 +8,14 @@
     "dev:remote": "pnpm --filter web dev:remote",
     "build": "pnpm --filter web build",
     "start": "pnpm --filter web start",
-    "lint": "pnpm --filter web lint",
-    "lint:check": "pnpm --filter web lint:check",
+    "lint": "pnpm --filter web lint && eslint --fix scripts",
+    "lint:check": "pnpm --filter web lint:check && eslint scripts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "pnpm --filter web test",
     "test:e2e": "./scripts/ensure-supabase.sh && pnpm --filter web test:e2e",
     "test:e2e:ui": "pnpm --filter web test:e2e:ui",
+    "test:e2e:local": "./scripts/ensure-supabase.sh && pnpm --filter web test:e2e:local",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset && node scripts/seed-resources.mjs",
@@ -25,7 +26,10 @@
     "strava:auth": "node scripts/strava-auth.mjs"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@supabase/supabase-js": "^2.95.3",
+    "eslint": "^9.39.2",
+    "globals": "^17.12.0",
     "prettier": "^3.8.1",
     "supabase": "^2.117.0"
   }

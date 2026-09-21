@@ -12,6 +12,7 @@
     "test": "jest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:local": "dotenv -e .env.test -- playwright test",
     "generate-icons": "node scripts/generate-icons.mjs",
     "generate-tech-logos": "node scripts/generate-tech-logos.mjs"
   },
