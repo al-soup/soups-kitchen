@@ -20,7 +20,7 @@ jobs:
       - uses: ./.github/actions/setup-node-pnpm
 
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm --filter web exec playwright install --with-deps chromium
 
       - name: Install Supabase CLI
         uses: supabase/setup-cli@v1
@@ -74,8 +74,8 @@ jobs:
       - name: Check database.types.ts is up to date
         run: |
           pnpm supabase:types
-          pnpm exec prettier --write src/lib/supabase/database.types.ts
-          git diff --exit-code -- src/lib/supabase/database.types.ts \
+          pnpm exec prettier --write apps/web/src/lib/supabase/database.types.ts
+          git diff --exit-code -- apps/web/src/lib/supabase/database.types.ts \
             || { echo "::error::database.types.ts out of date. Run pnpm supabase:types && pnpm format, then commit."; exit 1; }
 
       - name: Stop Supabase
