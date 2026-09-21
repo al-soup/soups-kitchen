@@ -76,11 +76,18 @@ minimal:
 
 ## Conventions
 
-- **Layout**: `src/app/apps/<name>/` per app; shared layout in
+- **Monorepo**: pnpm workspace (ADR-0014). `apps/web/` = the Next.js app;
+  `apps/*` holds workspace packages, not product Apps (CONTEXT.md). Root
+  `supabase/` + `scripts/` = shared backend. Run `pnpm` scripts from the repo
+  root; app scripts forward via `pnpm --filter web`. New app deps:
+  `pnpm --filter web add <pkg>`.
+- **Layout**: `src/...` paths in this file are relative to `apps/web/`.
+  `src/app/apps/<name>/` per app; shared layout in
   `src/components/layout/`; hooks in `src/hooks/`; Supabase clients + generated
-  `database.types.ts` in `src/lib/supabase/`; migrations in
-  `supabase/migrations/`, seed in `supabase/seed.sql`; edge functions in
-  `supabase/functions/`; build helpers in `scripts/`.
+  `database.types.ts` in `src/lib/supabase/`; icon generators in
+  `apps/web/scripts/`. Repo root: migrations in `supabase/migrations/`, seed in
+  `supabase/seed.sql`; edge functions in `supabase/functions/`; backend scripts
+  in `scripts/`.
 - **Next.js 16**: request middleware is `src/proxy.ts` (renamed from
   `middleware.ts`, see
   <https://nextjs.org/docs/messages/middleware-to-proxy#why-the-change>).

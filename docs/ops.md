@@ -3,13 +3,24 @@
 One-time setup and secrets for the GitHub → Supabase → Vercel pipeline. Decisions behind it:
 [ADR-0006](./adr/0006-ci-merge-habit-least-privilege-role.md),
 [ADR-0010](./adr/0010-ci-migrations-replay-prod-path.md),
-[ADR-0011](./adr/0011-cd-migrations-before-app-deploy.md).
+[ADR-0011](./adr/0011-cd-migrations-before-app-deploy.md),
+[ADR-0014](./adr/0014-pnpm-workspace-monorepo.md).
 
 ## Deploy pipeline
 
 `.github/workflows/deploy.yml` on push to `main`: CI job, `supabase link`, `db push`,
 `functions deploy`, then a POST to the Vercel deploy hook. Vercel auto-deploy for `main` is off
-(`vercel.json`); PR previews are unaffected.
+(`apps/web/vercel.json`); PR previews are unaffected.
+
+Vercel → Project → Settings → Build & Deployment, set by hand, not in source:
+
+- Root Directory = `apps/web`, with "Include files outside the Root Directory" on (the lockfile
+  and `pnpm-workspace.yaml` sit at the repo root).
+- Build Command `pnpm run build` and Install Command `pnpm install` are overridden; both run
+  inside `apps/web` and match the defaults. Keep any override free of paths.
+
+Vercel reads `vercel.json` from the Root Directory only. Move one without the other and `main`
+auto-deploys again, next to the deploy hook, and the ordering from ADR-0011 is gone.
 
 Secrets live in the GitHub `Production` environment, restricted to `main` (never repo-level):
 

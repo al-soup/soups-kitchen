@@ -19,7 +19,13 @@ Each app under `/apps` is installable as a PWA. Domain vocabulary: [CONTEXT.md](
 - Next.js 16 (app router, `proxy.ts` not `middleware.ts`), React 19, TypeScript 5
 - Supabase (auth, Postgres w/ RLS, Storage, Edge Functions)
 - CSS Modules + theme CSS vars (dark default / light)
-- pnpm 11.5 (pinned via `packageManager`), Jest (unit), Playwright (e2e, chromium)
+- pnpm 11.5 workspace (pinned via `packageManager`), Jest (unit), Playwright (e2e, chromium)
+
+## Repo layout
+
+pnpm workspace ([ADR-0014](docs/adr/0014-pnpm-workspace-monorepo.md)). `apps/web/` is the Next.js
+app. `supabase/` and `scripts/` at the root are the backend that every workspace package shares.
+Run all `pnpm` commands below from the repo root; app commands forward to `apps/web`.
 
 ## Getting started
 
@@ -27,7 +33,7 @@ Requires Docker Desktop. Supabase ports are offset from the defaults (API: 54221
 Studio: 54223) to allow running alongside other local projects.
 
 ```bash
-cp .env.test .env.local   # wired to local Supabase
+cp apps/web/.env.test apps/web/.env.local   # wired to local Supabase
 pnpm install
 pnpm supabase:start
 pnpm supabase:reset       # migrations + seed users + dev uploads
@@ -36,8 +42,13 @@ pnpm dev
 
 Seed users: `admin@local.test`, `manager@local.test`, `viewer@local.test` (pw: `password123`).
 
-Against the remote project instead: put its URL and publishable key in `.env.remote` and run
-`pnpm dev:remote`. All variables, incl. the optional Strava and MCP ones: `.env.example`.
+Against the remote project instead: put its URL and publishable key in `apps/web/.env.remote`
+and run `pnpm dev:remote`.
+
+Two env files. Next.js reads `apps/web/.env.local` (`NEXT_PUBLIC_*`, see
+`apps/web/.env.example`). `pnpm strava:auth` and `supabase functions serve` read the root
+`.env.local` (Strava, cron, MCP and service-role values, see `.env.example`). You only need the
+root one for edge function work.
 
 ## Scripts
 
@@ -53,13 +64,14 @@ Against the remote project instead: put its URL and publishable key in `.env.rem
 | `pnpm supabase:types`      | Regenerate `database.types.ts`                    |
 | `pnpm seed:resources`      | Upload `supabase/seed-files/*` to Storage         |
 | `pnpm generate-icons`      | Regenerate per-app PWA icons                      |
-| `pnpm generate-tech-logos` | Regenerate tech-stack tag PNGs in `public/tech/`  |
+| `pnpm generate-tech-logos` | Tech-stack tag PNGs in `apps/web/assets/`         |
 | `pnpm strava:auth`         | One-time Strava OAuth setup (stores tokens in DB) |
 
 ## Testing & CI
 
 - Unit: Jest, jsdom, colocated `*.test.ts(x)`
-- E2e: Playwright, chromium, boots local Supabase from `config.ci.toml`
+- E2e: Playwright, chromium, boots local Supabase from `config.ci.toml`. Against `.env.test`
+  without touching `.env.local`: `pnpm --filter web exec dotenv -e .env.test -- playwright test`
 - CI on push: build, format, lint, unit. PRs add e2e and a migrations job that replays only the
   PR's new migration files on a seeded base schema and checks `database.types.ts` is in sync
   ([ADR-0010](docs/adr/0010-ci-migrations-replay-prod-path.md))
@@ -80,11 +92,11 @@ Against the remote project instead: put its URL and publishable key in `.env.rem
 
 ## Adding an app
 
-1. Create `src/app/apps/<slug>/` with a `layout.tsx` that renders `AppFrame` and a
+1. Create `apps/web/src/app/apps/<slug>/` with a `layout.tsx` that renders `AppFrame` and a
    `manifest.webmanifest/route.ts` calling `appManifestResponse("<slug>")` (copy an existing app).
-2. Register it in `src/constants/apps.ts` — menus, `/apps` index, top bar icon and manifest follow.
-3. Add its glyph to `scripts/generate-icons.mjs` and run `pnpm generate-icons`.
-4. Gate routes in `src/lib/protectedRoutes.ts` if needed; manifests stay public automatically.
+2. Register it in `apps/web/src/constants/apps.ts` — menus, `/apps` index, top bar icon and manifest follow.
+3. Add its glyph to `apps/web/scripts/generate-icons.mjs` and run `pnpm generate-icons`.
+4. Gate routes in `apps/web/src/lib/protectedRoutes.ts` if needed; manifests stay public automatically.
 
 Conventions and rules for agents: [CLAUDE.md](CLAUDE.md). Design decisions:
 [ADR-0012](docs/adr/0012-mono-shell-apps-keep-typography.md).

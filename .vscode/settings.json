@@ -5,6 +5,7 @@
   "deno.enable": true,
   "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
+  "eslint.workingDirectories": [{ "pattern": "apps/*" }],
   "deno.unstable": [
     "bare-node-builtins",
     "byonm",
