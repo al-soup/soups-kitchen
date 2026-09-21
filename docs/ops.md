@@ -16,7 +16,8 @@ Vercel → Project → Settings → Build & Deployment, set by hand, not in sour
 
 - Root Directory = `apps/web`, with "Include files outside the Root Directory" on (the lockfile
   and `pnpm-workspace.yaml` sit at the repo root).
-- No build, install or output overrides.
+- Build Command `pnpm run build` and Install Command `pnpm install` are overridden; both run
+  inside `apps/web` and match the defaults. Keep any override free of paths.
 
 Vercel reads `vercel.json` from the Root Directory only. Move one without the other and `main`
 auto-deploys again, next to the deploy hook, and the ordering from ADR-0011 is gone.
