@@ -19,7 +19,8 @@ web app either.
 - Root scripts forward app commands (`pnpm --filter web <script>`), so `pnpm dev`, `build`,
   `test` and `test:e2e` behave as before and CI calls them unchanged. `supabase:types` writes
   into `apps/web/src/lib/supabase/`.
-- Prettier runs once from the root. ESLint runs per app.
+- Prettier runs once from the root. ESLint runs per app; a small root config covers root
+  `scripts/` with plain JS rules.
 - No Turborepo. One package has nothing to cache or order. Revisit with the second one.
 - Env files split by reader: `apps/web/.env.local` for Next.js, root `.env.local` for backend
   scripts and `supabase functions serve`.
@@ -29,7 +30,7 @@ web app either.
 - The Vercel Root Directory (`apps/web`) is a dashboard setting the repo cannot see.
   `vercel.json` has to sit in that directory or `main` auto-deploys again and ADR-0011 breaks.
   Recorded in [ops.md](../ops.md).
-- ESLint no longer covers root `scripts/*.mjs`. Prettier still does.
+- Root `scripts/*.mjs` lose the Next.js ESLint rules and get `@eslint/js` recommended instead.
 - `apps/` now means two things: workspace packages at the root, product Apps under
   `apps/web/src/app/apps/`. CONTEXT.md keeps "App" for the product sense only.
 - ADRs 0001 to 0013 keep their old `src/...` paths. Read them as relative to `apps/web/`.
