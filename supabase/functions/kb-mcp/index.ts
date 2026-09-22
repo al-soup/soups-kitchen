@@ -237,8 +237,9 @@ function buildServer(supabase: Supabase): McpServer {
           .describe("Markdown body. Omit for summary-only entries."),
         topics: z
           .array(z.string())
+          .max(1)
           .default([])
-          .describe("Topic tag names, e.g. ['TypeScript']"),
+          .describe("Topic tag name, at most one, e.g. ['TypeScript']"),
         concepts: z
           .array(z.string())
           .default([])

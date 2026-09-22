@@ -46,14 +46,20 @@ export function TagPicker({
     [concepts, query]
   );
 
-  const toggle = useCallback(
-    (id: string) => {
+  // One topic per entry (DB trigger, migration 20260922): picking a topic
+  // replaces the current one; concepts stay multi-select.
+  const select = useCallback(
+    (id: string, type: TagType) => {
       const next = new Set(selectedIds);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        if (type === "topic") for (const t of topics) next.delete(t.id);
+        next.add(id);
+      }
       onChange(next);
     },
-    [selectedIds, onChange]
+    [selectedIds, topics, onChange]
   );
 
   const handleCreate = useCallback(
@@ -66,6 +72,7 @@ export function TagPicker({
         const tag = await createTag(name, type);
         onTagCreated(tag);
         const next = new Set(selectedIds);
+        if (type === "topic") for (const t of topics) next.delete(t.id);
         next.add(tag.id);
         onChange(next);
         setQuery("");
@@ -81,7 +88,7 @@ export function TagPicker({
         setCreating(null);
       }
     },
-    [query, selectedIds, onChange, onTagCreated]
+    [query, selectedIds, topics, onChange, onTagCreated]
   );
 
   const trimmedQuery = query.trim();
@@ -150,7 +157,7 @@ export function TagPicker({
         tags={filteredTopics}
         totalCount={topics.length}
         selectedIds={selectedIds}
-        onToggle={toggle}
+        onToggle={select}
       />
       <TagList
         title="Concepts"
@@ -158,7 +165,7 @@ export function TagPicker({
         tags={filteredConcepts}
         totalCount={concepts.length}
         selectedIds={selectedIds}
-        onToggle={toggle}
+        onToggle={select}
       />
     </div>
   );
@@ -170,7 +177,7 @@ interface TagListProps {
   tags: Tag[];
   totalCount: number;
   selectedIds: Set<string>;
-  onToggle: (id: string) => void;
+  onToggle: (id: string, type: TagType) => void;
 }
 
 function TagList({
@@ -203,7 +210,7 @@ function TagList({
                   className={`${styles.pill} ${styles[type]} ${
                     selected ? styles.pillSelected : ""
                   }`}
-                  onClick={() => onToggle(tag.id)}
+                  onClick={() => onToggle(tag.id, type)}
                   aria-pressed={selected}
                 >
                   {tag.name}

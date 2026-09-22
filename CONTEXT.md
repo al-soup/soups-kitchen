@@ -140,11 +140,13 @@ A named label attached to Entries. Every Tag is either a Topic or a Concept.
 _Avoid_: label, keyword, category
 
 **Topic**:
-A broad Tag that groups Entries and carries a colour (e.g. "Databases").
+A broad Tag that groups Entries and carries a colour (e.g. "Databases"). An
+Entry has at most one Topic.
 _Avoid_: area, domain, subject
 
 **Concept**:
-A narrow Tag naming a specific idea inside a Topic (e.g. "DB Indexing").
+A narrow Tag naming a specific idea inside a Topic (e.g. "DB Indexing"). An
+Entry can have any number of Concepts.
 _Avoid_: keyword, term, sub-topic
 
 ### Fragespiel
