@@ -405,12 +405,7 @@ function KnowledgeBasePageInner() {
         ) : (
           <>
             {items.map((item, index) => {
-              const topicTag = item.tags.find((t) => t.type === "topic");
-              const conceptTag = item.tags.find((t) => t.type === "concept");
-              const swatch = topicColorFor(topicTag?.name);
-              const crumbTags = [topicTag, conceptTag].filter(
-                (t): t is Tag => !!t
-              );
+              const swatch = topicColorFor(item.topicName);
               const isExpanded = expandedId === item.id;
               // Grouping relies on the RPC ordering entries by topic globally,
               // so a header is due whenever the topic changes from the previous
@@ -478,7 +473,7 @@ function KnowledgeBasePageInner() {
                         </span>
                       </button>
                       <div className={styles.cardHeader}>
-                        <TagBreadcrumb tags={crumbTags} size="sm" />
+                        <TagBreadcrumb tags={item.tags} size="sm" />
                       </div>
                       <h2 className={styles.question}>
                         <MarkdownInline source={item.question} highlight={q} />

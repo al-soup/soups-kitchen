@@ -197,12 +197,33 @@ test.describe("Knowledge Base", () => {
     await page.getByLabel("Question").fill(question);
     await page.getByLabel("Summary").fill("Linked to the new tag.");
     await page.getByRole("button", { name: tagName }).click();
+    await expect(page.getByRole("button", { name: tagName })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+
+    // Creating a second topic from the picker search replaces the first:
+    // an entry carries exactly one topic.
+    const pickerTopic = `e2e picker topic ${stamp}`;
+    await page.getByLabel("Search tags").fill(pickerTopic);
+    await page.getByRole("button", { name: "+ Topic" }).click();
+    await expect(
+      page.getByRole("button", { name: pickerTopic })
+    ).toHaveAttribute("aria-pressed", "true");
+    await page.getByLabel("Search tags").fill("");
+    await expect(page.getByRole("button", { name: tagName })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    );
     await page.getByRole("button", { name: "Create entry" }).click();
 
     // Lands on the new entry's detail page; tag breadcrumb is visible.
     await expect(page).toHaveURL(/\/apps\/knowledge-base\/\d+/);
     await expect(page.getByRole("heading", { name: question })).toBeVisible();
-    await expect(page.getByLabel("Tags")).toContainText(tagName, {
+    await expect(page.getByLabel("Tags")).toContainText(pickerTopic, {
+      ignoreCase: true,
+    });
+    await expect(page.getByLabel("Tags")).not.toContainText(tagName, {
       ignoreCase: true,
     });
 
@@ -212,7 +233,7 @@ test.describe("Knowledge Base", () => {
       has: page.getByRole("heading", { name: question }),
     });
     await expect(card).toBeVisible();
-    await expect(card).toContainText(tagName, { ignoreCase: true });
+    await expect(card).toContainText(pickerTopic, { ignoreCase: true });
   });
 
   test("full CRUD on a knowledge entry", async ({ page }) => {

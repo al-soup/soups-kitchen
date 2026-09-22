@@ -43,9 +43,10 @@ export function TagBreadcrumb({
           /
         </span>
       )}
-      {concepts.map((c) => (
+      {concepts.map((c, i) => (
         <span key={c.id} className={styles.concept}>
           {c.name}
+          {i < concepts.length - 1 && ","}
         </span>
       ))}
     </span>

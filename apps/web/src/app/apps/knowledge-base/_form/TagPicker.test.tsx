@@ -99,6 +99,39 @@ describe("TagPicker", () => {
     expect(next.has("t2")).toBe(false);
   });
 
+  it("selecting a topic replaces the current topic, keeps concepts", () => {
+    const { onChange } = renderPicker({
+      selectedIds: new Set(["t1", "c1"]),
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Databases" }));
+    const next = onChange.mock.calls[0][0] as Set<string>;
+    expect([...next].sort()).toEqual(["c1", "t2"]);
+  });
+
+  it("selecting a second concept keeps the first", () => {
+    const { onChange } = renderPicker({
+      selectedIds: new Set(["t1", "c1"]),
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Caching" }));
+    const next = onChange.mock.calls[0][0] as Set<string>;
+    expect([...next].sort()).toEqual(["c1", "c2", "t1"]);
+  });
+
+  it("creating a topic replaces the current topic", async () => {
+    const newTag: Tag = { id: "new", name: "BrandNew", type: "topic" };
+    (createTag as jest.Mock).mockResolvedValue(newTag);
+    const { onChange } = renderPicker({ selectedIds: new Set(["t1", "c1"]) });
+
+    fireEvent.change(screen.getByRole("searchbox"), {
+      target: { value: "BrandNew" },
+    });
+    fireEvent.click(await screen.findByRole("button", { name: "+ Topic" }));
+
+    await waitFor(() => expect(onChange).toHaveBeenCalled());
+    const next = onChange.mock.calls.at(-1)?.[0] as Set<string>;
+    expect([...next].sort()).toEqual(["c1", "new"]);
+  });
+
   it("shows create buttons after a short delay when query has no matches", async () => {
     renderPicker();
     fireEvent.change(screen.getByRole("searchbox"), {
