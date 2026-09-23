@@ -25,6 +25,7 @@ import {
 } from "../_form/resolveResourceTokens";
 import { isDraftDirty, type KnowledgeFormInitial } from "../_form/types";
 import { TagBreadcrumb } from "../_form/TagBreadcrumb";
+import { RelatedEntries } from "../_form/RelatedEntries";
 import { formatDate, formatDateTime } from "../_form/format";
 import styles from "./page.module.css";
 
@@ -69,6 +70,12 @@ function entryToInitial(
 
 export default function KnowledgeDetailPage({ params }: DetailPageProps) {
   const { id: rawId } = use(params);
+  // Related links navigate entry -> entry within this route, so the whole
+  // detail (load state, draft, mode) remounts per id.
+  return <KnowledgeDetail key={rawId} rawId={rawId} />;
+}
+
+function KnowledgeDetail({ rawId }: { rawId: string }) {
   const id = Number(rawId);
   const idValid = Number.isInteger(id) && id > 0;
   usePageTitle("Entry", "Knowledge Base");
@@ -244,21 +251,16 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
     }
   }, [id, router]);
 
+  // Always the list, not history.back(): after create the previous entry is
+  // /create, and entries are also reached from other entries' Related block.
   const handleBack = useCallback(() => {
-    if (isDirty) {
-      if (!window.confirm("You have unsaved changes. Leave without saving?")) {
-        return;
-      }
-      // Dirty path also pushed a popstate sentinel; falling through to back()
-      // would only consume the sentinel. Push the list URL directly instead.
-      router.push("/apps/knowledge-base");
+    if (
+      isDirty &&
+      !window.confirm("You have unsaved changes. Leave without saving?")
+    ) {
       return;
     }
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/apps/knowledge-base");
-    }
+    router.push("/apps/knowledge-base");
   }, [isDirty, router]);
 
   if (state.kind === "loading" || !draft) {
@@ -351,6 +353,8 @@ export default function KnowledgeDetailPage({ params }: DetailPageProps) {
               <> · Updated {formatDateTime(entry.updated_at)}</>
             )}
           </p>
+
+          <RelatedEntries entryId={id} />
         </>
       ) : (
         <KnowledgeFields value={draft} onChange={setDraft} />

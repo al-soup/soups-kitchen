@@ -20,6 +20,11 @@ export type KnowledgeListItem = Knowledge & {
   groupCount?: number;
 };
 
+export type RelatedKnowledge = Pick<Knowledge, "id" | "question"> & {
+  tags: Tag[];
+  topicName: string | null;
+};
+
 export type KnowledgeListPage = {
   items: KnowledgeListItem[];
   hasMore: boolean;

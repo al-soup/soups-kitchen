@@ -141,6 +141,30 @@ test.describe("Knowledge Base", () => {
     ).toBeVisible();
   });
 
+  test("detail links to related entries and back to all entries", async ({
+    page,
+  }) => {
+    await page.goto("/apps/knowledge-base");
+    await page.getByRole("link", { name: /Why use a B-tree index\?/ }).click();
+
+    // Shares Databases + DB Indexing, so it ranks first among related.
+    const related = page.getByRole("navigation", { name: "Related entries" });
+    await expect(related.getByRole("link").first()).toContainText(
+      "Hash index vs B-tree"
+    );
+    await expect(related.getByRole("link")).toHaveCount(4);
+
+    await related.getByRole("link").first().click();
+    await expect(
+      page.getByRole("heading", {
+        name: "Hash index vs B-tree — when hash wins",
+      })
+    ).toBeVisible();
+
+    await page.getByRole("link", { name: "All entries →" }).click();
+    await expect(page).toHaveURL("/apps/knowledge-base");
+  });
+
   test("sorting by oldest reorders the list and updates the URL", async ({
     page,
   }) => {
@@ -252,6 +276,16 @@ test.describe("Knowledge Base", () => {
     await expect(
       page.getByRole("heading", { name: initialQuestion })
     ).toBeVisible();
+    const entryUrl = page.url();
+
+    // Back goes to the list, not the create form; browser back too.
+    await page.getByRole("button", { name: "Back to Knowledge Base" }).click();
+    await expect(page).toHaveURL("/apps/knowledge-base");
+    await page.goBack();
+    await expect(page).toHaveURL(entryUrl);
+    await page.goBack();
+    await expect(page).not.toHaveURL(/\/create$/);
+    await page.goto(entryUrl);
 
     // UPDATE
     await page.getByRole("button", { name: "Switch to edit mode" }).click();

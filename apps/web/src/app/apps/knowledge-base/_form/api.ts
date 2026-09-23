@@ -3,6 +3,7 @@ import type {
   Knowledge,
   KnowledgeListItem,
   KnowledgeListPage,
+  RelatedKnowledge,
   Tag,
 } from "@/lib/supabase/types";
 import { DEFAULT_SORT, type KnowledgeSort } from "./filterParams";
@@ -202,4 +203,21 @@ export async function getKnowledgeTotal(): Promise<number> {
     .select("id", { count: "exact", head: true });
   if (error) throw new Error(error.message);
   return count ?? 0;
+}
+
+export async function listRelatedKnowledge(
+  id: number,
+  limit = 4
+): Promise<RelatedKnowledge[]> {
+  const { data, error } = await getSupabase().rpc("related_knowledge", {
+    p_id: id,
+    p_limit: limit,
+  });
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    question: row.question,
+    tags: (row.tags ?? []) as Tag[],
+    topicName: row.topic_name ?? null,
+  }));
 }
