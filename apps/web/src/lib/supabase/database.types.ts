@@ -371,6 +371,15 @@ export type Database = {
       };
       is_global_admin: { Args: never; Returns: boolean };
       is_manager_of: { Args: { target_table: string }; Returns: boolean };
+      related_knowledge: {
+        Args: { p_id: number; p_limit?: number };
+        Returns: {
+          id: number;
+          question: string;
+          tags: Json;
+          topic_name: string;
+        }[];
+      };
       search_knowledge: {
         Args: {
           concept_ids?: string[];

@@ -24,7 +24,8 @@ export default function CreateKnowledgePage() {
   const handleSubmit = useCallback(
     async (input: KnowledgeFormInput) => {
       const entry = await createKnowledge(input);
-      router.push(`/apps/knowledge-base/${entry.id}`);
+      // replace: back from the new entry must not reopen the empty form.
+      router.replace(`/apps/knowledge-base/${entry.id}`);
     },
     [router]
   );
