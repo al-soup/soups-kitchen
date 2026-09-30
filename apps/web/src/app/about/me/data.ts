@@ -30,11 +30,11 @@ export const HEADLINE = {
 export const JOBS: Job[] = [
   {
     company: "Ambit Group",
-    url: "https://www.ambit.ch",
+    url: "https://ambit-group.com/",
     years: "2026 – now",
     role: "Senior Software Engineer",
     summary:
-      "In-house competence build-up for Frontend, CustomComponents, NodeJS & OpenSource.",
+      "Consulting adn in-house competence build-up for Frontend, CustomComponents, NodeJS & OpenSource.",
     tech: ["NodeJS", "React", "Azure", ".NET", "Dynamics 365"],
   },
   {
@@ -43,7 +43,7 @@ export const JOBS: Job[] = [
     years: "2025",
     role: "DevOps Engineer",
     summary:
-      "CMS infrastructure for the Swiss government: backend, frontend, CI/CD.",
+      "Working on CMS infrastructure for the Swiss government: backend, frontend, CI/CD.",
     tech: ["Golang", "NodeJS", "Nuxt", "Kubernetes", "Gitlab CI"],
   },
   {
@@ -53,7 +53,7 @@ export const JOBS: Job[] = [
     role: "Senior Software Engineer",
     summary:
       "Building interactive visuals and data visualization software for journalists.",
-    tech: ["SvelteKit", "D3.js", "Node", "CouchDB"],
+    tech: ["SvelteKit", "D3.js", "NodeJS", "CouchDB"],
   },
   {
     company: "Smallstack",
@@ -65,12 +65,12 @@ export const JOBS: Job[] = [
   },
   {
     company: "University of Bern",
-    url: "https://www.unibe.ch",
+    url: "https://www.digitale-nachhaltigkeit.unibe.ch/index_eng.html",
     years: "2017 – 2020",
     role: "Software Engineer",
     summary:
       "Research and consulting projects around open source and open data.",
-    tech: ["Angular", "D3.js", "Python", "SQL"],
+    tech: ["Angular", "D3.js", "NodeJS", "Python", "SQL"],
   },
 ];
 
@@ -81,9 +81,9 @@ export const BEFORE: string[] = [
 export const LIKES: string[] = [
   "road & touring bikes",
   "calisthenics",
-  "dogs",
+  "dog walks",
   "board games with too many rules",
-  "techno",
+  "techno music",
 ];
 
 export const LINKS: CvLink[] = [
