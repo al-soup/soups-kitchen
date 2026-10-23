@@ -9,6 +9,7 @@ import {
   Space_Grotesk,
   Space_Mono,
 } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { PageProvider } from "@/context/PageContext";
 import { AuthProvider } from "@/context/AuthContext";
@@ -115,6 +116,7 @@ export default function RootLayout({
             </PageProvider>
           </AuthProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
