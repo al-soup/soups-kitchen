@@ -184,7 +184,13 @@ export function HabitScoreGraph({
         </div>
 
         <div
-          className={`${styles.wrapper}${canScrollLeft ? ` ${styles.fadeLeft}` : ""}`}
+          className={[
+            styles.wrapper,
+            canScrollLeft && styles.fadeLeft,
+            canScrollRight && styles.fadeRight,
+          ]
+            .filter(Boolean)
+            .join(" ")}
           ref={scrollRef}
           onScroll={updateScrollButtons}
         >

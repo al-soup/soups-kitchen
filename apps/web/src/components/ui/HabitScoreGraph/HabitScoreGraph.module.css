@@ -34,22 +34,23 @@
   flex: 1;
   scrollbar-width: none;
   scroll-behavior: smooth;
+  --fade-left: 0px;
+  --fade-right: 0px;
   mask-image: linear-gradient(
     to right,
-    black 0,
-    black calc(100% - 24px),
+    transparent 0,
+    black var(--fade-left),
+    black calc(100% - var(--fade-right)),
     transparent 100%
   );
 }
 
 .wrapper.fadeLeft {
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    black 24px,
-    black calc(100% - 24px),
-    transparent 100%
-  );
+  --fade-left: 24px;
+}
+
+.wrapper.fadeRight {
+  --fade-right: 24px;
 }
 
 .wrapper::-webkit-scrollbar {
