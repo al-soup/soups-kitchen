@@ -24,7 +24,10 @@ interface TokenRow {
 }
 
 interface StravaSummaryActivity {
+  // `id` can exceed 2^53 after 2027-06-01 and lose precision in JSON.parse;
+  // `id_str` is exact. PostgREST casts it into the bigint column.
   id: number;
+  id_str: string;
   sport_type: (typeof RIDE_SPORT_TYPES)[number];
   start_date: string;
   distance: number; // meters
@@ -33,7 +36,7 @@ interface StravaSummaryActivity {
 }
 
 interface StravaRideRow {
-  strava_activity_id: number;
+  strava_activity_id: string;
   ride_date: string;
   distance_km: number;
   elevation_gain_m: number;
@@ -172,7 +175,7 @@ function round(value: number, decimals: number): number {
 
 function toRideRow(a: StravaSummaryActivity): StravaRideRow {
   return {
-    strava_activity_id: a.id,
+    strava_activity_id: a.id_str,
     ride_date: a.start_date,
     distance_km: round(a.distance / 1000, 2),
     elevation_gain_m: round(a.total_elevation_gain, 1),
