@@ -108,7 +108,8 @@ async function storeTokens({
     method: "POST",
     headers,
     body: JSON.stringify({
-      p_athlete_id: athlete.id,
+      // id_str: exact past 2^53 (Strava 64-bit ids, 2027-06-01)
+      p_athlete_id: athlete.id_str,
       p_access_token: access_token,
       p_refresh_token: refresh_token,
       p_expires_at: expires_at,
@@ -175,7 +176,7 @@ const server = createServer(async (req, res) => {
     console.log("Exchanging code for tokens...");
     const tokens = await exchangeCode(code);
 
-    console.log(`Athlete ID: ${tokens.athlete.id}`);
+    console.log(`Athlete ID: ${tokens.athlete.id_str}`);
     console.log(
       `Access token expires at: ${new Date(tokens.expires_at * 1000).toISOString()}`
     );
