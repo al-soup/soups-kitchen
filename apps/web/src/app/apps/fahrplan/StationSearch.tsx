@@ -91,8 +91,7 @@ export function StationSearch({ onSelect }: StationSearchProps) {
   useEffect(() => {
     if (activeIndex < 0 || !listRef.current) return;
     const item = listRef.current.children[activeIndex] as
-      | HTMLElement
-      | undefined;
+      HTMLElement | undefined;
     item?.scrollIntoView?.({ block: "nearest" });
   }, [activeIndex]);
 
