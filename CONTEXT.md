@@ -112,6 +112,11 @@ The analytics page of the Habits app: Streaks, weekly Scores, weekday rhythm and
 top Actions.
 _Avoid_: stats, analytics, dashboard, report
 
+**Lab Visit**:
+A Habit of a Sports Action named "Laboratorium…" (gym). Saving one appends
+"Besuch <n>: <cost> CHF" to its note: n-th visit of that year, yearly fee / n.
+_Avoid_: gym session, check-in
+
 **Ride**:
 A cycling activity imported from Strava. Every Ride yields a "Cycling" Habit.
 _Avoid_: activity (Strava's word), workout, session

@@ -16,6 +16,7 @@ import { PageTitle } from "@/components/ui/PageTitle";
 import { HabitTypeSelector } from "../HabitTypeSelector";
 import { ActionList, type SelectionMap } from "./ActionList";
 import { getActions, createHabits } from "./api";
+import { withLabVisitNotes } from "./labVisit";
 import { getLocalToday, getCurrentTime } from "@/lib/dateUtils";
 import { actionTypeQuery, parseActionType, TYPE_PARAM } from "@/lib/actionType";
 import type { Action, ActionType } from "@/lib/supabase/types";
@@ -134,7 +135,7 @@ function CreateHabitPageInner() {
     setSubmitSuccess(false);
 
     try {
-      await createHabits(rows);
+      await createHabits(await withLabVisitNotes(rows, actions));
       setSelection({});
       setSubmitSuccess(true);
       if (successTimerRef.current) clearTimeout(successTimerRef.current);
@@ -144,7 +145,7 @@ function CreateHabitPageInner() {
     } finally {
       setSubmitting(false);
     }
-  }, [selection]);
+  }, [selection, actions]);
 
   if (loading) {
     return (
